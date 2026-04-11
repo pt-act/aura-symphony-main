@@ -1,0 +1,198 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {userId}
+    // Fields:
+    //   - uid: string (required) - Firebase Auth UID
+    //   - email: string (required) - User email
+    //   - displayName: string (optional)
+    //   - photoURL: string (optional)
+    //   - digitalLearnerProfile: map (optional)
+    //
+    // Collection: insights
+    // Document ID: {insightId}
+    // Fields:
+    //   - id: number (required)
+    //   - title: string (required)
+    //   - type: string (required)
+    //   - data: map (optional)
+    //   - userId: string (required)
+    //   - createdAt: timestamp (optional)
+    //
+    // Collection: annotations
+    // Document ID: {annotationId}
+    // Fields:
+    //   - id: number (required)
+    //   - time: number (required)
+    //   - text: string (required)
+    //   - userId: string (required)
+    //   - videoId: string (optional)
+    //   - createdAt: timestamp (optional)
+    //
+    // Collection: presentations
+    // Document ID: {presentationId}
+    // Fields:
+    //   - userId: string (required)
+    //   - name: string (required)
+    //   - slides: list (required)
+    //   - createdAt: timestamp (optional)
+    //   - lastUpdated: timestamp (optional)
+    //
+    // Collection: custom_virtuosos
+    // Document ID: {virtuosoId}
+    // Fields:
+    //   - userId: string (required)
+    //   - id: string (required)
+    //   - name: string (required)
+    //   - title: string (required)
+    //   - model: string (required)
+    //   - description: string (required)
+    //   - systemInstruction: string (required)
+    //   - capabilities: list (required)
+    //   - color: string (required)
+    //   - icon: string (required)
+    //   - createdAt: timestamp (optional)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "ai.streetwear.art@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return hasOnlyAllowedFields(['uid', 'email', 'displayName', 'photoURL', 'digitalLearnerProfile']) &&
+             data.uid is string && data.uid == request.auth.uid &&
+             isValidEmail(data.email) &&
+             (!('displayName' in data) || data.displayName is string && data.displayName.size() < 100) &&
+             (!('photoURL' in data) || data.photoURL is string && data.photoURL.size() < 500) &&
+             (!('digitalLearnerProfile' in data) || data.digitalLearnerProfile is map);
+    }
+
+    function isValidInsight(data) {
+      return hasOnlyAllowedFields(['id', 'title', 'type', 'data', 'userId', 'createdAt']) &&
+             data.id is number &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.type is string &&
+             data.userId is string && data.userId == request.auth.uid &&
+             (!('data' in data) || data.data is map) &&
+             (!('createdAt' in data) || data.createdAt is timestamp);
+    }
+
+    function isValidAnnotation(data) {
+      return hasOnlyAllowedFields(['id', 'time', 'text', 'userId', 'videoId', 'createdAt']) &&
+             data.id is number &&
+             data.time is number &&
+             data.text is string && data.text.size() > 0 && data.text.size() < 1000 &&
+             data.userId is string && data.userId == request.auth.uid &&
+             (!('videoId' in data) || data.videoId is string) &&
+             (!('createdAt' in data) || data.createdAt is timestamp);
+    }
+
+    function isValidPresentation(data) {
+      return hasOnlyAllowedFields(['userId', 'name', 'slides', 'createdAt', 'lastUpdated']) &&
+             data.userId is string && data.userId == request.auth.uid &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 200 &&
+             data.slides is list && data.slides.size() < 50 &&
+             (!('createdAt' in data) || data.createdAt is timestamp) &&
+             (!('lastUpdated' in data) || data.lastUpdated is timestamp);
+    }
+
+    function isValidCustomVirtuoso(data) {
+      return hasOnlyAllowedFields(['userId', 'id', 'name', 'title', 'model', 'description', 'systemInstruction', 'capabilities', 'color', 'icon', 'createdAt']) &&
+             data.userId is string && data.userId == request.auth.uid &&
+             data.id is string && data.id.size() > 0 && data.id.size() < 100 &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 100 &&
+             data.model is string && data.model.size() > 0 && data.model.size() < 100 &&
+             data.description is string && data.description.size() > 0 && data.description.size() < 500 &&
+             data.systemInstruction is string && data.systemInstruction.size() > 0 && data.systemInstruction.size() < 5000 &&
+             data.capabilities is list && data.capabilities.size() < 20 &&
+             data.color is string && data.color.size() > 0 && data.color.size() < 20 &&
+             data.icon is string && data.icon.size() > 0 && data.icon.size() < 50 &&
+             (!('createdAt' in data) || data.createdAt is timestamp);
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if isOwner(userId) && isValidUser(request.resource.data);
+    }
+
+    match /insights/{insightId} {
+      allow read: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && isValidInsight(request.resource.data);
+      allow update: if isDocOwner() && isValidInsight(request.resource.data);
+      allow delete: if isDocOwner() || isAdmin();
+    }
+
+    match /annotations/{annotationId} {
+      allow read: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && isValidAnnotation(request.resource.data);
+      allow update: if isDocOwner() && isValidAnnotation(request.resource.data);
+      allow delete: if isDocOwner() || isAdmin();
+    }
+
+    match /presentations/{presentationId} {
+      allow read: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && isValidPresentation(request.resource.data);
+      allow update: if isDocOwner() && isValidPresentation(request.resource.data);
+      allow delete: if isDocOwner() || isAdmin();
+    }
+
+    match /custom_virtuosos/{virtuosoId} {
+      allow read: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && isValidCustomVirtuoso(request.resource.data);
+      allow update: if isDocOwner() && isValidCustomVirtuoso(request.resource.data);
+      allow delete: if isDocOwner() || isAdmin();
+    }
+
+    // Connection test collection
+    match /test/connection {
+      allow read: if true;
+    }
+
+    // Default deny
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

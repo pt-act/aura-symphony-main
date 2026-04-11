@@ -1,0 +1,9 @@
+{
+  "name": "in-struktor",
+  "description": "Chat with any video and PDF's to generate amazing step-by-step instructions or walkthroughs and export in your preferred format  ",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "prompt": ""
+}

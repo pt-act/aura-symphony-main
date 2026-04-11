@@ -1,0 +1,104 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and learning data",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string", "format": "uri" },
+        "digitalLearnerProfile": {
+          "type": "object",
+          "properties": {
+            "knowledgeGraph": { "type": "object" }
+          }
+        }
+      },
+      "required": ["uid", "email"]
+    },
+    "Insight": {
+      "title": "Insight",
+      "description": "AI-generated learning insight",
+      "type": "object",
+      "properties": {
+        "id": { "type": "number" },
+        "title": { "type": "string" },
+        "type": { "type": "string" },
+        "data": { "type": "object" },
+        "userId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "type", "userId"]
+    },
+    "Annotation": {
+      "title": "Annotation",
+      "description": "User-added video annotation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "number" },
+        "time": { "type": "number" },
+        "text": { "type": "string" },
+        "userId": { "type": "string" },
+        "videoId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "time", "text", "userId"]
+    },
+    "Presentation": {
+      "title": "Presentation",
+      "description": "User-created presentation",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "slides": { "type": "array", "items": { "type": "object" } },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "lastUpdated": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "name", "slides"]
+    },
+    "CustomVirtuoso": {
+      "title": "CustomVirtuoso",
+      "description": "User-defined AI agent",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "title": { "type": "string" },
+        "model": { "type": "string" },
+        "description": { "type": "string" },
+        "systemInstruction": { "type": "string" },
+        "capabilities": { "type": "array", "items": { "type": "string" } },
+        "color": { "type": "string" },
+        "icon": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "id", "name", "title", "model", "description", "systemInstruction", "capabilities", "color", "icon"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/insights/{insightId}": {
+      "schema": "Insight",
+      "description": "AI-generated insights"
+    },
+    "/annotations/{annotationId}": {
+      "schema": "Annotation",
+      "description": "Video annotations"
+    },
+    "/presentations/{presentationId}": {
+      "schema": "Presentation",
+      "description": "User presentations"
+    },
+    "/custom_virtuosos/{virtuosoId}": {
+      "schema": "CustomVirtuoso",
+      "description": "User-defined AI agents"
+    }
+  }
+}
