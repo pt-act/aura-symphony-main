@@ -28,10 +28,42 @@ Aura isn't just for analysis; it's an educational platform. The "Create Course" 
 
 ## Getting Started
 
-1. Clone the repository.
-2. Install dependencies with `npm install`.
-3. Set up your environment variables (e.g., Gemini API Key, Firebase Config).
-4. Run the development server with `npm run dev`.
+### Prerequisites
+- Node.js 18+
+- A Google Gemini API key ([get one here](https://aistudio.google.com/apikey))
+
+### Setup
+
+1. Clone and install:
+   ```bash
+   git clone <repo-url> && cd aura-symphony
+   npm install
+   ```
+
+2. Create your environment file:
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Edit `.env` and add your Gemini API key:
+   ```
+   GEMINI_API_KEY=AIzaSy...your_actual_key
+   ```
+
+4. Start the dev server:
+   ```bash
+   npm run dev
+   ```
+
+The app runs at `http://localhost:3000`.
+
+### Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `GEMINI_API_KEY` | Yes | Google Gemini API key for all AI features |
+
+> **How it works:** Vite reads `GEMINI_API_KEY` from `.env` and injects it as `process.env.API_KEY` at build time via `define` in `vite.config.ts`. The key never leaves your browser — all API calls go directly to Google's endpoints.
 
 ## Architecture
 
