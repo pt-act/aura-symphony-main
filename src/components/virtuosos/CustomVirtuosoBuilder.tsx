@@ -15,7 +15,7 @@ export default function CustomVirtuosoBuilder({ onClose, onSave, customVirtuosos
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [systemInstruction, setSystemInstruction] = useState('');
-  const [model, setModel] = useState('gemini-3.1-pro-preview');
+  const [model, setModel] = useState('gemini-2.5-pro');
   const [color, setColor] = useState('#8AB4F8');
   const [icon, setIcon] = useState('Bot');
   const [capabilities, setCapabilities] = useState<string[]>(['custom']);
@@ -57,7 +57,7 @@ export default function CustomVirtuosoBuilder({ onClose, onSave, customVirtuosos
     setTitle('');
     setDescription('');
     setSystemInstruction('');
-    setModel('gemini-3.1-pro-preview');
+    setModel('gemini-2.5-pro');
     setColor('#8AB4F8');
     setIcon('Bot');
     setCapabilities(['custom']);
@@ -144,9 +144,9 @@ export default function CustomVirtuosoBuilder({ onClose, onSave, customVirtuosos
                 <div className="form-group">
                   <label>Model</label>
                   <select value={model} onChange={e => setModel(e.target.value)}>
-                    <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro</option>
-                    <option value="gemini-3-flash-preview">Gemini 3 Flash</option>
-                    <option value="gemini-3.1-flash-image-preview">Gemini 3.1 Flash Image</option>
+                    <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                    <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                    <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
                   </select>
                 </div>
                 

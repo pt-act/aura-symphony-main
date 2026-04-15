@@ -1,47 +1,81 @@
 .docs-container {
   min-height: 100vh;
-  background-color: #0a0a0a;
+  background-color: #000000;
   color: #ffffff;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-feature-settings: 'cv01', 'ss03';
   display: flex;
   flex-direction: column;
 }
 
+/* ─── Header ─── */
 .docs-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: #111;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.docs-header .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.docs-header .logo-orb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8AB4F8, #6C9BF2);
+  box-shadow: 0 0 12px rgba(138, 180, 248, 0.35);
+}
+
+.docs-header .logo h1 {
+  font-size: 0.95rem;
+  font-weight: 510;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: #f7f8f8;
 }
 
 .back-link {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #a0a0a0;
+  gap: 6px;
+  color: #8a8f98;
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 400;
   transition: color 0.2s;
+  letter-spacing: -0.01em;
 }
 
 .back-link:hover {
-  color: #fff;
+  color: #ffffff;
 }
 
+/* ─── Layout ─── */
 .docs-layout {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
 
+/* ─── Sidebar ─── */
 .docs-sidebar {
-  width: 280px;
-  background: #111;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 2rem 1rem;
+  width: 260px;
+  background: rgba(255, 255, 255, 0.01);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 1.5rem 0.75rem;
   overflow-y: auto;
+  flex-shrink: 0;
 }
 
 .docs-sidebar ul {
@@ -50,73 +84,312 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 2px;
 }
 
 .docs-sidebar button {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
+  gap: 10px;
+  padding: 9px 12px;
   background: transparent;
   border: none;
-  color: #a0a0a0;
-  font-size: 0.95rem;
+  color: #8a8f98;
+  font-size: 0.825rem;
+  font-weight: 400;
   text-align: left;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.15s;
+  font-family: inherit;
+  letter-spacing: -0.01em;
 }
 
 .docs-sidebar button:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.04);
+  color: #d0d6e0;
 }
 
 .docs-sidebar button.active {
-  background: rgba(138, 180, 248, 0.1);
+  background: rgba(138, 180, 248, 0.08);
   color: #8AB4F8;
-  font-weight: 500;
+  font-weight: 510;
 }
 
+.docs-sidebar .sidebar-label {
+  font-size: 0.65rem;
+  font-weight: 510;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #62666d;
+  padding: 1rem 12px 0.5rem;
+}
+
+/* ─── Content ─── */
 .docs-content {
   flex: 1;
-  padding: 4rem;
+  padding: 4rem 3rem;
   overflow-y: auto;
-  background: #0a0a0a;
+  background: #000000;
 }
 
 .docs-article {
-  max-width: 800px;
+  max-width: 720px;
   margin: 0 auto;
 }
 
-.docs-article h2 {
-  font-size: 2.5rem;
-  margin: 0 0 2rem 0;
-  letter-spacing: -0.02em;
+.docs-article .article-label {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 510;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #8AB4F8;
+  margin-bottom: 0.75rem;
 }
 
+.docs-article h2 {
+  font-size: 2.25rem;
+  font-weight: 510;
+  letter-spacing: -1.4px;
+  margin: 0 0 2rem 0;
+  color: #f7f8f8;
+  line-height: 1.1;
+}
+
+/* ─── Markdown Body ─── */
 .markdown-body {
-  color: #d0d0d0;
-  font-size: 1.1rem;
+  color: #a6a6a6;
+  font-size: 0.95rem;
   line-height: 1.7;
+  letter-spacing: -0.005em;
 }
 
 .markdown-body p {
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 1.25rem 0;
 }
 
 .markdown-body ul {
-  margin: 0 0 1.5rem 0;
-  padding-left: 1.5rem;
+  margin: 0 0 1.25rem 0;
+  padding-left: 0;
+  list-style: none;
 }
 
 .markdown-body li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding-left: 1.25rem;
+  position: relative;
+}
+
+.markdown-body li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(138, 180, 248, 0.3);
 }
 
 .markdown-body strong {
-  color: #fff;
+  color: #f7f8f8;
+  font-weight: 510;
+}
+
+.markdown-body ol {
+  margin: 0 0 1.25rem 0;
+  padding-left: 1.25rem;
+  counter-reset: step;
+}
+
+.markdown-body ol li {
+  padding-left: 0;
+  counter-increment: step;
+}
+
+.markdown-body ol li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: rgba(138, 180, 248, 0.1);
+  color: #8AB4F8;
+  font-size: 0.7rem;
+  font-weight: 510;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── Code-like blocks ─── */
+.markdown-body code {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', 'Space Mono', monospace;
+  font-size: 0.825rem;
+  color: #d0d6e0;
+}
+
+/* ─── Virtuoso Cards ─── */
+.virtuoso-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+}
+
+.virtuoso-card {
+  background: #000000;
+  padding: 1.5rem;
+  transition: background 0.2s;
+}
+
+.virtuoso-card:hover {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.virtuoso-card .v-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0.75rem;
+}
+
+.virtuoso-card .v-icon {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.virtuoso-card .v-name {
+  font-size: 0.85rem;
+  font-weight: 510;
+  color: #f7f8f8;
+  letter-spacing: -0.02em;
+}
+
+.virtuoso-card .v-role {
+  font-size: 0.7rem;
+  color: #62666d;
+  letter-spacing: 0.02em;
+}
+
+.virtuoso-card p {
+  color: #8a8f98;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ─── Feature List ─── */
+.feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+}
+
+.feature-list-item {
+  background: #000000;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  transition: background 0.2s;
+}
+
+.feature-list-item:hover {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.feature-list-item .fl-icon {
+  width: 32px;
+  height: 32px;
+  background: rgba(138, 180, 248, 0.06);
+  border: 1px solid rgba(138, 180, 248, 0.1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.feature-list-item .fl-content h4 {
+  font-size: 0.85rem;
+  font-weight: 510;
+  color: #f7f8f8;
+  margin: 0 0 0.25rem 0;
+  letter-spacing: -0.02em;
+}
+
+.feature-list-item .fl-content p {
+  color: #8a8f98;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 768px) {
+  .docs-layout {
+    flex-direction: column;
+  }
+
+  .docs-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 1rem;
+    overflow-y: visible;
+  }
+
+  .docs-sidebar ul {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 4px;
+  }
+
+  .docs-sidebar .sidebar-label {
+    display: none;
+  }
+
+  .docs-sidebar button {
+    white-space: nowrap;
+    padding: 8px 14px;
+  }
+
+  .docs-content {
+    padding: 2rem 1.5rem;
+  }
+
+  .docs-article h2 {
+    font-size: 1.75rem;
+    letter-spacing: -1px;
+  }
+
+  .virtuoso-grid,
+  .feature-list {
+    grid-template-columns: 1fr;
+  }
 }

@@ -22,7 +22,7 @@ Write the exact script (e.g., Python for Blender) to accomplish this.
 Return ONLY the code block, no markdown formatting outside the code block.`;
 
     const scriptResponse = await ai.models.generateContent({
-      model: 'gemini-3.1-pro-preview',
+      model: 'gemini-2.5-pro',
       contents: scriptPrompt,
     });
     
@@ -43,7 +43,7 @@ Return ONLY the code block, no markdown formatting outside the code block.`;
     let imageUrl = '';
     try {
       const imageResponse = await ai.models.generateContent({
-        model: 'gemini-3.1-flash-image-preview',
+        model: 'gemini-2.5-flash',
         contents: imagePrompt,
         config: {
           imageConfig: {

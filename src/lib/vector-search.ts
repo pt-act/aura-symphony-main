@@ -216,7 +216,7 @@ Return timestamps and brief descriptions of matching moments.
 ${context}`;
 
   const response = await ai.models.generateContent({
-    model: 'gemini-3.1-pro-preview',
+    model: 'gemini-2.5-pro',
     contents: prompt,
   });
 

@@ -80,20 +80,37 @@ button:disabled {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
+  padding: 0.5rem 1rem;
   background-color: var(--surface-color);
   border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
 }
 
 .app-header h1 {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
 }
 
 .header-controls {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.user-profile img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-profile span {
+  font-size: 0.85rem;
 }
 
 .main-content {
@@ -391,8 +408,8 @@ button:disabled {
 .creator-studio-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  width: 100%;
+  flex-grow: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -1711,4 +1728,10 @@ textarea:focus {
 .custom-virtuoso-modal .btn-primary:hover {
   background: var(--accent-color);
   opacity: 0.9;
+}
+
+/* Provider Settings Card focus states */
+.settings-card-input:focus {
+  outline: none;
+  border-color: var(--accent-color);
 }

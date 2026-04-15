@@ -35,9 +35,9 @@ export const VIRTUOSO_REGISTRY: Record<string, VirtuosoProfile> = {
     id: VirtuosoType.CONDUCTOR,
     name: "The Conductor",
     title: "Orchestra Lead",
-    model: "gemini-3.1-pro-preview",
+    model: "gemini-2.5-pro",
     description: "Interprets user intent and delegates tasks to specialized Virtuosos.",
-    systemInstruction: `You are the Conductor of the Aura Symphony. 
+    systemInstruction: `You are the Conductor of the Aura Symphony.
     Your role is to interpret the user's natural language commands and delegate them to the appropriate specialized Virtuosos.
     Do not perform complex analysis yourself; instead, commission the specialists.
     Always maintain a professional, orchestral tone.`,
@@ -49,7 +49,7 @@ export const VIRTUOSO_REGISTRY: Record<string, VirtuosoProfile> = {
     id: VirtuosoType.VISIONARY,
     name: "The Visionary",
     title: "Visual Analyst",
-    model: "gemini-3.1-pro-preview",
+    model: "gemini-2.5-pro",
     description: "Specializes in deep multi-modal analysis of video and image content.",
     systemInstruction: `You are The Visionary. Your domain is the visual realm.
     When commissioned, perform exhaustive analysis of video frames or images.
@@ -63,7 +63,7 @@ export const VIRTUOSO_REGISTRY: Record<string, VirtuosoProfile> = {
     id: VirtuosoType.SCHOLAR,
     name: "The Scholar",
     title: "Research Specialist",
-    model: "gemini-3-flash-preview",
+    model: "gemini-2.5-flash",
     description: "Utilizes Google Search and web grounding to provide real-world context.",
     systemInstruction: `You are The Scholar. Your domain is knowledge and grounding.
     Use Google Search to verify facts, find recent events, and provide external context to the media being analyzed.
@@ -92,7 +92,7 @@ export const VIRTUOSO_REGISTRY: Record<string, VirtuosoProfile> = {
     id: VirtuosoType.ANALYST,
     name: "The Analyst",
     title: "Logic Specialist",
-    model: "gemini-3.1-pro-preview",
+    model: "gemini-2.5-pro",
     description: "Performs complex reasoning, data extraction, and logical synthesis.",
     systemInstruction: `You are The Analyst. Your domain is logic and structure.
     Perform deep reasoning on text data, extract structured information, and solve complex problems.
@@ -108,7 +108,7 @@ export const VIRTUOSO_REGISTRY: Record<string, VirtuosoProfile> = {
     id: VirtuosoType.CHRONICLER,
     name: "The Chronicler",
     title: "Documentation Lead",
-    model: "gemini-3-flash-preview",
+    model: "gemini-2.5-flash",
     description: "Summarizes sessions and prepares data for export in various formats.",
     systemInstruction: `You are The Chronicler. Your domain is memory and documentation.
     Summarize the analysis session, organize insights into structured reports, and prepare data for export (Markdown, PDF, etc.).`,
@@ -120,7 +120,7 @@ export const VIRTUOSO_REGISTRY: Record<string, VirtuosoProfile> = {
     id: VirtuosoType.CRITIC,
     name: "The Critic",
     title: "Quality Evaluator",
-    model: "gemini-3.1-pro-preview",
+    model: "gemini-2.5-pro",
     description: "Evaluates output quality against user intent. Catches hallucinations and ensures relevance.",
     systemInstruction: `You are The Critic. Your domain is quality assurance.
     You evaluate the output of other Virtuosos against the user's original request.
