@@ -8,7 +8,7 @@
  * Falls back to direct Gemini context-window search if backend unavailable.
  */
 
-import { ai } from '../api/client';
+import { getAI, getEffectiveModel } from '../api/client';
 
 // ─── Types ───────────────────────────────────────────────────────────
 
@@ -215,8 +215,8 @@ Return timestamps and brief descriptions of matching moments.
 
 ${context}`;
 
-  const response = await ai.models.generateContent({
-    model: 'gemini-2.5-pro',
+  const response = await getAI().models.generateContent({
+    model: getEffectiveModel('gemini-2.5-pro'),
     contents: prompt,
   });
 

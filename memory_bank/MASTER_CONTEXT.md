@@ -25,6 +25,7 @@ Foundation implementation - core multimedia analysis and creation workflows esta
 ### Key Features Implemented
 - Multimedia ingestion and analysis timeline
 - AI-powered virtuoso assistants (Visionary, Scholar, Conductor, Artisan, Analyst, Chronicler)
+- **Provider Settings (operational)**: Dynamic AI provider/model selection via Settings UI, persisted in localStorage, consumed by all API modules via `getAI()` / `getEffectiveModel()`
 - Annotation system with timecode synchronization
 - Creator Studio for presentation building
 - Live conversation and collaboration features

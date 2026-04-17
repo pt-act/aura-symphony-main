@@ -1730,6 +1730,61 @@ textarea:focus {
   opacity: 0.9;
 }
 
+/* Settings Modal */
+.settings-modal-content {
+  width: 90vw;
+  max-width: 640px;
+  max-height: 85vh;
+}
+
+.settings-modal-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  overflow-y: auto;
+}
+
+.settings-modal-body > div {
+  border-radius: 0;
+  border: none;
+  max-width: 100%;
+}
+
+/* Icon-only header button */
+.icon-header-btn {
+  background: none;
+  border: none;
+  color: var(--secondary-text-color);
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, background 0.2s;
+}
+
+.icon-header-btn:hover:not(:disabled) {
+  color: var(--accent-color);
+  background: rgba(138, 180, 248, 0.08);
+}
+
+.icon-header-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Spin animation for test-connection loader */
+@keyframes spin-icon {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.spin-icon {
+  animation: spin-icon 0.8s linear infinite;
+}
+
 /* Provider Settings Card focus states */
 .settings-card-input:focus {
   outline: none;

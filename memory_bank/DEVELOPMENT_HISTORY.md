@@ -1,6 +1,9 @@
 # Aura Symphony Project - Development History
 ## Feature Chronology - Newest First
 
+### June 2025
+- **Provider Settings — End-to-End Integration**: Wired the ProviderSettingsCard into the app UI (gear icon in header → SettingsModal) and connected the API layer so user-configured providers actually drive AI calls. Created shared `provider-config.ts` module, added `getAI()` and `getEffectiveModel()` to `client.ts`, and updated all virtuoso modules, valhalla, vector-search, and LiveConversation to use dynamic provider resolution.
+
 ### Mon Apr 06 2026
 - **Project Initialization**: Set up React 19 + TypeScript + Vite foundation
 - **Core Architecture**: Implemented SymphonyBus event system for decoupled communication

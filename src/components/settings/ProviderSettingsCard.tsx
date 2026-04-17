@@ -1,45 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Eye, EyeOff, Check, Server, Key, Cpu, AlertCircle } from 'lucide-react';
+import { Plus, Trash2, Eye, EyeOff, Check, Server, Key, Cpu, AlertCircle, Loader, Zap } from 'lucide-react';
+import {
+  ProviderConfig,
+  loadProviders,
+  saveProviders,
+  getActiveProvider as getActiveProviderBase,
+} from '../../lib/provider-config';
+import {testProviderConnection} from '../../api/client';
+import {styles} from './providerSettingsCardStyles';
 
-export interface ProviderConfig {
-  id: string;
-  name: string;
-  baseUrl: string;
-  apiKey: string;
-  model: string;
-  isActive: boolean;
-}
-
-const STORAGE_KEY = 'aura-symphony-providers';
-
-const defaultProviders: ProviderConfig[] = [
-  {
-    id: 'google-default',
-    name: 'Google AI (Default)',
-    baseUrl: 'https://generativelanguage.googleapis.com',
-    apiKey: '',
-    model: 'gemini-2.5-pro',
-    isActive: true,
-  },
-];
-
-function loadProviders(): ProviderConfig[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return JSON.parse(stored);
-  } catch {}
-  return defaultProviders;
-}
-
-function saveProviders(providers: ProviderConfig[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(providers));
-}
+// Re-export for consumers that imported from this file
+export type { ProviderConfig };
+export { getActiveProviderBase as getActiveProvider };
 
 export default function ProviderSettingsCard() {
   const [providers, setProviders] = useState<ProviderConfig[]>(loadProviders);
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [testState, setTestState] = useState<Record<string, 'idle' | 'testing' | 'ok' | 'fail'>>({});
+  const [testError, setTestError] = useState<Record<string, string>>({});
 
   useEffect(() => {
     saveProviders(providers);
@@ -82,6 +62,26 @@ export default function ProviderSettingsCard() {
     saveProviders(providers);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleTestConnection = async (provider: ProviderConfig) => {
+    if (!provider.apiKey?.trim()) {
+      setTestState(prev => ({...prev, [provider.id]: 'fail'}));
+      setTestError(prev => ({...prev, [provider.id]: 'No API key entered.'}));
+      return;
+    }
+    setTestState(prev => ({...prev, [provider.id]: 'testing'}));
+    setTestError(prev => ({...prev, [provider.id]: ''}));
+    const result = await testProviderConnection(provider.apiKey, provider.model);
+    if (result.ok) {
+      setTestState(prev => ({...prev, [provider.id]: 'ok'}));
+    } else {
+      setTestState(prev => ({...prev, [provider.id]: 'fail'}));
+      setTestError(prev => ({...prev, [provider.id]: result.error}));
+    }
+    setTimeout(() => {
+      setTestState(prev => ({...prev, [provider.id]: 'idle'}));
+    }, 4000);
   };
 
   const activeProvider = providers.find(p => p.isActive);
@@ -207,6 +207,33 @@ export default function ProviderSettingsCard() {
                     style={styles.input}
                   />
                 </div>
+
+                {/* Test Connection */}
+                <div style={styles.testConnectionRow}>
+                  <button
+                    onClick={() => handleTestConnection(provider)}
+                    disabled={testState[provider.id] === 'testing'}
+                    style={{
+                      ...styles.testBtn,
+                      ...(testState[provider.id] === 'testing' ? styles.testBtnDisabled : {}),
+                      ...(testState[provider.id] === 'ok' ? styles.testBtnOk : {}),
+                      ...(testState[provider.id] === 'fail' ? styles.testBtnFail : {}),
+                    }}
+                  >
+                    {testState[provider.id] === 'testing' ? (
+                      <><Loader size={13} className="spin-icon" /> Testing…</>
+                    ) : testState[provider.id] === 'ok' ? (
+                      <><Check size={13} /> Connected!</>
+                    ) : testState[provider.id] === 'fail' ? (
+                      <><AlertCircle size={13} /> Failed</>
+                    ) : (
+                      <><Zap size={13} /> Test Connection</>
+                    )}
+                  </button>
+                  {testState[provider.id] === 'fail' && testError[provider.id] && (
+                    <span style={styles.testErrorText}>{testError[provider.id]}</span>
+                  )}
+                </div>
               </div>
 
               {/* Collapsed Summary */}
@@ -243,237 +270,4 @@ export default function ProviderSettingsCard() {
   );
 }
 
-// Export for use by other components
-export function getActiveProvider(): ProviderConfig | null {
-  const providers = loadProviders();
-  return providers.find(p => p.isActive) || null;
-}
-
-const styles: Record<string, React.CSSProperties> = {
-  card: {
-    background: 'var(--surface-color)',
-    border: '1px solid var(--border-color)',
-    borderRadius: '12px',
-    padding: '0',
-    maxWidth: '600px',
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: 'hidden',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '16px 20px',
-    borderBottom: '1px solid var(--border-color)',
-    background: '#252525',
-  },
-  headerLeft: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-  },
-  title: {
-    margin: 0,
-    fontSize: '1rem',
-    fontWeight: 600,
-    color: 'var(--primary-text-color)',
-  },
-  subtitle: {
-    margin: 0,
-    fontSize: '0.75rem',
-    color: 'var(--secondary-text-color)',
-    marginTop: '2px',
-  },
-  saveBtn: {
-    background: 'var(--accent-color)',
-    border: 'none',
-    color: 'white',
-    padding: '6px 14px',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '0.8rem',
-    fontWeight: 500,
-    fontFamily: 'inherit',
-  },
-  savedBtn: {
-    background: '#34A853',
-    border: 'none',
-    color: 'white',
-    padding: '6px 14px',
-    borderRadius: '6px',
-    cursor: 'default',
-    fontSize: '0.8rem',
-    fontWeight: 500,
-    fontFamily: 'inherit',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
-  },
-  activeBadge: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '8px 20px',
-    fontSize: '0.75rem',
-    color: 'var(--accent-color)',
-    background: 'rgba(138, 180, 248, 0.08)',
-    borderBottom: '1px solid var(--border-color)',
-  },
-  activeDot: {
-    width: '6px',
-    height: '6px',
-    borderRadius: '50%',
-    background: '#34A853',
-  },
-  providerList: {
-    display: 'flex',
-    flexDirection: 'column',
-    padding: '16px 20px',
-    gap: '12px',
-  },
-  providerRow: {
-    border: '1px solid var(--border-color)',
-    borderRadius: '8px',
-    overflow: 'hidden',
-    transition: 'border-color 0.2s',
-  },
-  providerHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '10px 12px',
-    background: 'rgba(255,255,255,0.02)',
-  },
-  providerHeaderLeft: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    flex: 1,
-  },
-  radioBtn: {
-    width: '16px',
-    height: '16px',
-    borderRadius: '50%',
-    border: '2px solid var(--accent-color)',
-    cursor: 'pointer',
-    padding: 0,
-    flexShrink: 0,
-  },
-  nameInput: {
-    background: 'transparent',
-    border: 'none',
-    color: 'var(--primary-text-color)',
-    fontSize: '0.9rem',
-    fontWeight: 500,
-    fontFamily: 'inherit',
-    flex: 1,
-    outline: 'none',
-    minWidth: 0,
-  },
-  providerActions: {
-    display: 'flex',
-    gap: '4px',
-  },
-  iconBtn: {
-    background: 'none',
-    border: 'none',
-    color: 'var(--secondary-text-color)',
-    cursor: 'pointer',
-    padding: '4px',
-    borderRadius: '4px',
-    display: 'flex',
-    alignItems: 'center',
-    fontFamily: 'inherit',
-  },
-  fields: {
-    flexDirection: 'column',
-    gap: '12px',
-    padding: '0 12px 12px',
-  },
-  fieldGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '4px',
-  },
-  label: {
-    fontSize: '0.75rem',
-    color: 'var(--secondary-text-color)',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
-  },
-  input: {
-    background: 'var(--background-color)',
-    border: '1px solid var(--border-color)',
-    borderRadius: '6px',
-    padding: '8px 10px',
-    color: 'var(--primary-text-color)',
-    fontSize: '0.85rem',
-    fontFamily: "'Space Mono', monospace",
-    width: '100%',
-    boxSizing: 'border-box',
-  },
-  keyInputWrapper: {
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
-  },
-  eyeBtn: {
-    position: 'absolute',
-    right: '8px',
-    background: 'none',
-    border: 'none',
-    color: 'var(--secondary-text-color)',
-    cursor: 'pointer',
-    padding: '2px',
-    display: 'flex',
-    alignItems: 'center',
-  },
-  collapsedSummary: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '8px 12px',
-    cursor: 'pointer',
-  },
-  summaryText: {
-    fontSize: '0.75rem',
-    color: 'var(--secondary-text-color)',
-    fontFamily: "'Space Mono', monospace",
-  },
-  editHint: {
-    fontSize: '0.7rem',
-    color: 'var(--accent-color)',
-    opacity: 0.6,
-  },
-  addBtn: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '6px',
-    margin: '0 20px 16px',
-    padding: '10px',
-    background: 'transparent',
-    border: '1px dashed var(--border-color)',
-    borderRadius: '8px',
-    color: 'var(--secondary-text-color)',
-    cursor: 'pointer',
-    fontSize: '0.85rem',
-    fontFamily: 'inherit',
-    transition: 'border-color 0.2s, color 0.2s',
-  },
-  infoBox: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '10px 20px',
-    fontSize: '0.72rem',
-    color: 'var(--secondary-text-color)',
-    borderTop: '1px solid var(--border-color)',
-    background: 'rgba(255,255,255,0.01)',
-  },
-};
+// getActiveProvider is re-exported from provider-config above

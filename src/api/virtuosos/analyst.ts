@@ -1,12 +1,12 @@
 import {Type} from '@google/genai';
-import {ai} from '../client';
+import {getAI, getEffectiveModel} from '../client';
 import {Events, symphonyBus} from '../../lib/symphonyBus';
 import {VIRTUOSO_REGISTRY, VirtuosoType} from '../../services/virtuosos';
 
 export async function generateCourseModules(frames: string[]) {
   const taskId = symphonyBus.commission(VirtuosoType.ANALYST, 'Curating Modules');
   try {
-    const modelName = VIRTUOSO_REGISTRY[VirtuosoType.ANALYST].model;
+    const modelName = getEffectiveModel(VIRTUOSO_REGISTRY[VirtuosoType.ANALYST].model);
     const prompt = `Analyze this video and generate a concise learning course from it. Provide a brief summary, identify 3-5 key moments, and create a 3-question multiple-choice quiz to test understanding. Ensure the key moments have accurate timecodes. For each quiz question, also provide a relevant timecode from the video where the answer can be found.`;
     const imageParts = frames.map((frame) => ({
       inlineData: {
@@ -15,7 +15,7 @@ export async function generateCourseModules(frames: string[]) {
       },
     }));
 
-    const response = await ai.models.generateContent({
+    const response = await getAI().models.generateContent({
       model: modelName,
       contents: {
         parts: [{text: prompt}, ...imageParts],

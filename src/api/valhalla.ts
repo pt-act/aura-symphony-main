@@ -1,4 +1,4 @@
-import {ai} from './client';
+import {getAI, getEffectiveModel} from './client';
 import {symphonyBus, Events} from '../lib/symphonyBus';
 import {VirtuosoType} from '../services/virtuosos';
 
@@ -21,8 +21,8 @@ The user wants to: "${command}"
 Write the exact script (e.g., Python for Blender) to accomplish this.
 Return ONLY the code block, no markdown formatting outside the code block.`;
 
-    const scriptResponse = await ai.models.generateContent({
-      model: 'gemini-2.5-pro',
+    const scriptResponse = await getAI().models.generateContent({
+      model: getEffectiveModel('gemini-2.5-pro'),
       contents: scriptPrompt,
     });
     
@@ -42,8 +42,8 @@ Return ONLY the code block, no markdown formatting outside the code block.`;
     
     let imageUrl = '';
     try {
-      const imageResponse = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+      const imageResponse = await getAI().models.generateContent({
+        model: getEffectiveModel('gemini-2.5-flash'),
         contents: imagePrompt,
         config: {
           imageConfig: {

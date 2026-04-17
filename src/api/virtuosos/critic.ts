@@ -4,7 +4,7 @@
  */
 
 import { Type } from '@google/genai';
-import { ai } from '../client';
+import { getAI, getEffectiveModel } from '../client';
 import { Events, symphonyBus } from '../../lib/symphonyBus';
 import { VIRTUOSO_REGISTRY, VirtuosoType } from '../../services/virtuosos';
 
@@ -38,7 +38,7 @@ export async function evaluateOutput(
   const taskId = symphonyBus.commission(VirtuosoType.CRITIC, 'Quality Evaluation');
 
   try {
-    const modelName = VIRTUOSO_REGISTRY[VirtuosoType.CRITIC].model;
+    const modelName = getEffectiveModel(VIRTUOSO_REGISTRY[VirtuosoType.CRITIC].model);
 
     const evaluationPrompt = `You are evaluating the output of an AI system called "${virtuosoType}".
 
@@ -56,7 +56,7 @@ Evaluate this output on three dimensions:
 A score of 7+ on all dimensions is a PASS. Below 7 on any dimension is a FAIL.
 If FAIL, provide specific, actionable feedback for improvement.`;
 
-    const response = await ai.models.generateContent({
+    const response = await getAI().models.generateContent({
       model: modelName,
       contents: evaluationPrompt,
       config: {

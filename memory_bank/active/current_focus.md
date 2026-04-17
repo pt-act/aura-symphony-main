@@ -1,28 +1,32 @@
 # Current Focus - What's Being Worked On NOW
-## Updated: Thu Apr 10 2026
+## Updated: June 2025
 
-### Evaluation Upgrades Spec — Integration Complete
+### Provider Settings Feature — END-TO-END INTEGRATION COMPLETE ✅
 
-| Group | Status | Wiring |
-|-------|--------|--------|
-| **A** Vector Search | ✅ | `useVectorSearch` hook → `useAnalysisState` (fast path + fallback) |
-| **B** Schema Validation | ✅ | `conductor-validator` → `useAnalysisState` (retry loop) |
-| **C** Media Pipeline | ✅ | `useMediaPipeline` hook → `useVideoState.captureFramesCloud` |
-| **D** Graph Knowledge | ✅ | `useGraphKnowledge` hook → `useAnalysisState.graphKnowledge` |
-| **E** Critic Virtuoso | ✅ | `useCriticGate` → `useLensExecution` (gates text output) |
-| **F** AST + Telemetry | ✅ | `valhalla-analyzer` + `valhalla-telemetry` → `ValhallaGateway` |
+The AI Provider Settings card is now fully operational:
+- **UI**: SettingsModal accessible via gear icon (⚙) in header
+- **API**: All virtuoso modules now use `getAI()` and `getEffectiveModel()` from `client.ts`
+- **Config**: Shared `provider-config.ts` module (no React dependency) reads/writes localStorage
+- **Fallback**: Default env-based Google AI client used when no custom provider is configured
+
+| File | Change |
+|------|--------|
+| `src/lib/provider-config.ts` | **NEW** — shared ProviderConfig interface, loadProviders, saveProviders, getActiveProvider |
+| `src/api/client.ts` | Added `getAI()` and `getEffectiveModel()` functions |
+| `src/components/settings/SettingsModal.tsx` | **NEW** — modal wrapper following HelpModal/ShareModal pattern |
+| `src/components/settings/ProviderSettingsCard.tsx` | Refactored to import from provider-config |
+| `src/Workspace.tsx` | Added gear button + SettingsModal + state |
+| All virtuoso modules | Now use `getAI()` + `getEffectiveModel()` |
+| `valhalla.ts`, `vector-search.ts`, `LiveConversation.tsx` | Same pattern |
+| `src/styles/index.css` | Settings modal + icon button CSS |
 
 ### Code Quality Status
-- `useAnalysisState.ts` — 381 lines ✅ (under 400)
-- `useVectorSearch.ts` — 108 lines ✅
-- `useLensExecution.ts` — 225 lines ✅
-- `useMediaPipeline.ts` — 75 lines ✅
-- `useGraphKnowledge.ts` — 80 lines ✅
-- `Workspace.tsx` — 491 lines (needs refactoring)
+- `Workspace.tsx` — ~500 lines (needs refactoring per 400-line rule)
+- All other components under 400 lines ✅
 
 ### Next Steps
-1. Wire Group C (media pipeline) into useVideoState
-2. Wire Group E (critic gate) into Agent Studio components
-3. Address useAnalysisState.ts line count (requires architectural decision on conductor flow extraction)
+1. Refactor Workspace.tsx to stay under 400 lines
+2. Consider adding provider validation/test connection button
+3. Update DocsPage with Provider Settings documentation
 
 [Creative_State: ALIGNED]

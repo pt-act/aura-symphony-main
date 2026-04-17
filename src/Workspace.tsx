@@ -2,14 +2,10 @@ import c from 'classnames';
 import React, {useEffect, useState} from 'react';
 import {
   auth,
-  db,
   onAuthStateChanged,
   signInWithGoogle,
   signOutUser,
-  handleFirestoreError,
-  OperationType,
 } from './api/firebase';
-import { collection, getDocs, setDoc, doc } from 'firebase/firestore';
 import IngestionScreen from './components/analysis/IngestionScreen';
 import LensLaboratory from './components/analysis/LensLaboratory';
 import Timeline from './components/analysis/Timeline';
@@ -20,15 +16,18 @@ import CreatorStudio from './components/creator/CreatorStudio';
 import LibraryModal from './components/creator/LibraryModal';
 import OrchestraVisualizer from './components/shared/OrchestraVisualizer';
 import HelpModal from './components/shared/HelpModal';
+import SettingsModal from './components/settings/SettingsModal';
 import LiveConversation from './components/shared/LiveConversation';
 import ShareModal from './components/shared/ShareModal';
 import ValhallaGateway from './components/valhalla/ValhallaGateway';
 import ExportNLEModal from './components/analysis/ExportNLEModal';
 import CustomVirtuosoBuilder from './components/virtuosos/CustomVirtuosoBuilder';
 import {Events, symphonyBus} from './lib/symphonyBus';
+import {handleExportNLE} from './lib/nleExport';
 import {useAnalysisState} from './hooks/useAnalysisState';
 import {useCreatorState} from './hooks/useCreatorState';
-import {VIRTUOSO_REGISTRY, VirtuosoProfile} from './services/virtuosos';
+import {useCustomVirtuosos} from './hooks/useCustomVirtuosos';
+import {Settings} from 'lucide-react';
 
 export default function Workspace() {
   // App State
@@ -48,59 +47,9 @@ export default function Workspace() {
   const [valhallaToolName, setValhallaToolName] = useState('Blender');
   const [isCustomVirtuosoOpen, setIsCustomVirtuosoOpen] = useState(false);
   const [isExportNLEOpen, setIsExportNLEOpen] = useState(false);
-  const [customVirtuosos, setCustomVirtuosos] = useState<VirtuosoProfile[]>([]);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      const loadCustomVirtuosos = async () => {
-        try {
-          const querySnapshot = await getDocs(collection(db, 'custom_virtuosos'));
-          const loaded: VirtuosoProfile[] = [];
-          querySnapshot.forEach((doc) => {
-            const data = doc.data() as VirtuosoProfile;
-            if (data.userId === user.uid) {
-              VIRTUOSO_REGISTRY[data.id] = data;
-              loaded.push(data);
-            }
-          });
-          setCustomVirtuosos(loaded);
-        } catch (error) {
-          handleFirestoreError(error, OperationType.GET, 'custom_virtuosos');
-        }
-      };
-      loadCustomVirtuosos();
-    }
-  }, [user]);
-
-  const handleSaveCustomVirtuoso = async (virtuoso: VirtuosoProfile) => {
-    if (!user) {
-      alert('You must be logged in to save custom virtuosos.');
-      return;
-    }
-    
-    const virtuosoWithUser = { ...virtuoso, userId: user.uid, createdAt: new Date() };
-    
-    try {
-      await setDoc(doc(db, 'custom_virtuosos', virtuoso.id), virtuosoWithUser);
-      VIRTUOSO_REGISTRY[virtuoso.id] = virtuosoWithUser;
-      setCustomVirtuosos(prev => [...prev, virtuosoWithUser]);
-      alert(`Custom Virtuoso "${virtuoso.name}" created successfully!`);
-    } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, `custom_virtuosos/${virtuoso.id}`);
-    }
-  };
-
-  const handleDeleteCustomVirtuoso = async (id: string) => {
-    if (!user) return;
-    try {
-      const { deleteDoc } = await import('firebase/firestore');
-      await deleteDoc(doc(db, 'custom_virtuosos', id));
-      delete VIRTUOSO_REGISTRY[id];
-      setCustomVirtuosos(prev => prev.filter(v => v.id !== id));
-    } catch (error) {
-      handleFirestoreError(error, OperationType.DELETE, `custom_virtuosos/${id}`);
-    }
-  };
+  const {customVirtuosos, saveCustomVirtuoso, deleteCustomVirtuoso} = useCustomVirtuosos(user);
 
   const {
     presentation,
@@ -216,81 +165,8 @@ export default function Workspace() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const handleExportNLE = (format: 'fcpxml' | 'edl' | 'csv') => {
-    let content = '';
-    let mimeType = '';
-    let filename = '';
-
-    if (format === 'fcpxml') {
-      content = `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE fcpxml>
-<fcpxml version="1.9">
-  <resources>
-    <format id="r1" name="FFVideoFormat1080p30" frameDuration="100/3000s" width="1920" height="1080" colorSpace="1-1-1 (Rec. 709)"/>
-    <asset id="r2" name="Video" src="file://${videoUrl || 'video.mp4'}" start="0s" duration="${duration}s" hasVideo="1" hasAudio="1" format="r1"/>
-  </resources>
-  <library>
-    <event name="Aura Symphony Export">
-      <project name="Aura Project">
-        <sequence format="r1" duration="${duration}s" tcStart="0s" tcFormat="NDF">
-          <spine>
-            <asset-clip name="Video" ref="r2" offset="0s" duration="${duration}s" start="0s">
-              ${annotations.map(ann => `
-              <marker start="${ann.time}s" duration="100/3000s" value="${ann.text.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}" note="Aura Annotation"/>
-              `).join('')}
-            </asset-clip>
-          </spine>
-        </sequence>
-      </project>
-    </event>
-  </library>
-</fcpxml>`;
-      mimeType = 'application/xml';
-      filename = 'aura_export.fcpxml';
-    } else if (format === 'edl') {
-      content = `TITLE: Aura Symphony Export\nFCM: NON-DROP FRAME\n\n`;
-      annotations.forEach((ann, index) => {
-        const eventNum = String(index + 1).padStart(3, '0');
-        // Simple timecode conversion (assuming 30fps)
-        const toTimecode = (seconds: number) => {
-          const h = Math.floor(seconds / 3600);
-          const m = Math.floor((seconds % 3600) / 60);
-          const s = Math.floor(seconds % 60);
-          const f = Math.floor((seconds % 1) * 30);
-          return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}:${String(f).padStart(2, '0')}`;
-        };
-        const tc = toTimecode(ann.time);
-        content += `${eventNum}  AX       V     C        ${tc} ${tc} ${tc} ${tc}\n`;
-        content += `* FROM CLIP NAME: Video\n`;
-        content += `* LOC: ${tc} ${ann.text.replace(/\n/g, ' ')}\n\n`;
-      });
-      mimeType = 'text/plain';
-      filename = 'aura_export.edl';
-    } else if (format === 'csv') {
-      content = `Time (Seconds),Timecode,Annotation\n`;
-      annotations.forEach(ann => {
-        const toTimecode = (seconds: number) => {
-          const h = Math.floor(seconds / 3600);
-          const m = Math.floor((seconds % 3600) / 60);
-          const s = Math.floor(seconds % 60);
-          return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        };
-        const escapedText = `"${ann.text.replace(/"/g, '""')}"`;
-        content += `${ann.time.toFixed(2)},${toTimecode(ann.time)},${escapedText}\n`;
-      });
-      mimeType = 'text/csv';
-      filename = 'aura_export.csv';
-    }
-
-    const blob = new Blob([content], { type: mimeType });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const onExportNLE = (format: 'fcpxml' | 'edl' | 'csv') => {
+    handleExportNLE(format, videoUrl || '', duration, annotations);
   };
 
   const renderAnalysisView = () => {
@@ -406,6 +282,7 @@ export default function Workspace() {
 
   return (
     <div className="app-container">
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
       <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
       <ShareModal
         isOpen={isShareOpen}
@@ -424,14 +301,14 @@ export default function Workspace() {
       <ExportNLEModal
         isOpen={isExportNLEOpen}
         onClose={() => setIsExportNLEOpen(false)}
-        onExport={handleExportNLE}
+        onExport={onExportNLE}
       />
       {isCustomVirtuosoOpen && (
         <CustomVirtuosoBuilder
           onClose={() => setIsCustomVirtuosoOpen(false)}
-          onSave={handleSaveCustomVirtuoso}
+          onSave={saveCustomVirtuoso}
           customVirtuosos={customVirtuosos}
-          onDelete={handleDeleteCustomVirtuoso}
+          onDelete={deleteCustomVirtuoso}
         />
       )}
       {user && (
@@ -476,6 +353,14 @@ export default function Workspace() {
               <button onClick={signInWithGoogle}>Sign In</button>
             )}
           </div>
+          <button
+            className="icon-header-btn"
+            onClick={() => setIsSettingsOpen(true)}
+            title="Settings"
+            aria-label="Settings"
+          >
+            <Settings size={18} />
+          </button>
           <button onClick={() => setIsCustomVirtuosoOpen(true)}>Build Virtuoso</button>
           <button onClick={() => setIsHelpOpen(true)}>Help</button>
         </div>

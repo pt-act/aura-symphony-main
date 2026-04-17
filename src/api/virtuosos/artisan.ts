@@ -1,5 +1,6 @@
-import {GoogleGenAI, Modality} from '@google/genai';
-import {ai} from '../client';
+import {Modality} from '@google/genai';
+import {getAI, getEffectiveModel} from '../client';
+import {getActiveProvider} from '../../lib/provider-config';
 import {Events, symphonyBus} from '../../lib/symphonyBus';
 import {VIRTUOSO_REGISTRY, VirtuosoType} from '../../services/virtuosos';
 
@@ -10,7 +11,7 @@ async function performVideoGeneration(
   image?: {mimeType: string; data: string},
 ) {
   const generateVideosPayload: any = {
-    model: VIRTUOSO_REGISTRY[VirtuosoType.ARTISAN].model,
+    model: getEffectiveModel(VIRTUOSO_REGISTRY[VirtuosoType.ARTISAN].model),
     prompt,
     config: {
       numberOfVideos: 1,
@@ -30,7 +31,7 @@ async function performVideoGeneration(
     if (window.aistudio && !(await window.aistudio.hasSelectedApiKey())) {
       await window.aistudio.openSelectKey();
     }
-    let videoAI = new GoogleGenAI({apiKey: process.env.API_KEY});
+    let videoAI = getAI();
 
     let operation = await videoAI.models.generateVideos(generateVideosPayload);
 
@@ -46,7 +47,7 @@ async function performVideoGeneration(
             await window.aistudio.openSelectKey();
           }
           // Re-create AI instance and retry
-          videoAI = new GoogleGenAI({apiKey: process.env.API_KEY});
+          videoAI = getAI();
           operation = await videoAI.models.generateVideos(
             generateVideosPayload,
           );
@@ -60,7 +61,9 @@ async function performVideoGeneration(
     if (!downloadLink) {
       throw new Error('Video generation failed to return a download link.');
     }
-    const response = await fetch(`${downloadLink}&key=${process.env.API_KEY}`);
+    const activeProvider = getActiveProvider();
+    const apiKey = activeProvider?.apiKey?.trim() || process.env.API_KEY || '';
+    const response = await fetch(`${downloadLink}&key=${apiKey}`);
     const videoBlob = await response.blob();
     const videoUrl = URL.createObjectURL(videoBlob);
 
@@ -88,7 +91,7 @@ export async function generateImage(
 ) {
   const taskId = symphonyBus.commission(VirtuosoType.ARTISAN, 'Generate Image');
   try {
-    const response = await ai.models.generateImages({
+    const response = await getAI().models.generateImages({
       model: 'imagen-4.0-generate-001',
       prompt,
       config: {
@@ -113,8 +116,8 @@ export async function editImage(
 ) {
   const taskId = symphonyBus.commission(VirtuosoType.ARTISAN, 'Edit Image');
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image',
+    const response = await getAI().models.generateContent({
+      model: getEffectiveModel('gemini-2.5-flash-image'),
       contents: {
         parts: [
           {

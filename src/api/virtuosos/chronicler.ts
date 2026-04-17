@@ -1,11 +1,11 @@
 import {Modality} from '@google/genai';
-import {ai} from '../client';
+import {getAI, getEffectiveModel} from '../client';
 import {Events, symphonyBus} from '../../lib/symphonyBus';
 import {VIRTUOSO_REGISTRY, VirtuosoType} from '../../services/virtuosos';
 
 export async function generateSpeech(text: string): Promise<string> {
-  const response = await ai.models.generateContent({
-    model: 'gemini-2.5-flash-preview-tts',
+  const response = await getAI().models.generateContent({
+    model: getEffectiveModel('gemini-2.5-flash-preview-tts'),
     contents: [{parts: [{text}]}],
     config: {
       responseModalities: [Modality.AUDIO],
@@ -25,8 +25,8 @@ export async function transcribeAudio(audio: {
 }): Promise<string> {
   const taskId = symphonyBus.commission(VirtuosoType.CHRONICLER, 'Transcribe Audio');
   try {
-    const response = await ai.models.generateContent({
-    model: VIRTUOSO_REGISTRY[VirtuosoType.CHRONICLER].model,
+    const response = await getAI().models.generateContent({
+    model: getEffectiveModel(VIRTUOSO_REGISTRY[VirtuosoType.CHRONICLER].model),
     contents: {
       parts: [
         {text: 'Transcribe the following audio:'},

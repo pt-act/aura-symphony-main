@@ -16,7 +16,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {GoogleGenAI, LiveServerMessage, Modality, Blob} from '@google/genai';
+import {LiveServerMessage, Modality, Blob} from '@google/genai';
+import {getAI} from '../../api/client';
 import c from 'classnames';
 import {AnimatePresence, motion} from 'framer-motion';
 // Fix for framer-motion props not being recognized by TypeScript
@@ -24,7 +25,7 @@ import React from 'react';
 import {useEffect, useRef, useState} from 'react';
 import {decode, decodeAudioData, encode} from '../../lib/utils';
 
-const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+// AI client is now resolved dynamically per the active provider settings
 
 interface LiveConversationProps {
   isOpen: boolean;
@@ -77,7 +78,8 @@ export default function LiveConversation({
         (window as any).webkitAudioContext)({sampleRate: 24000});
       nextStartTimeRef.current = 0;
 
-      sessionPromiseRef.current = ai.live.connect({
+      const dynamicAI = getAI();
+      sessionPromiseRef.current = dynamicAI.live.connect({
         model: 'gemini-2.5-flash-native-audio-preview-12-2025',
         callbacks: {
           onopen: () => {

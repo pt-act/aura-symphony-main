@@ -1,5 +1,5 @@
 import {FunctionDeclaration, GenerateContentResponse} from '@google/genai';
-import {ai} from '../client';
+import {getAI, getEffectiveModel} from '../client';
 import {Events, symphonyBus} from '../../lib/symphonyBus';
 import {VIRTUOSO_REGISTRY, VirtuosoType} from '../../services/virtuosos';
 import {getSharedMediaWorker} from '../../lib/utils';
@@ -34,10 +34,11 @@ export async function runPdfQuery(
   try {
     const pdfText = await extractTextFromPdf(file.data);
 
-    const modelName = VIRTUOSO_REGISTRY[VirtuosoType.VISIONARY].model;
+    const registryModel = VIRTUOSO_REGISTRY[VirtuosoType.VISIONARY].model;
+    const modelName = getEffectiveModel(registryModel);
     const fullPrompt = `Based on the following document, answer the user's question. Document Content:\n\n---\n\n${pdfText}\n\n---\n\nUser Question: ${prompt}`;
 
-    const response = await ai.models.generateContent({
+    const response = await getAI().models.generateContent({
       model: modelName,
       contents: fullPrompt,
       config: {
@@ -62,7 +63,7 @@ export async function runVideoQuery(
   const taskId = symphonyBus.commission(virtuosoId as VirtuosoType, 'Deep Analysis');
   try {
     const virtuoso = VIRTUOSO_REGISTRY[virtuosoId as VirtuosoType] || VIRTUOSO_REGISTRY[VirtuosoType.VISIONARY];
-    const modelName = virtuoso.model;
+    const modelName = getEffectiveModel(virtuoso.model);
 
     const imageParts = frames.map((frame) => ({
       inlineData: {
@@ -85,7 +86,7 @@ export async function runVideoQuery(
       config.thinkingConfig = {thinkingBudget: 32768};
     }
 
-    const response = await ai.models.generateContent({
+    const response = await getAI().models.generateContent({
       model: modelName,
       contents: {
         parts: [{text: `Instructions: ${prompt}\n\n`}, ...imageParts],

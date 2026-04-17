@@ -1,5 +1,5 @@
 import {GenerateContentResponse} from '@google/genai';
-import {ai} from '../client';
+import {getAI, getEffectiveModel} from '../client';
 import {conductorFunctions} from '../../lib/conductor-functions';
 import {VIRTUOSO_REGISTRY, VirtuosoType} from '../../services/virtuosos';
 import type {ChatMessage} from '../../types';
@@ -7,7 +7,7 @@ import type {ChatMessage} from '../../types';
 export async function runConductorQuery(
   query: string,
 ): Promise<GenerateContentResponse> {
-  const modelName = VIRTUOSO_REGISTRY[VirtuosoType.CONDUCTOR].model;
+  const modelName = getEffectiveModel(VIRTUOSO_REGISTRY[VirtuosoType.CONDUCTOR].model);
 
   const availableVirtuosos = Object.values(VIRTUOSO_REGISTRY)
     .filter(v => v.id !== VirtuosoType.CONDUCTOR)
@@ -19,7 +19,7 @@ export async function runConductorQuery(
 Available Virtuosos (Lenses) you can apply using the applyLens function:
 ${availableVirtuosos}`;
 
-  const response = await ai.models.generateContent({
+  const response = await getAI().models.generateContent({
     model: modelName,
     contents: {
       parts: [{text: query}],
@@ -38,7 +38,7 @@ export async function runChat(
   history: ChatMessage[],
   context?: string,
 ): Promise<string> {
-  const modelName = VIRTUOSO_REGISTRY[VirtuosoType.CONDUCTOR].model;
+  const modelName = getEffectiveModel(VIRTUOSO_REGISTRY[VirtuosoType.CONDUCTOR].model);
 
   const formattedHistory = history.map((msg) => {
     const parts = [];
@@ -54,7 +54,7 @@ export async function runChat(
     return {role: msg.role, parts};
   });
 
-  const chat = ai.chats.create({
+  const chat = getAI().chats.create({
     model: modelName, 
     history: formattedHistory,
     config: {
