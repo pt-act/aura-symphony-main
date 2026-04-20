@@ -165,9 +165,11 @@ The platform delivers **demonstrable value today** in three areas:
 
 1. **Video Analysis:** The combination of Gemini's multimodal capabilities with structured function calling produces genuinely useful timeline-linked insights. The "Semantic Video Search" feature (ask natural language questions, get timestamped answers) is a compelling UX.
 
-2. **Adaptive Learning:** The course generation pipeline (video → frames → Gemini structured JSON → quiz + key moments + summary) is a functional MVP of an AI tutor. The Digital Learner Profile with concept mastery tracking has genuine educational technology merit.
+2. **Adaptive Learning:** The course generation pipeline (video → frames → Gemini structured JSON → quiz + key moments + summary) is a functional MVP of an AI tutor. Bayesian Knowledge Tracing with temporal decay and prerequisite-aware content selection provides calibrated mastery estimates. The Digital Learner Profile powers principled adaptive content recommendations.
 
 3. **Generative Media:** Direct integration with Veo 3.1 and Imagen 4.0 for in-context media generation is a capability few competitors offer in an integrated environment.
+
+**Current limitation:** The platform is **video-first** — the entire data pipeline (ingestion, chunking, vector indexing, timecodes) assumes a single video source. This constrains the platform's utility for researchers, students, and knowledge workers who operate across books, papers, lectures, and code simultaneously. Phase 4 (Multi-Source Knowledge Engine) addresses this directly.
 
 ### §5.2 Competitive Landscape & Differentiation
 
@@ -175,19 +177,21 @@ The platform delivers **demonstrable value today** in three areas:
 |-----------|---------|----------------------|
 | Descript | Video analysis + editing | Multi-agent orchestration; adaptive learning |
 | Runway | Generative video | Integrated analysis ↔ creation loop |
-| Google NotebookLM | AI-powered learning | Video-native; real-time frame analysis |
-| Khan Academy (Khanmigo) | AI tutoring | Media-first; generative capabilities |
+| Google NotebookLM | AI-powered multi-source learning | Multi-agent orchestration; generative media; real-time frame analysis; BKT adaptive learning |
+| Elicit / Semantic Scholar | AI research assistant | Generative capabilities; video-native; multi-agent architecture |
+| Khan Academy (Khanmigo) | AI tutoring | Media-first; generative capabilities; multi-source corpus |
 | LangGraph / CrewAI | Multi-agent frameworks | Domain-specific; end-user-facing |
+| Zotero + AI plugins | Reference management + AI | Native multi-agent synthesis; adaptive learning; no plugin friction |
 
-**The defensible moat** is the *closed loop* between analysis, learning, and creation — a user can analyze a video, learn from it adaptively, and generate derivative content, all within a single agent-orchestrated environment. No current competitor offers this complete loop.
+**The defensible moat** is the *closed loop* between analysis, learning, and creation — a user can analyze a video, learn from it adaptively, and generate derivative content, all within a single agent-orchestrated environment. No current competitor offers this complete loop. **With Phase 4 (Multi-Source Knowledge Engine)**, this loop extends across source types: a researcher can ingest a lecture video, the textbook it references, and three cited papers — then have the Conductor cross-reference claims, the Analyst synthesize findings, and the Artisan generate explanatory media. This creates a category-defining capability with no direct competitor.
 
 ### §5.3 Market Impact Potential
 
 **Near-term (6-12 months):** B2B education technology — sell to online course creators, corporate training departments, and universities as an "AI Teaching Assistant" that auto-generates courses from lecture recordings.
 
-**Mid-term (1-2 years):** Creative professional tool — position against Descript/Runway as the "AI-first editing suite" where creation is conversational, not timeline-driven.
+**Mid-term (1-2 years):** **AI-native research environment** — position against NotebookLM/Elicit as the multi-agent research platform where researchers ingest papers, textbooks, and lecture videos into a unified corpus, then ask complex cross-source questions with provenance-tracked answers. The multi-source knowledge engine (Phase 4) is the key unlock.
 
-**Long-term (2-5 years):** The "Project Valhalla" vision — if executed — represents a paradigm shift: AI agents that can operate *any* creative software as instruments. This is the most ambitious and highest-impact vector, but also the highest-risk.
+**Long-term (2-5 years):** The "Project Valhalla" vision — if executed — represents a paradigm shift: AI agents that can operate *any* creative software as instruments, reasoning across *any* knowledge source. Combined with multi-source RAG, this creates the "universal AI research and creation studio" — a single environment where a PhD student can study a textbook, watch the author's lecture, read the cited papers, run experiments in Valhalla, and generate a presentation of their findings, all orchestrated by the Conductor.
 
 ---
 
@@ -230,7 +234,41 @@ The platform delivers **demonstrable value today** in three areas:
 
 *19 files changed, +4,404 lines. 438 tests passing.*
 
-### Phase 4: Scalability Engineering 🔜 PLANNED 
+### Phase 4: Multi-Source Knowledge Engine 🔜 NEXT
+
+**Thesis:** Aura is currently a *video-first* platform — every data path (ingestion, chunking, vector indexing, frame extraction, timecodes) assumes the source material is a single video with a timeline. This is the platform's most significant **growth ceiling**. Expanding to a multi-source knowledge engine — where videos, books, scientific papers, LaTeX documents, and arbitrary text corpora can be loaded, cross-referenced, and synthesized — transforms Aura from a "smart video tool" into a **universal AI research and learning environment**.
+
+**Strategic Rationale:** The generative and analytical power of the multi-agent system increases *super-linearly* with the number of source modalities. A Conductor that can cross-reference a lecture video against the textbook it teaches from, validate claims against cited papers, and synthesize insights across a corpus of 20 sources is categorically more valuable than one that operates on a single video in isolation. This is the difference between a tool and a *research partner*.
+
+| Priority | Recommendation | Rationale |
+|----------|---------------|-----------|
+| **P0** | **Generalized `Source` abstraction** | Replace the video-only ingestion model with a polymorphic `Source` type. Define `Source = VideoSource \| DocumentSource \| TextSource \| WebSource`. Each source has a `sourceId`, `sourceType`, `metadata`, and a `content()` method that yields normalized `ContentChunk[]`. The existing `VideoChunk` becomes one specialization. All downstream systems (vector search, RAG, BKT, DLP) must index by `sourceId` rather than `videoId`. |
+| **P0** | **Multi-source workspace** | Replace the single-source `IngestionScreen` with a **Source Library** — a workspace panel where users load N sources of any type. Each source is ingested independently and indexed into a unified vector store. The Conductor gains a `sources` context parameter and can reason across the full corpus when answering queries. This is the "Master Score" vision extended from collaboration to *knowledge*. |
+| **P0** | **Document parsers: PDF, Markdown, plain text** | Extend the existing PDF text extraction (pdfjs-dist) with **structural parsing** — detect sections, headings, figures, tables, footnotes, and page numbers. Add parsers for Markdown (with frontmatter extraction) and plain text (with paragraph detection). Each parser emits `ContentChunk[]` with `sectionTitle`, `pageNumber`, and `sourcePosition` metadata for provenance tracking. |
+| **P1** | **LaTeX (.tex) parser** | Parse LaTeX source files into structured sections: `\section`, `\subsection`, `\begin{theorem}`, `\begin{equation}`, `\cite{}` references, `\caption{}` text. Extract the document's logical structure without requiring a full TeX compilation. Resolve `\input{}` and `\include{}` for multi-file projects. Emit BibTeX citation keys for cross-referencing with the citation graph. |
+| **P1** | **Scientific paper ingestion (arXiv, DOI)** | Accept arXiv IDs (e.g., `2301.12345`) and DOI URLs (e.g., `doi.org/10.1234/...`) as source inputs. Resolve to PDF via arXiv API / CrossRef API, extract structured metadata (title, authors, abstract, references, sections), and ingest into the corpus. Auto-extract the bibliography and create edges in the knowledge graph for cited works, enabling citation-chain traversal. |
+| **P1** | **Cross-source RAG with unified vector index** | Generalize `VideoChunk` → `ContentChunk` with a `sourceId` + `sourceType` discriminant. The vector store indexes all sources into a single ChromaDB collection with source-aware metadata filtering. Semantic search returns results across all sources, ranked by relevance, with **provenance annotation** — each result carries a breadcrumb trail: `Source → Section → Page/Timestamp → Chunk`. The fusion search (text + CLIP visual) extends naturally: text chunks from papers and visual chunks from video frames merge in the same ranked list. |
+| **P1** | **EPUB / ebook parser with chapter structure** | Parse EPUB files (which are ZIP archives of XHTML + OPF manifest) into chapter-by-chapter `ContentChunk[]`. Extract table of contents, chapter titles, and inline images. Support `.mobi` via epub conversion. This unlocks the "study a textbook" use case that is the natural complement to "study a lecture video". |
+| **P2** | **Cross-source knowledge synthesis** | Enable the Conductor to perform **cross-source reasoning**: "Compare the explanation of backpropagation in this textbook (Chapter 4) with the lecture video (at 12:30) and the original 1986 Rumelhart paper." The ReAct planner orchestrates multi-source retrieval, the Scholar validates claims across sources, and the Analyst synthesizes a unified insight with per-source citations. This is the highest-value capability — it transforms Aura from a consumption tool into a *research engine*. |
+| **P2** | **Source-aware provenance tracking** | Every Insight generated by the system carries a `provenance` array: which sources contributed, which chunks were retrieved, what similarity scores were observed, and which agent produced the synthesis. This creates an auditable chain-of-evidence for every AI output — critical for academic integrity and enterprise compliance. Provenance data feeds into the knowledge graph, creating a citation network *within* the user's corpus. |
+| **P2** | **Multi-modal source fusion** | Unify visual elements across source types: video frames, PDF figures/diagrams, book illustrations, and LaTeX-rendered equations are all indexed as visual embeddings via CLIP. A query like "show me all diagrams of neural network architectures across my sources" returns a ranked gallery of images from videos, papers, and textbooks — a capability that does not exist in any current research tool. |
+
+**Architectural Impact Analysis:**
+
+| Layer | Current (Video-Only) | Target (Multi-Source) |
+|-------|---------------------|----------------------|
+| **Ingestion** | `IngestionScreen` → single video URL/file | `SourceLibrary` → N sources of any type, drag-and-drop |
+| **Data Model** | `VideoChunk { videoId, timestamp }` | `ContentChunk { sourceId, sourceType, position }` |
+| **Vector Store** | Per-video ChromaDB collection | Unified collection with `sourceId` metadata filter |
+| **Conductor** | Single-source context (`frames[]`) | Multi-source context (`sources[]`, `activeSource?`) |
+| **RAG Pipeline** | `vectorSearch(query, videoId)` | `corpusSearch(query, sourceIds[], modalities[])` |
+| **Knowledge Graph** | Per-video concept nodes | Cross-source concept nodes with source-edge provenance |
+| **BKT** | Per-video learning state | Per-corpus learning state with source-weighted mastery |
+| **CRDT** | Shared annotations on one video | Shared annotations across corpus with source references |
+
+**Competitive Repositioning:** This phase moves Aura from the "video analysis" category into **"AI-native research environment"** — competing not just with Descript/Runway but with Elicit, Semantic Scholar, Zotero+AI, and Google NotebookLM. The key differentiator is that Aura would be the only platform combining *multi-source ingestion + multi-agent orchestration + adaptive learning + generative media creation* in a single environment.
+
+### Phase 5: Scalability Engineering 🔜 PLANNED
 
 | Area | Current State | Target State |
 |------|--------------|--------------|
@@ -259,7 +297,9 @@ The **most impressive technical achievements** now include: (1) the three-layer 
 
 The **most significant strategic opportunity** — the closed-loop integration of analysis, adaptive learning, and generative creation — is now **realized**: CRDT collaboration enables B2B multi-user workflows, BKT-based knowledge tracing provides calibrated adaptive learning, the Valhalla sandbox executes real Python code, and the plugin marketplace enables third-party ecosystem growth.
 
-**Final Assessment:** With Phases 1-3 complete (+9,452 lines, 62 files changed, 438 tests), Aura Symphony has graduated from a promising prototype to a **near-production-grade platform**. The remaining Phase 4 (Scalability Engineering) addresses infrastructure concerns (queue-based processing, managed vector DB, CDN, observability) that are standard scaling challenges rather than architectural risks. The vision has become reality.
+**The next inflection point** is **Phase 4: Multi-Source Knowledge Engine**. The platform's current video-only data model is its most significant growth ceiling. Expanding to a polymorphic `Source` abstraction — where videos, books, scientific papers, LaTeX documents, and arbitrary text corpora are ingested, cross-referenced, and synthesized — transforms Aura from a "smart video tool" into a **universal AI research and learning environment**. The generative and analytical power of the multi-agent system increases *super-linearly* with source diversity: a Conductor that can cross-reference a lecture against its textbook and cited papers is categorically more valuable than one operating on a single video. This phase repositions the platform against NotebookLM, Elicit, and Semantic Scholar — a competitive landscape where Aura's multi-agent orchestration, adaptive learning, and generative capabilities create an unmatched combination.
+
+**Final Assessment:** With Phases 1-3 complete (+9,452 lines, 62 files changed, 438 tests), Aura Symphony has graduated from a promising prototype to a **near-production-grade platform**. Phase 4 (Multi-Source Knowledge Engine) represents the highest-value feature expansion remaining — it unlocks the research/academic market and creates the cross-source synthesis capability that no current competitor offers. Phase 5 (Scalability Engineering) then addresses the infrastructure needed to serve this expanded capability at enterprise scale. The architectural foundations are sound; the path from vision to category-defining product is clear.
 
 ---
 
