@@ -191,7 +191,7 @@ The platform delivers **demonstrable value today** in three areas:
 
 ## VI. STRATEGIC ROADMAP: RECOMMENDATIONS
 
-### Phase 1: Foundation Hardening (0-3 months)
+### Phase 1: Foundation Hardening 
 
 | Priority | Recommendation | Rationale |
 |----------|---------------|-----------|
@@ -201,7 +201,7 @@ The platform delivers **demonstrable value today** in three areas:
 | **P1** | **Implement commission chaining in the Conductor** | The infrastructure exists; wire the Conductor to actually delegate multi-step tasks (e.g., "Analyze this video and then search the web for related research" → Visionary → Scholar chain). |
 | **P2** | **CORS configuration for all backend services** | Add origin allowlisting, CSRF tokens, and request signing. |
 
-### Phase 2: Algorithmic Optimization (3-6 months)
+### Phase 2: Algorithmic Optimization 
 
 | Priority | Recommendation | Rationale |
 |----------|---------------|-----------|
@@ -211,7 +211,7 @@ The platform delivers **demonstrable value today** in three areas:
 | **P1** | **Hierarchical agent planning** | Implement a **ReAct-style** (Reason + Act) loop in the Conductor: the Conductor should plan a multi-step workflow, execute steps sequentially via chain commissions, and adapt the plan based on intermediate results. |
 | **P2** | **WebWorker pool for frame extraction** | Replace the singleton `SharedWorker` with a pool of `n` workers (where `n` = `navigator.hardwareConcurrency`). Implement work-stealing for load balancing. |
 
-### Phase 3: Advanced Feature Integration (6-18 months)
+### Phase 3: Advanced Feature Integration 
 
 | Priority | Recommendation | Rationale |
 |----------|---------------|-----------|
@@ -222,7 +222,7 @@ The platform delivers **demonstrable value today** in three areas:
 | **P2** | **Federated Learning for DLP** | Enable learner profiles to improve the system's pedagogical models across users while preserving privacy. This creates a network effect where the AI tutor improves as more students use it. |
 | **P2** | **Offline-first PWA** | Leverage the existing IndexedDB persistence, add Service Worker caching of frames and transcripts, and implement optimistic sync for Firestore operations. This unlocks mobile and low-connectivity use cases. |
 
-### Phase 4: Scalability Engineering (12-24 months)
+### Phase 4: Scalability Engineering 
 
 | Area | Current State | Target State |
 |------|--------------|--------------|
