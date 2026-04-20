@@ -86,7 +86,26 @@ api-proxy:
       interval: 5s
       retries: 3
 
+clip-embeddings:
+    build:
+      context: ./backend/clip-embeddings
+      dockerfile: Dockerfile
+    ports:
+      - "3006:3006"
+    volumes:
+      - clip-data:/app/clip_data
+    environment:
+      - PORT=3006
+      - CLIP_MODEL=openai/clip-vit-base-patch32
+      - CLIP_PERSIST_DIR=/app/clip_data
+      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3006/health"]
+      interval: 10s
+      retries: 3
+
 volumes:
   neo4j-data:
   vector-data:
   media-temp:
+  clip-data:
