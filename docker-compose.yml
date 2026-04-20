@@ -69,6 +69,23 @@ services:
       interval: 5s
       retries: 3
 
+api-proxy:
+    build:
+      context: ./backend/api-proxy
+      dockerfile: Dockerfile
+    ports:
+      - "3005:3005"
+    environment:
+      - PORT=3005
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - RATE_LIMIT_MAX=30
+      - RATE_LIMIT_WINDOW_MS=60000
+      - ALLOWED_ORIGINS=http://localhost:3000
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3005/api/health"]
+      interval: 5s
+      retries: 3
+
 volumes:
   neo4j-data:
   vector-data:

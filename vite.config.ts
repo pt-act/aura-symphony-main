@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
         'process.env.VITE_VECTOR_BACKEND_URL': JSON.stringify(env.VITE_VECTOR_BACKEND_URL || ''),
         'process.env.VITE_MEDIA_BACKEND_URL': JSON.stringify(env.VITE_MEDIA_BACKEND_URL || ''),
         'process.env.VITE_GRAPH_BACKEND_URL': JSON.stringify(env.VITE_GRAPH_BACKEND_URL || ''),
+        'import.meta.env.VITE_API_PROXY_URL': JSON.stringify(env.VITE_API_PROXY_URL || ''),
       },
       resolve: {
         alias: {

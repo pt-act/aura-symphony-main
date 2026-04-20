@@ -195,6 +195,10 @@ function execFFmpeg(args) {
 const app = express();
 app.use(express.json());
 
+// CORS
+import { corsMiddleware } from '../shared/cors.js';
+app.use(corsMiddleware());
+
 app.post('/jobs', async (req, res) => {
   const { videoUrl, videoId, frameInterval, extractAudio, transcribe } = req.body;
 

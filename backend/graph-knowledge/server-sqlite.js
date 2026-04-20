@@ -125,6 +125,10 @@ const stmts = {
 const app = express();
 app.use(express.json());
 
+// CORS
+import { corsMiddleware } from '../shared/cors.js';
+app.use(corsMiddleware());
+
 app.get('/health', (req, res) => {
   try {
     const concepts = stmts.getConceptCount.get();

@@ -1,0 +1,16 @@
+{
+  "name": "aura-api-proxy",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@google/genai": "^1.46.0",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.4"
+  }
+}

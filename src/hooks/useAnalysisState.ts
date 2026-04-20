@@ -86,10 +86,15 @@ export function useAnalysisState(
    * Validates and executes a single Conductor function call.
    * Returns true if execution succeeded, false if validation/execution failed.
    * On validation failure, builds a correction prompt for re-querying.
+   *
+   * Uses commission chaining for multi-step delegations: when the Conductor
+   * invokes applyLens or search_video, it creates a parent→child chain
+   * via symphonyBus.chainCommission, enabling observable agent-to-agent delegation.
    */
   const executeValidatedCall = async (
     call: { name: string; args: any },
-    spokenTextRef: { current: string }
+    spokenTextRef: { current: string },
+    parentTaskId?: string | number,
   ): Promise<boolean> => {
     const validation = validateConductorCall(call.name, call.args);
 
@@ -101,10 +106,25 @@ export function useAnalysisState(
     const args = (validation as any).args;
 
     switch (call.name) {
-      case 'applyLens':
+      case 'applyLens': {
         if (!spokenTextRef.current) spokenTextRef.current = `Applying the ${args.lensName} lens.`;
+        // Chain: Conductor → target Virtuoso
+        if (parentTaskId) {
+          const targetVirtuoso = Object.values(VIRTUOSO_REGISTRY).find(
+            (v) => v.name === args.lensName || v.id === args.lensName,
+          );
+          if (targetVirtuoso) {
+            symphonyBus.chainCommission(
+              parentTaskId,
+              targetVirtuoso.id as any,
+              `Lens: ${args.lensName}`,
+              { customPrompt: args.customPrompt },
+            );
+          }
+        }
         await handleSelectLens(args.lensName, args.customPrompt);
         break;
+      }
       case 'seekToTime':
         if (!spokenTextRef.current) spokenTextRef.current = `Seeking to ${args.timeInSeconds} seconds.`;
         videoState.jumpToTimecode(args.timeInSeconds);
@@ -131,10 +151,24 @@ export function useAnalysisState(
           detail: { tool: args.tool },
         }));
         break;
-      case 'search_video':
+      case 'web_search': {
+        if (!spokenTextRef.current) spokenTextRef.current = `Searching the web for "${args.query}".`;
+        // Chain: Conductor → Scholar
+        if (parentTaskId) {
+          symphonyBus.chainCommission(parentTaskId, 'scholar' as any, `Web Search: ${args.query}`, { query: args.query });
+        }
+        await handleSelectLens('Web Search', args.query);
+        break;
+      }
+      case 'search_video': {
         if (!spokenTextRef.current) spokenTextRef.current = `Searching video for ${args.query}.`;
+        // Chain: Conductor → Visionary (video search)
+        if (parentTaskId) {
+          symphonyBus.chainCommission(parentTaskId, 'visionary' as any, `Video Search: ${args.query}`, { query: args.query });
+        }
         await handleSearchVideo(args.query);
         break;
+      }
       default:
         console.warn(`[Conductor] Unhandled function call: ${call.name}`);
         return false;
@@ -145,6 +179,11 @@ export function useAnalysisState(
   const handleConductorQuery = async (query: string) => {
     const MAX_RETRIES = 2;
     setIsConductorLoading(true);
+
+    // Commission the Conductor as the parent task
+    const conductorTaskId = symphonyBus.commission('conductor' as any, `Query: ${query.slice(0, 50)}…`);
+    const timer = startTimer();
+
     try {
       let currentQuery = query;
       let attempt = 0;
@@ -173,7 +212,6 @@ export function useAnalysisState(
           }
 
           if (invalidCalls.length > 0 && attempt < MAX_RETRIES) {
-            // Build correction prompt and retry
             const corrections = invalidCalls
               .map((ic) => buildCorrectionPrompt(ic.name, ic.args, ic.errors))
               .join('\n\n');
@@ -182,9 +220,12 @@ export function useAnalysisState(
             continue;
           }
 
-          // Execute valid calls (or best-effort on final attempt)
+          // Log the Conductor query with telemetry
+          logConductorQuery(query, functionCalls.map((c: any) => c.name), attempt, timer.elapsed());
+
+          // Execute valid calls with commission chaining
           for (const call of functionCalls) {
-            await executeValidatedCall(call, spokenTextRef);
+            await executeValidatedCall(call, spokenTextRef, conductorTaskId);
           }
 
           if (spokenTextRef.current) {
@@ -195,11 +236,15 @@ export function useAnalysisState(
             speak(response.text);
           }
         }
+
+        // Report success on the parent task
+        symphonyBus.reportResult(conductorTaskId, 'conductor', true, { functionCalls: functionCalls?.length ?? 0, text: !!response.text }, timer.elapsed());
         break; // Success or final attempt — exit loop
       }
     } catch (err: any) {
       console.error(err);
       setError(`Conductor error: ${err.message}`);
+      symphonyBus.reportResult(conductorTaskId, 'conductor', false, err.message, timer.elapsed());
     } finally {
       setIsConductorLoading(false);
     }
