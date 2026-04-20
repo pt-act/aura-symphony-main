@@ -266,7 +266,25 @@ The platform delivers **demonstrable value today** in three areas:
 | **BKT** | Per-video learning state | Per-corpus learning state with source-weighted mastery |
 | **CRDT** | Shared annotations on one video | Shared annotations across corpus with source references |
 
-**Competitive Repositioning:** This phase moves Aura from the "video analysis" category into **"AI-native research environment"** — competing not just with Descript/Runway but with Elicit, Semantic Scholar, Zotero+AI, and Google NotebookLM. The key differentiator is that Aura would be the only platform combining *multi-source ingestion + multi-agent orchestration + adaptive learning + generative media creation* in a single environment.
+**Emergent Use Cases — The Cross-Source Synthesis Effect:**
+
+The value of multi-source ingestion is not additive — it is *super-linear*. One manual + one video > 2× the value of either alone. The following scenarios illustrate capabilities that are **impossible with any single-source tool** but emerge naturally from cross-source orchestration:
+
+> **Scenario 1 — Technical Manual + Tutorial Video → Step-by-Step Instructions**
+> A musician loads the 200-page owner's manual for a synthesizer (PDF) alongside three YouTube tutorial videos. The manual is exhaustive but impenetrable; the videos are engaging but skip 80% of the features. The Conductor cross-references both: *"At 3:42 in Tutorial #2, the creator sweeps the filter cutoff — the manual (§3.2.1, p.47) explains this is the 24dB/oct ladder filter with resonance self-oscillation, controlled via CC#74. The manual's parameter table (p.112) lists the full MIDI mapping that none of the videos mention."* The Analyst generates a complete step-by-step guide that combines the video's practical workflow with the manual's technical depth — a document that neither source could produce alone.
+
+> **Scenario 2 — Software Documentation + Conference Talk + Release Notes → Migration Guide**
+> A developer loads the API documentation (Markdown), a conference keynote video explaining the design philosophy, and three versions of release notes (plain text). The Conductor synthesizes a migration guide: *"The breaking change in v3.0 (Release Notes, §Breaking) removes `syncAdapter()` — the keynote (at 18:30) explains this was replaced by the reactive model described in the Architecture docs (§Event-Driven Core). Here's the before/after code pattern with the rationale from the original designer."*
+
+> **Scenario 3 — Lecture Video + Textbook + Cited Papers → Adaptive Course**
+> A student loads a university lecture recording, the assigned textbook (EPUB), and three papers cited by the professor. The Analyst generates a course module where each quiz question links to the specific textbook section, lecture timestamp, *and* paper paragraph that cover the concept. BKT tracks mastery across all sources — if the student struggles with "gradient descent," the system pulls the clearest explanation from whichever source explains it best, then validates understanding against the formal definition in the cited paper.
+
+> **Scenario 4 — Product Specs + Repair Manual + Community Forum → Diagnostic Guide**
+> A technician loads the product specification sheet (PDF), the official repair manual (LaTeX), and a transcript of a troubleshooting video from the manufacturer's channel. The Conductor generates a diagnostic flowchart (Mermaid) that cross-references error codes from the manual with the visual symptoms shown in the video and the known issues discussed in the specs. Each diagnostic step includes provenance: which source contributed each piece of evidence.
+
+These scenarios share a common pattern: **no single source is sufficient, but the AI's ability to cross-reference, validate, and synthesize across sources creates a new artifact that is more valuable than the sum of its parts.** This is the fundamental insight behind Phase 4 — the platform becomes a *knowledge multiplier*, not just a content analyzer.
+
+**Competitive Repositioning:** This phase moves Aura from the "video analysis" category into **"AI-native research environment"** — competing not just with Descript/Runway but with Elicit, Semantic Scholar, Zotero+AI, and Google NotebookLM. The key differentiator is that Aura would be the only platform combining *multi-source ingestion + multi-agent orchestration + adaptive learning + generative media creation* in a single environment. The cross-source synthesis capability described above has no direct competitor — no existing tool can ingest a video, a manual, and a paper, then produce a unified guide with provenance tracking and adaptive quizzes.
 
 ### Phase 5: Scalability Engineering 🔜 PLANNED
 
