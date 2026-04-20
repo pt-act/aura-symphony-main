@@ -7,4 +7,4 @@
 > The `.agents/` directory is in `.gitignore` — it travels with the human's local machine, not the repository.
 >
 > If you're an AI agent starting a session, read `.agents/AGENTS.md` first, then `.agents/MEMORY_FORMATS.md`.
-> If those files don't exist, this project hasn't been initialized with Orion-OS v2.4 yet.
+> If those files don't exist, this project hasn't been initialized with Orion-OS v2.4 yet, or your operating on a web client without access to .agents.
