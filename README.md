@@ -57,13 +57,18 @@ Aura isn't just for analysis; it's an educational platform. The "Create Course" 
 
 The app runs at `http://localhost:3000`.
 
-### Environment Variables
+### API Configuration
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `GEMINI_API_KEY` | Yes | Google Gemini API key for all AI features |
+Aura supports **two ways** to supply an AI provider key:
 
-> **How it works:** Vite reads `GEMINI_API_KEY` from `.env` and injects it as `process.env.API_KEY` at build time via `define` in `vite.config.ts`. The key never leaves your browser — all API calls go directly to Google's endpoints.
+| Method | Description |
+|--------|-------------|
+| **In-App Settings (recommended)** | Click the ⚙️ Settings icon in the toolbar to open the **AI Provider Settings** panel. From there you can add one or more providers, each with its own **Base URL**, **API Key**, and **Model**. The active provider is used for all AI calls. A **Test Connection** button validates the key and model before you commit. Settings are persisted in `localStorage`. |
+| **`.env` file (fallback)** | Set `GEMINI_API_KEY` in a `.env` file at the project root. Vite injects it as `process.env.API_KEY` at build time via `define` in `vite.config.ts`. This key is used only when no custom provider is configured in Settings. |
+
+> **Resolution order:** `getAI()` checks for an active provider with a non-empty API key first. If none exists, it falls back to the `.env`-based default client. `getEffectiveModel(registryModel)` similarly returns the user's custom model when set, or the per-virtuoso default otherwise.
+
+> **Compatibility:** The Settings panel supports any OpenAI-compatible API (Google AI, Anthropic via proxy, Ollama, local LLMs, etc.).
 
 ## Architecture
 
