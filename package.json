@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build:local": "vite build"
   },
   "dependencies": {
     "@google/genai": "^1.46.0",
