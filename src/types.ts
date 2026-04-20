@@ -17,6 +17,7 @@
 // limitations under the License.
 
 import type modes from './lib/modes';
+import type {FieldValue} from 'firebase/firestore';
 
 export type Mode = keyof typeof modes;
 
@@ -48,11 +49,22 @@ export interface DigitalLearnerProfile {
   };
 }
 
+/** Discriminated union for Insight data types. */
+export type InsightData =
+  | ChatMessage[]
+  | QuizQuestion[]
+  | DigitalLearnerProfile
+  | Annotation[]
+  | string
+  | {timecodes: Array<{time: number; text: string}>}
+  | Record<string, unknown>
+  | null;
+
 export interface Insight {
   id: number;
   title: string;
   type: Mode | 'Chat' | 'Annotations' | 'DLP' | 'Quiz' | 'Create Course';
-  data: any;
+  data: InsightData;
   isList: boolean;
   isLoading: boolean;
 }
@@ -78,6 +90,6 @@ export interface Presentation {
   userId: string;
   name: string;
   slides: Slide[];
-  createdAt: any; // Or a more specific Firestore timestamp type
-  lastUpdated: any; // Or a more specific Firestore timestamp type
+  createdAt: FieldValue | string | null;
+  lastUpdated: FieldValue | string | null;
 }

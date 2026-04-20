@@ -8,6 +8,7 @@ import getFunctions from '../lib/functions';
 import {fileToBase64, convertInsightToMarkdown} from '../lib/utils';
 import {symphonyBus} from '../lib/symphonyBus';
 import {validateConductorCall, buildCorrectionPrompt, logValidationFailure, ValidationFailure} from '../lib/conductor-validator';
+import {logConductorQuery, startTimer} from '../lib/telemetry';
 import type {ChatMessage, Insight} from '../types';
 
 import {useVideoState} from './useVideoState';

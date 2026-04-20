@@ -18,17 +18,28 @@
 
 import {useEffect, useState} from 'react';
 import {Events, symphonyBus, Task} from '../lib/symphonyBus';
+import {persistTask, removeTask, loadPersistedTasks, pruneStaleTasks} from '../lib/task-persistence';
 
 export const useSymphony = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
 
+  // Restore persisted tasks on mount
+  useEffect(() => {
+    loadPersistedTasks().then((restored) => {
+      if (restored.length > 0) {
+        setTasks(restored);
+      }
+    });
+    // Prune stale tasks in the background
+    pruneStaleTasks();
+  }, []);
+
   useEffect(() => {
     const handleTaskStart = (event: Event) => {
       const {id, name, virtuosoId} = (event as CustomEvent).detail;
-      setTasks((prev) => [
-        ...prev,
-        {id, name, virtuosoId, status: 'running', createdAt: Date.now()},
-      ]);
+      const task: Task = {id, name, virtuosoId, status: 'running', createdAt: Date.now()};
+      setTasks((prev) => [...prev, task]);
+      persistTask(task);
     };
 
     const handleTaskSuccess = (event: Event) => {
@@ -36,6 +47,9 @@ export const useSymphony = () => {
       setTasks((prev) =>
         prev.map((t) => (t.id === id ? {...t, status: 'success', result} : t)),
       );
+      // Update persistence with final state
+      const updated = tasks.find((t) => t.id === id);
+      if (updated) persistTask({...updated, status: 'success', result});
     };
 
     const handleTaskError = (event: Event) => {
@@ -43,6 +57,8 @@ export const useSymphony = () => {
       setTasks((prev) =>
         prev.map((t) => (t.id === id ? {...t, status: 'error', error} : t)),
       );
+      const updated = tasks.find((t) => t.id === id);
+      if (updated) persistTask({...updated, status: 'error', error});
     };
 
     symphonyBus.listen(Events.TASK_START, handleTaskStart);
@@ -63,6 +79,7 @@ export const useSymphony = () => {
       if (task.status === 'success' || task.status === 'error') {
         const timer = window.setTimeout(() => {
           setTasks((prev) => prev.filter((t) => t.id !== task.id));
+          removeTask(task.id);
         }, 5000); // 5 seconds
         timers.push(timer);
       }

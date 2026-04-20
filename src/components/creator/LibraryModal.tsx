@@ -16,9 +16,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {AnimatePresence, motion} from 'framer-motion';
 import React, {useEffect, useState} from 'react';
+import {AnimatePresence, motion} from 'framer-motion';
 import {deletePresentation, getPresentationsForUser} from '../../api/firestoreService';
+import {useEscapeKey} from '../../lib/a11y';
 import type {Presentation} from '../../types';
 
 interface LibraryModalProps {
@@ -36,6 +37,8 @@ export default function LibraryModal({
 }: LibraryModalProps) {
   const [presentations, setPresentations] = useState<Presentation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEscapeKey(onClose, isOpen);
 
   useEffect(() => {
     if (isOpen && userId) {
@@ -67,13 +70,16 @@ export default function LibraryModal({
           onClick={onClose}>
           <motion.div
             className="modal-content"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="library-title"
             initial={{y: 50, opacity: 0}}
             animate={{y: 0, opacity: 1}}
             exit={{y: 50, opacity: 0}}
             onClick={(e) => e.stopPropagation()}>
             <header className="modal-header">
-              <h2>My Library</h2>
-              <button onClick={onClose}>&times;</button>
+              <h2 id="library-title">My Library</h2>
+              <button onClick={onClose} aria-label="Close library">&times;</button>
             </header>
             <div className="modal-body">
               {isLoading ? (
@@ -90,12 +96,13 @@ export default function LibraryModal({
                         {p.name}
                       </span>
                       <div className="library-item-actions">
-                        <button onClick={() => onLoad(p)} title="Load">
+                        <button onClick={() => onLoad(p)} title="Load" aria-label={`Load presentation ${p.name}`}>
                           <span className="icon">open_in_new</span>
                         </button>
                         <button
                           onClick={() => handleDelete(p.id!)}
-                          title="Delete">
+                          title="Delete"
+                          aria-label={`Delete presentation ${p.name}`}>
                           <span className="icon">delete</span>
                         </button>
                       </div>

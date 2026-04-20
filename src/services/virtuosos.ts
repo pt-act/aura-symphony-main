@@ -4,6 +4,7 @@
  */
 
 import { Modality } from "@google/genai";
+import type {FieldValue} from 'firebase/firestore';
 
 export enum VirtuosoType {
   CONDUCTOR = "conductor",
@@ -13,6 +14,13 @@ export enum VirtuosoType {
   ANALYST = "analyst",     // Logic/Data/Reasoning
   CHRONICLER = "chronicler", // Documentation/Export/Summary
   CRITIC = "critic"        // Quality evaluation and feedback
+}
+
+/** Gemini config options used by Virtuosos. */
+export interface VirtuosoConfig {
+  tools?: Array<{googleSearch?: Record<string, unknown>}>;
+  thinkingConfig?: {includeThinkingProcess?: boolean};
+  [key: string]: unknown;
 }
 
 export interface VirtuosoProfile {
@@ -25,9 +33,9 @@ export interface VirtuosoProfile {
   capabilities: string[];
   color: string;
   icon: string;
-  config?: any;
+  config?: VirtuosoConfig;
   userId?: string;
-  createdAt?: any;
+  createdAt?: string | FieldValue;
 }
 
 export const VIRTUOSO_REGISTRY: Record<string, VirtuosoProfile> = {

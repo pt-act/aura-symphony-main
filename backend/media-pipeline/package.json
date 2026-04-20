@@ -1,0 +1,13 @@
+{
+  "name": "aura-media-pipeline",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "ws": "^8.18.0",
+    "uuid": "^10.0.0"
+  }
+}

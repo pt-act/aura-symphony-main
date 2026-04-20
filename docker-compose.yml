@@ -1,0 +1,75 @@
+version: "3.8"
+
+services:
+  neo4j:
+    image: neo4j:5-community
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: neo4j/aura-symphony
+      NEO4J_PLUGINS: '["apoc"]'
+    volumes:
+      - neo4j-data:/data
+    healthcheck:
+      test: ["CMD", "neo4j", "status"]
+      interval: 10s
+      retries: 5
+
+  vector-search:
+    build:
+      context: ./backend/vector-search
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    volumes:
+      - vector-data:/app/chroma_data
+    environment:
+      - CHROMA_PERSIST_DIR=/app/chroma_data
+      - PORT=3001
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 5s
+      retries: 3
+
+  media-pipeline:
+    build:
+      context: ./backend/media-pipeline
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+      - "3003:3003"
+    volumes:
+      - media-temp:/tmp/aura-media
+    environment:
+      - PORT=3002
+      - WS_PORT=3003
+      - TEMP_DIR=/tmp/aura-media
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 5s
+      retries: 3
+
+  graph-knowledge:
+    build:
+      context: ./backend/graph-knowledge
+      dockerfile: Dockerfile
+    ports:
+      - "3004:3004"
+    environment:
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=aura-symphony
+      - PORT=3004
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3004/health"]
+      interval: 5s
+      retries: 3
+
+volumes:
+  neo4j-data:
+  vector-data:
+  media-temp:

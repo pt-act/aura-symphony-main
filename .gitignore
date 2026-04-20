@@ -23,3 +23,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Orion-OS (local agent context, not repository content)
+.agents/

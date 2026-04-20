@@ -4,6 +4,7 @@ import {X, Maximize2, Minimize2, MousePointer2, Terminal, Play, ShieldCheck, Shi
 import {executeValhallaCommand, ValhallaResponse} from '../../api/valhalla';
 import {analyzeScript, getSafetyBadge, SafetyReport} from '../../lib/valhalla-analyzer';
 import {logValhallaTelemetry} from '../../lib/valhalla-telemetry';
+import {useEscapeKey} from '../../lib/a11y';
 
 interface ValhallaGatewayProps {
   isOpen: boolean;
@@ -25,6 +26,8 @@ export default function ValhallaGateway({
   const [result, setResult] = useState<ValhallaResponse | null>(null);
   const [safetyReport, setSafetyReport] = useState<SafetyReport | null>(null);
   const [overrideConfirmed, setOverrideConfirmed] = useState(false);
+
+  useEscapeKey(onClose, isOpen);
 
   useEffect(() => {
     if (!isOpen) {
@@ -159,12 +162,15 @@ export default function ValhallaGateway({
         exit={{opacity: 0}}>
         <motion.div
           className="valhalla-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="valhalla-title"
           initial={{scale: 0.95, opacity: 0}}
           animate={{scale: 1, opacity: 1}}
           exit={{scale: 0.95, opacity: 0}}>
           <header className="valhalla-header">
             <div className="header-left">
-              <h2>Project Valhalla Gateway</h2>
+              <h2 id="valhalla-title">Project Valhalla Gateway</h2>
               <span className="tool-badge">{toolName}</span>
             </div>
             <div className="header-right">
@@ -173,10 +179,10 @@ export default function ValhallaGateway({
                 onClick={() => setIsHumanControl(!isHumanControl)}>
                 {isHumanControl ? 'Release Control' : 'Take Control'}
               </button>
-              <button onClick={() => setIsExpanded(false)}>
+              <button onClick={() => setIsExpanded(false)} aria-label="Minimize">
                 <Minimize2 size={18} />
               </button>
-              <button onClick={onClose}>
+              <button onClick={onClose} aria-label="Close Valhalla Gateway">
                 <X size={18} />
               </button>
             </div>

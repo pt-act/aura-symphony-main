@@ -13,7 +13,10 @@ export default defineConfig(({ mode }) => {
       plugins: [react()],
       define: {
         'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
+        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+        'process.env.VITE_VECTOR_BACKEND_URL': JSON.stringify(env.VITE_VECTOR_BACKEND_URL || ''),
+        'process.env.VITE_MEDIA_BACKEND_URL': JSON.stringify(env.VITE_MEDIA_BACKEND_URL || ''),
+        'process.env.VITE_GRAPH_BACKEND_URL': JSON.stringify(env.VITE_GRAPH_BACKEND_URL || ''),
       },
       resolve: {
         alias: {
@@ -25,7 +28,7 @@ export default defineConfig(({ mode }) => {
       },
       test: {
         globals: true,
-        include: ['src/**/*.test.ts'],
+        include: ['src/**/*.test.ts', 'backend/**/*.test.js'],
       }
     };
 });

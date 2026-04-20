@@ -27,27 +27,20 @@ import {handleExportNLE} from './lib/nleExport';
 import {useAnalysisState} from './hooks/useAnalysisState';
 import {useCreatorState} from './hooks/useCreatorState';
 import {useCustomVirtuosos} from './hooks/useCustomVirtuosos';
+import {useAppModals} from './hooks/useAppModals';
+import {useKeyboardActivator, useScreenReaderAnnouncer} from './lib/a11y';
 import {Settings} from 'lucide-react';
 
 export default function Workspace() {
   // App State
-  const [user, setUser] = useState<any | null>(null);
-  const [currentView, setCurrentView] = useState<'analysis' | 'creator'>(
-    'analysis',
-  );
+  const [user, setUser] = useState<Record<string, unknown> | null>(null);
+  const [currentView, setCurrentView] = useState<'analysis' | 'creator'>('analysis');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Modal State
-  const [isHelpOpen, setIsHelpOpen] = useState(false);
-  const [isShareOpen, setShareOpen] = useState(false);
-  const [shareUrl, setShareUrl] = useState('');
-  const [isLiveConversationOpen, setIsLiveConversationOpen] = useState(false);
-  const [isValhallaOpen, setIsValhallaOpen] = useState(false);
-  const [valhallaToolName, setValhallaToolName] = useState('Blender');
-  const [isCustomVirtuosoOpen, setIsCustomVirtuosoOpen] = useState(false);
-  const [isExportNLEOpen, setIsExportNLEOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  // Modal State (extracted hook)
+  const modals = useAppModals();
+  const announce = useScreenReaderAnnouncer();
 
   const {customVirtuosos, saveCustomVirtuoso, deleteCustomVirtuoso} = useCustomVirtuosos(user);
 
@@ -56,8 +49,6 @@ export default function Workspace() {
     setPresentation,
     activeSlideIndex,
     setActiveSlideIndex,
-    isLibraryOpen,
-    setIsLibraryOpen,
     handleSendToCreator,
     handleNewPresentation,
     handleLoadPresentation,
@@ -99,7 +90,7 @@ export default function Workspace() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+      setUser(currentUser as unknown as Record<string, unknown>);
     });
     return () => unsubscribe();
   }, []);
@@ -108,7 +99,7 @@ export default function Workspace() {
     if (videoUrl && currentView === 'analysis') {
       const hasSeenHelp = localStorage.getItem('hasSeenHelpModal');
       if (!hasSeenHelp) {
-        setIsHelpOpen(true);
+        modals.help.setIsOpen(true);
         localStorage.setItem('hasSeenHelpModal', 'true');
       }
     }
@@ -128,14 +119,12 @@ export default function Workspace() {
     const handleTaskError = (event: Event) => {
       const {id, error: errorMessage} = (event as CustomEvent).detail;
       setError(`Task failed: ${errorMessage}`);
-      // Remove the insight card that failed
       setInsights((prev) => prev.filter((i) => i.id !== id));
     };
 
     const handleValhallaLaunch = (event: Event) => {
       const {tool} = (event as CustomEvent).detail;
-      setValhallaToolName(tool || 'Blender');
-      setIsValhallaOpen(true);
+      modals.valhalla.open(tool);
     };
 
     symphonyBus.addEventListener(Events.TASK_SUCCESS, handleTaskSuccess);
@@ -156,8 +145,7 @@ export default function Workspace() {
         e.preventDefault();
         const tool = prompt('Enter external tool to launch (e.g., Blender, Ableton):', 'Blender');
         if (tool) {
-          setValhallaToolName(tool);
-          setIsValhallaOpen(true);
+          modals.valhalla.open(tool);
         }
       }
     };
@@ -230,7 +218,7 @@ export default function Workspace() {
                 onFrameStep={handleFrameStep}
                 currentSpeed={playbackSpeed}
                 onSpeedChange={handleSpeedChange}
-                onExportNLE={() => setIsExportNLEOpen(true)}
+                onExportNLE={() => modals.exportNLE.setIsOpen(true)}
               />
             </div>
           </div>
@@ -244,7 +232,7 @@ export default function Workspace() {
             jumpToTimecode={jumpToTimecode}
             onDeleteAnnotation={handleDeleteAnnotation}
             onSendToCreator={handleSendToCreator}
-            onOpenCustomBuilder={() => setIsCustomVirtuosoOpen(true)}
+            onOpenCustomBuilder={() => modals.customVirtuoso.setIsOpen(true)}
           />
         </main>
         <ConductorInput
@@ -275,37 +263,37 @@ export default function Workspace() {
         activeSlideIndex={activeSlideIndex}
         setActiveSlideIndex={setActiveSlideIndex}
         onNewPresentation={handleNewPresentation}
-        onOpenLibrary={() => setIsLibraryOpen(true)}
+        onOpenLibrary={() => modals.library.setIsOpen(true)}
       />
     );
   };
 
   return (
     <div className="app-container">
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
-      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+      <SettingsModal isOpen={modals.settings.isOpen} onClose={() => modals.settings.setIsOpen(false)} />
+      <HelpModal isOpen={modals.help.isOpen} onClose={() => modals.help.setIsOpen(false)} />
       <ShareModal
-        isOpen={isShareOpen}
-        onClose={() => setShareOpen(false)}
-        shareUrl={shareUrl}
+        isOpen={modals.share.isOpen}
+        onClose={() => modals.share.setIsOpen(false)}
+        shareUrl={modals.share.shareUrl}
       />
       <LiveConversation
-        isOpen={isLiveConversationOpen}
-        onClose={() => setIsLiveConversationOpen(false)}
+        isOpen={modals.liveConversation.isOpen}
+        onClose={() => modals.liveConversation.setIsOpen(false)}
       />
       <ValhallaGateway
-        isOpen={isValhallaOpen}
-        onClose={() => setIsValhallaOpen(false)}
-        toolName={valhallaToolName}
+        isOpen={modals.valhalla.isOpen}
+        onClose={() => modals.valhalla.setIsOpen(false)}
+        toolName={modals.valhalla.toolName}
       />
       <ExportNLEModal
-        isOpen={isExportNLEOpen}
-        onClose={() => setIsExportNLEOpen(false)}
+        isOpen={modals.exportNLE.isOpen}
+        onClose={() => modals.exportNLE.setIsOpen(false)}
         onExport={onExportNLE}
       />
-      {isCustomVirtuosoOpen && (
+      {modals.customVirtuoso.isOpen && (
         <CustomVirtuosoBuilder
-          onClose={() => setIsCustomVirtuosoOpen(false)}
+          onClose={() => modals.customVirtuoso.setIsOpen(false)}
           onSave={saveCustomVirtuoso}
           customVirtuosos={customVirtuosos}
           onDelete={deleteCustomVirtuoso}
@@ -313,10 +301,10 @@ export default function Workspace() {
       )}
       {user && (
         <LibraryModal
-          isOpen={isLibraryOpen}
-          onClose={() => setIsLibraryOpen(false)}
+          isOpen={modals.library.isOpen}
+          onClose={() => modals.library.setIsOpen(false)}
           onLoad={handleLoadPresentation}
-          userId={user.uid}
+          userId={user.uid as string}
         />
       )}
       <OrchestraVisualizer />
@@ -341,11 +329,11 @@ export default function Workspace() {
               <>
                 <div className="user-profile">
                   <img
-                    src={user.photoURL}
-                    alt={user.displayName}
+                    src={user.photoURL as string}
+                    alt={user.displayName as string}
                     referrerPolicy="no-referrer"
                   />
-                  <span>{user.displayName.split(' ')[0]}</span>
+                  <span>{(user.displayName as string).split(' ')[0]}</span>
                 </div>
                 <button onClick={signOutUser}>Sign Out</button>
               </>
@@ -355,19 +343,26 @@ export default function Workspace() {
           </div>
           <button
             className="icon-header-btn"
-            onClick={() => setIsSettingsOpen(true)}
+            onClick={() => modals.settings.setIsOpen(true)}
             title="Settings"
             aria-label="Settings"
+            aria-expanded={modals.settings.isOpen}
           >
             <Settings size={18} />
           </button>
-          <button onClick={() => setIsCustomVirtuosoOpen(true)}>Build Virtuoso</button>
-          <button onClick={() => setIsHelpOpen(true)}>Help</button>
+          <button onClick={() => modals.customVirtuoso.setIsOpen(true)}>Build Virtuoso</button>
+          <button onClick={() => modals.help.setIsOpen(true)}>Help</button>
         </div>
       </header>
       {currentView === 'analysis' ? renderAnalysisView() : renderCreatorView()}
       {error && (
-        <div className="error-toast" onClick={() => setError(null)}>
+        <div
+          className="error-toast"
+          role="alert"
+          aria-live="assertive"
+          {...useKeyboardActivator(() => setError(null))}
+          onClick={() => setError(null)}
+        >
           {error}
         </div>
       )}

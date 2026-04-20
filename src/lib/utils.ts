@@ -102,14 +102,17 @@ export function encode(bytes: Uint8Array) {
 export function convertInsightToMarkdown(insight: Insight): string | null {
   if (!insight.data) return null;
 
+  const data = insight.data;
   let mdContent = `# ${insight.title}\n\n`;
 
   switch (insight.type) {
     case 'Paragraph':
     case 'Haiku':
-      mdContent += insight.data
-        .map((item: {text: string}) => item.text)
-        .join(insight.type === 'Haiku' ? '\n' : ' ');
+      if (Array.isArray(data)) {
+        mdContent += (data as unknown as Record<string, unknown>[])
+          .map((item) => String(item.text ?? ''))
+          .join(insight.type === 'Haiku' ? '\n' : ' ');
+      }
       break;
 
     case 'A/V captions':
@@ -117,10 +120,10 @@ export function convertInsightToMarkdown(insight: Insight): string | null {
     case 'In-strukt':
     case 'Custom':
     case 'Deep Analysis':
-      if (Array.isArray(insight.data) && insight.data[0]?.time) {
-        mdContent += insight.data
+      if (Array.isArray(data) && data.length > 0 && ((data[0] as unknown) as Record<string, unknown>)?.time) {
+        mdContent += (data as unknown as Record<string, unknown>[])
           .map(
-            (item: {time: string; text: string}) =>
+            (item) =>
               `- **[${item.time}]** ${item.text}`,
           )
           .join('\n');
@@ -130,39 +133,43 @@ export function convertInsightToMarkdown(insight: Insight): string | null {
       break;
 
     case 'Table':
-      if (insight.data.length === 0) return null;
-      const headers = Object.keys(insight.data[0]);
-      mdContent += `| ${headers.join(' | ')} |\n`;
-      mdContent += `| ${headers.map(() => '---').join(' | ')} |\n`;
-      mdContent += insight.data
-        .map(
-          (row: any) =>
-            `| ${headers
-              .map((h) => (Array.isArray(row[h]) ? row[h].join(', ') : row[h]))
-              .join(' | ')} |`,
-        )
-        .join('\n');
+      if (Array.isArray(data) && data.length === 0) return null;
+      if (Array.isArray(data)) {
+        const rows = data as unknown as Record<string, unknown>[];
+        const headers = Object.keys(rows[0]);
+        mdContent += `| ${headers.join(' | ')} |\n`;
+        mdContent += `| ${headers.map(() => '---').join(' | ')} |\n`;
+        mdContent += rows
+          .map(
+            (row) =>
+              `| ${headers
+                .map((h) => (Array.isArray(row[h]) ? (row[h] as string[]).join(', ') : row[h]))
+                .join(' | ')} |`,
+          )
+          .join('\n');
+      }
       break;
 
     case 'Mermaid':
-      mdContent += '```mermaid\n' + insight.data + '\n```';
+      mdContent += '```mermaid\n' + String(data) + '\n```';
       break;
 
     case 'PDF Analysis':
-      if (typeof insight.data === 'string') {
-        mdContent += insight.data;
+      if (typeof data === 'string') {
+        mdContent += data;
       } else {
         return null;
       }
       break;
 
     case 'Web Search':
-      if (typeof insight.data?.text === 'string') {
-        mdContent += insight.data.text;
-        if (insight.data.sources?.length > 0) {
+      if (typeof data === 'object' && data !== null && 'text' in data) {
+        const searchData = data as {text: string; sources?: Array<{web: {title: string; uri: string}}>};
+        mdContent += searchData.text;
+        if (searchData.sources && searchData.sources.length > 0) {
           mdContent += '\n\n**Sources:**\n';
-          mdContent += insight.data.sources
-            .map((s: any) => `* [${s.web.title}](${s.web.uri})`)
+          mdContent += searchData.sources
+            .map((s) => `* [${s.web.title}](${s.web.uri})`)
             .join('\n');
         }
       } else {
@@ -171,8 +178,8 @@ export function convertInsightToMarkdown(insight: Insight): string | null {
       break;
 
     case 'Transcribe Audio':
-      if (typeof insight.data === 'string') {
-        mdContent += `**Transcription:**\n\n> ${insight.data}`;
+      if (typeof data === 'string') {
+        mdContent += `**Transcription:**\n\n> ${data}`;
       } else {
         return null;
       }

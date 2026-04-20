@@ -25,6 +25,8 @@ import React from 'react';
 import {useEffect, useRef, useState} from 'react';
 import {decode, decodeAudioData, encode} from '../../lib/utils';
 
+import {useEscapeKey} from '../../lib/a11y';
+
 // AI client is now resolved dynamically per the active provider settings
 
 interface LiveConversationProps {
@@ -54,6 +56,9 @@ export default function LiveConversation({
   >([]);
   const [partialInput, setPartialInput] = useState('');
   const [partialOutput, setPartialOutput] = useState('');
+
+  // Escape key closes the modal
+  useEscapeKey(stopConversation, isOpen);
 
   const currentInputRef = useRef('');
   const currentOutputRef = useRef('');
@@ -254,12 +259,15 @@ export default function LiveConversation({
           exit={{opacity: 0}}>
           <motion.div
             className="modal-content live-conversation-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="live-conversation-title"
             initial={{y: 50, opacity: 0}}
             animate={{y: 0, opacity: 1}}
             exit={{y: 50, opacity: 0}}>
             <header className="modal-header">
-              <h2>Live Conversation</h2>
-              <button onClick={stopConversation}>&times;</button>
+              <h2 id="live-conversation-title">Live Conversation</h2>
+              <button onClick={stopConversation} aria-label="Close live conversation">&times;</button>
             </header>
             <div className="modal-body">
               <div className="live-transcript-container">
