@@ -251,3 +251,80 @@ The **most significant strategic opportunity** is the closed-loop integration of
 
 *Respectfully submitted,*
 *Professor of Computer Science & Software Engineering*
+
+---
+
+All five Phase 1 priorities are implemented, built, and tested. Here's the summary:
+
+---
+
+## Phase 1: Foundation Hardening — Implementation Summary
+
+### P0: Backend API Proxy for Gemini Calls ✅
+
+**Files created:** `backend/api-proxy/server.js`, `server.test.js`, `Dockerfile`, `package.json`, `src/api/proxy-client.ts`
+
+| Feature | Implementation |
+|---------|---------------|
+| **Key isolation** | API key lives only on the server (`GEMINI_API_KEY` env var). Never reaches the client bundle. |
+| **Rate limiting** | Sliding-window per-IP limiter. Default: 30 req/min. Returns `429` with `Retry-After` header. Stale IPs pruned every 60s. |
+| **Usage metering** | Per-endpoint stats (request count, errors, avg latency). Per-model request counts. Exposed via `GET /api/usage`. |
+| **Endpoints** | `POST /api/generate` (proxy for generateContent), `POST /api/chat` (multi-turn), `POST /api/search` (grounded search), `GET /api/health`, `GET /api/usage` |
+| **Fallback** | When `VITE_API_PROXY_URL` is not set, frontend calls Gemini directly (backward compatible). |
+| **Docker** | Added to `docker-compose.yml` with health check on port 3005. |
+
+### P0: Refactor useLensExecution into Strategy Pattern ✅
+
+**Files created:** `src/lib/lens-handlers/types.ts`, `registry.ts`, plus 7 handler modules
+
+| Before | After |
+|--------|-------|
+| 234-line `useCallback` with 12 `if/else` branches | 67-line dispatcher + 7 independent handler files |
+| Adding a lens requires editing the monolith | Create a file, add to `handlers[]` in registry |
+| All lens logic coupled | Each handler is independently testable and deployable |
+
+**Handler modules:** `pdf-handler.ts`, `chat-handler.ts`, `media-handler.ts` (4 handlers), `search-handler.ts`, `course-handler.ts`, `video-analysis-handler.ts` (default fallback)
+
+**Runtime extensibility:** `registerHandler()` lets plugins add new lens types at runtime.
+
+### P1: Commission Chaining in the Conductor ✅
+
+**Files modified:** `src/hooks/useAnalysisState.ts`
+
+The Conductor now creates a **parent task** via `symphonyBus.commission()` at the start of every query, then **chains child tasks** for delegated operations:
+
+- `applyLens` → chains to the target Virtuoso (looked up from `VIRTUOSO_REGISTRY`)
+- `web_search` → chains to Scholar
+- `search_video` → chains to Visionary
+
+Task IDs form a DAG: `conductor-abc::scholar::def`. The parent task reports success/failure with elapsed time via `symphonyBus.reportResult()`.
+
+### P1: Test Coverage Expansion ✅
+
+| New Test File | Tests | Coverage |
+|---------------|-------|----------|
+| `symphonyBus.test.ts` | 12 | Event dispatch, listen/unlisten, commission, reportResult, chainCommission |
+| `conductor-schemas.test.ts` | 60+ | All 18 schemas: valid/invalid/edge cases, .strict() enforcement, property-based (reject string/number/array inputs) |
+| `telemetry.test.ts` | 10 | Log sinks, timer utility, all 6 log functions |
+| `lens-handlers/registry.test.ts` | 12 | Handler resolution, fallback, runtime registration |
+| `proxy-client.test.ts` | 2 | Proxy detection when unconfigured |
+
+**Result:** 279 tests passing across 10 files (up from 183 tests across 5 files — a **52% increase**).
+
+### P2: CORS Configuration for All Backend Services ✅
+
+| Service | Implementation |
+|---------|---------------|
+| **Vector Search (Python)** | FastAPI `CORSMiddleware` with `ALLOWED_ORIGINS` env var |
+| **Graph Knowledge (Node.js)** | Shared `backend/shared/cors.js` middleware |
+| **Media Pipeline (Node.js)** | Same shared middleware |
+| **API Proxy (Node.js)** | Built-in CORS with `ALLOWED_ORIGINS` env var |
+
+The shared middleware adds: origin allowlist validation, `X-Request-ID` tracking headers, preflight `OPTIONS` handling, and configurable `Access-Control-Max-Age`.
+
+### Verification
+
+- ✅ **Production build:** `vite build` succeeds in 29s
+- ✅ **All 279 tests pass** (0 failures)
+- ✅ **Zero new TypeScript errors** introduced
+- ✅ **Git committed** (26 files changed, +1668 lines)
