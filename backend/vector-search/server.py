@@ -50,10 +50,12 @@ class VideoChunk(BaseModel):
 
 class IngestRequest(BaseModel):
     chunks: list[VideoChunk]
+    chunkMethod: Optional[str] = Field(default="semantic", description="Chunking method: 'semantic' or 'fixed'")
 
 class IngestResponse(BaseModel):
     ingested: int
     errors: int
+    chunkMethod: str = "semantic"
 
 class SearchResult(BaseModel):
     chunk: VideoChunk
@@ -144,7 +146,8 @@ async def ingest_chunks(request: IngestRequest):
             print(f"[Ingest] Batch upsert error: {e}")
             errors += len(ids)
 
-    return IngestResponse(ingested=ingested, errors=errors)
+    chunk_method = request.chunkMethod or "semantic"
+    return IngestResponse(ingested=ingested, errors=errors, chunkMethod=chunk_method)
 
 
 @app.get("/search", response_model=SearchResponse)

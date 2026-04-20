@@ -22,3 +22,16 @@ export {generateVideo, generateImage, editImage} from './virtuosos/artisan';
 export {runSearchGroundedQuery} from './virtuosos/scholar';
 export {generateCourseModules} from './virtuosos/analyst';
 export {generateSpeech, transcribeAudio} from './virtuosos/chronicler';
+
+// ─── Streaming APIs ──────────────────────────────────────────────────
+export {
+  streamPdfQuery,
+  streamSearchQuery,
+  streamChat,
+  streamVideoAnalysis,
+  streamCourseGeneration,
+  streamTranscription,
+  createStreamController,
+  type StreamChunkCallback,
+  type StreamOptions,
+} from './streaming';

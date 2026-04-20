@@ -9,6 +9,7 @@ import {fileToBase64, convertInsightToMarkdown} from '../lib/utils';
 import {symphonyBus} from '../lib/symphonyBus';
 import {validateConductorCall, buildCorrectionPrompt, logValidationFailure, ValidationFailure} from '../lib/conductor-validator';
 import {logConductorQuery, startTimer} from '../lib/telemetry';
+import {isComplexQuery, executeReactPlan, type ReactPlan} from '../lib/react-planner';
 import type {ChatMessage, Insight} from '../types';
 
 import {useVideoState} from './useVideoState';
@@ -33,6 +34,7 @@ export function useAnalysisState(
 
   const [insights, setInsights] = useState<Insight[]>([]);
   const [isConductorLoading, setIsConductorLoading] = useState(false);
+  const [activePlan, setActivePlan] = useState<ReactPlan | null>(null);
   const nextInsightId = useRef(0);
 
   useEffect(() => {
@@ -176,7 +178,53 @@ export function useAnalysisState(
     return true;
   };
 
+  /**
+   * Handles complex queries using the ReAct (Reason + Act) planner.
+   * Generates a multi-step plan and executes it sequentially, adapting
+   * as intermediate results arrive.
+   */
+  const handleReactQuery = async (query: string) => {
+    setIsConductorLoading(true);
+    setActivePlan(null);
+
+    try {
+      const spokenTextRef = { current: '' };
+
+      const plan = await executeReactPlan(
+        query,
+        async (call, parentTaskId) => {
+          return executeValidatedCall(call, spokenTextRef, parentTaskId);
+        },
+        (updatedPlan) => {
+          setActivePlan({ ...updatedPlan, steps: [...updatedPlan.steps] });
+        },
+      );
+
+      if (spokenTextRef.current) {
+        speak(spokenTextRef.current);
+      }
+
+      setActivePlan(plan);
+    } catch (err: any) {
+      console.error(err);
+      setError(`Conductor (ReAct) error: ${err.message}`);
+    } finally {
+      setIsConductorLoading(false);
+    }
+  };
+
+  /**
+   * Main Conductor query handler.
+   * Routes complex queries to the ReAct planner, simple queries to
+   * the single-pass dispatcher.
+   */
   const handleConductorQuery = async (query: string) => {
+    // Route complex queries through ReAct planner
+    if (isComplexQuery(query)) {
+      return handleReactQuery(query);
+    }
+
+    // ── Simple single-pass dispatch (existing behavior) ───────
     const MAX_RETRIES = 2;
     setIsConductorLoading(true);
 
@@ -418,6 +466,7 @@ export function useAnalysisState(
     insights,
     setInsights,
     isConductorLoading,
+    activePlan,
     handleVideoLoaded,
     handleSelectLens,
     handleConductorQuery,

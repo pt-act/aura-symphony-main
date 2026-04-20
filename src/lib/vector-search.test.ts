@@ -1,34 +1,16 @@
 import {describe, it, expect} from 'vitest';
-import {chunkTranscript, chunkFrameDescriptions} from './vector-search';
+import {chunkTranscript, chunkTranscriptFixed, chunkFrameDescriptions} from './vector-search';
 
-// ─── chunkTranscript ───────────────────────────────────────────────
+// ─── chunkTranscript (now uses adaptive semantic chunking) ─────────
 
 describe('chunkTranscript', () => {
   it('chunks a short transcript into a single chunk', () => {
     const transcript = [{time: 0, text: 'one two three four five six seven eight nine ten'}];
-    const chunks = chunkTranscript(transcript, 'vid-1', 100, 20);
+    const chunks = chunkTranscript(transcript, 'vid-1');
     expect(chunks).toHaveLength(1);
     expect(chunks[0].videoId).toBe('vid-1');
-    expect(chunks[0].content).toBe('one two three four five six seven eight nine ten');
     expect(chunks[0].timestamp).toBe(0);
     expect(chunks[0].type).toBe('transcript');
-  });
-
-  it('creates multiple chunks when text exceeds chunkSize', () => {
-    // 25 words → chunkSize=10, overlap=2 → chunks at 0,8,16
-    const words = Array.from({length: 25}, (_, i) => `word${i}`).join(' ');
-    const transcript = [{time: 0, text: words}];
-    const chunks = chunkTranscript(transcript, 'vid-2', 10, 2);
-    expect(chunks.length).toBeGreaterThan(1);
-  });
-
-  it('assigns sequential chunk IDs', () => {
-    const words = Array.from({length: 50}, (_, i) => `w${i}`).join(' ');
-    const transcript = [{time: 0, text: words}];
-    const chunks = chunkTranscript(transcript, 'vid-3', 10, 2);
-    chunks.forEach((chunk, i) => {
-      expect(chunk.id).toBe(`vid-3-chunk-${i}`);
-    });
   });
 
   it('preserves timestamps from the source transcript', () => {
@@ -36,40 +18,76 @@ describe('chunkTranscript', () => {
       {time: 10, text: 'first segment of words for testing purposes here'},
       {time: 30, text: 'second segment at thirty seconds with more content'},
     ];
-    const chunks = chunkTranscript(transcript, 'vid-4', 100, 0);
-    // With chunkSize=100 and only ~10 words total, everything fits in one chunk
+    const chunks = chunkTranscript(transcript, 'vid-4');
     expect(chunks.length).toBeGreaterThanOrEqual(1);
-    // First chunk's timestamp should be from the first entry
     expect(chunks[0].timestamp).toBe(10);
   });
 
-  it('skips trailing chunks with fewer than 10 words', () => {
-    // 13 words with chunkSize=10 overlap=0 → chunk0=[0..9], chunk1=[10..12] (3 words, skipped)
-    const words = Array.from({length: 13}, (_, i) => `w${i}`).join(' ');
-    const transcript = [{time: 0, text: words}];
-    const chunks = chunkTranscript(transcript, 'vid-5', 10, 0);
-    expect(chunks).toHaveLength(1);
-  });
-
   it('handles empty transcript', () => {
-    const chunks = chunkTranscript([], 'vid-6', 100, 20);
+    const chunks = chunkTranscript([], 'vid-6');
     expect(chunks).toHaveLength(0);
   });
 
   it('handles transcript entry with empty text', () => {
     const transcript = [{time: 0, text: ''}];
-    const chunks = chunkTranscript(transcript, 'vid-7', 100, 20);
+    const chunks = chunkTranscript(transcript, 'vid-7');
     expect(chunks).toHaveLength(0);
   });
 
+  it('includes semantic metadata in chunks', () => {
+    const transcript = [
+      {time: 0, text: 'Machine learning algorithms process data. Neural nets learn patterns.'},
+      {time: 10, text: 'Cooking pasta is simple. Boil water first. Add salt.'},
+    ];
+    const chunks = chunkTranscript(transcript, 'vid-meta');
+    for (const chunk of chunks) {
+      expect(chunk.metadata).toBeDefined();
+      expect(['semantic', 'single']).toContain(chunk.metadata?.chunkMethod);
+    }
+  });
+
+  it('produces chunks for multi-topic transcripts', () => {
+    const transcript = [
+      {time: 0, text: 'Physics involves matter and energy. Quantum mechanics is a branch of physics. Particles behave differently at quantum scales.'},
+      {time: 30, text: 'Baking requires precise measurements. Flour and sugar are key ingredients. Preheat the oven to 350 degrees.'},
+      {time: 60, text: 'Software engineering is about building reliable systems. Testing ensures quality. Version control tracks changes.'},
+    ];
+    const chunks = chunkTranscript(transcript, 'vid-multi');
+    expect(chunks.length).toBeGreaterThanOrEqual(1);
+    expect(chunks.every(c => c.videoId === 'vid-multi')).toBe(true);
+  });
+});
+
+// ─── chunkTranscriptFixed (legacy, kept for backwards compat) ──────
+
+describe('chunkTranscriptFixed', () => {
+  it('creates multiple chunks when text exceeds chunkSize', () => {
+    const words = Array.from({length: 25}, (_, i) => `word${i}`).join(' ');
+    const transcript = [{time: 0, text: words}];
+    const chunks = chunkTranscriptFixed(transcript, 'vid-2', 10, 2);
+    expect(chunks.length).toBeGreaterThan(1);
+  });
+
+  it('assigns sequential chunk IDs', () => {
+    const words = Array.from({length: 50}, (_, i) => `w${i}`).join(' ');
+    const transcript = [{time: 0, text: words}];
+    const chunks = chunkTranscriptFixed(transcript, 'vid-3', 10, 2);
+    chunks.forEach((chunk, i) => {
+      expect(chunk.id).toBe(`vid-3-chunk-${i}`);
+    });
+  });
+
+  it('skips trailing chunks with fewer than 10 words', () => {
+    const words = Array.from({length: 13}, (_, i) => `w${i}`).join(' ');
+    const transcript = [{time: 0, text: words}];
+    const chunks = chunkTranscriptFixed(transcript, 'vid-5', 10, 0);
+    expect(chunks).toHaveLength(1);
+  });
+
   it('uses default chunkSize and overlap when not specified', () => {
-    // 250 words → default chunkSize=100, overlap=20 → step=80
-    // chunks at: 0, 80, 160 (slice 160..250 = 90 words)
     const words = Array.from({length: 250}, (_, i) => `w${i}`).join(' ');
     const transcript = [{time: 0, text: words}];
-    const chunks = chunkTranscript(transcript, 'vid-8');
-    // 250 words, defaults: chunkSize=100, overlap=20, step=80
-    // Chunks at i=0 (100w), i=80 (100w), i=160 (90w), i=240 (10w)
+    const chunks = chunkTranscriptFixed(transcript, 'vid-8');
     expect(chunks.length).toBe(4);
   });
 
@@ -79,9 +97,8 @@ describe('chunkTranscript', () => {
       {time: 10, text: 'lambda mu nu xi omicron pi rho sigma tau'},
       {time: 20, text: 'upsilon phi chi psi omega'},
     ];
-    const chunks = chunkTranscript(transcript, 'vid-9', 100, 0);
+    const chunks = chunkTranscriptFixed(transcript, 'vid-9', 100, 0);
     expect(chunks).toHaveLength(1);
-    // The last word "omega" has time=20
     expect(chunks[0].endTime).toBe(20);
   });
 });
