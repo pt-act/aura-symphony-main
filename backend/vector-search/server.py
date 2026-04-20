@@ -87,6 +87,24 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Aura Vector Search", lifespan=lifespan)
 
+# ─── CORS ──────────────────────────────────────────────────────────
+
+from fastapi.middleware.cors import CORSMiddleware
+
+ALLOWED_ORIGINS = os.environ.get(
+    "ALLOWED_ORIGINS",
+    "http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000",
+).split(",")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "X-Request-ID"],
+    expose_headers=["X-Request-ID"],
+    max_age=86400,
+)
+
 # ─── Endpoints ─────────────────────────────────────────────────────
 
 @app.post("/ingest", response_model=IngestResponse)
