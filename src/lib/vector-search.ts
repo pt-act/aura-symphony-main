@@ -9,6 +9,7 @@
  */
 
 import { getAI, getEffectiveModel } from '../api/client';
+import { adaptiveChunkTranscript } from './semantic-chunker';
 
 // ─── Types ───────────────────────────────────────────────────────────
 
@@ -45,14 +46,30 @@ const MAX_RESULTS = 10;
 // ─── Client-side chunking (for ingestion) ────────────────────────────
 
 /**
- * Chunks a video transcript into overlapping segments for embedding.
+ * Chunks a video transcript using adaptive semantic chunking.
+ *
+ * Splits on topic boundaries detected by embedding similarity drops
+ * instead of fixed word counts. Falls back to single-chunk mode for
+ * very short transcripts.
  *
  * @param transcript - Full transcript with timestamps
  * @param videoId - Video identifier
- * @param chunkSize - Number of words per chunk (default 100)
- * @param overlap - Overlap between chunks in words (default 20)
+ * @param chunkSize - DEPRECATED (ignored). Kept for API compat.
+ * @param overlap - DEPRECATED (ignored). Kept for API compat.
  */
 export function chunkTranscript(
+  transcript: { time: number; text: string }[],
+  videoId: string,
+  _chunkSize = 100,
+  _overlap = 20
+): VideoChunk[] {
+  return adaptiveChunkTranscript(transcript, videoId);
+}
+
+/**
+ * Legacy fixed-size chunking (kept for backwards compatibility / comparison).
+ */
+export function chunkTranscriptFixed(
   transcript: { time: number; text: string }[],
   videoId: string,
   chunkSize = 100,
