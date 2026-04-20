@@ -26,3 +26,4 @@ dist-ssr
 
 # Orion-OS (local agent context, not repository content)
 .agents/
+.personal/
