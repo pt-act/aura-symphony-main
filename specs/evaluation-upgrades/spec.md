@@ -107,7 +107,7 @@ No UI changes required for Phase I (validation is invisible to user; vector sear
 - **Replacing Firebase Auth** — existing auth remains, backend services authenticate via Firebase tokens
 - **Rewriting existing Virtuosos** — Critic is additive, existing agents unchanged
 - **Mobile client** — desktop browser remains primary target
-- **Real-time collaboration** — single-user sessions only for now
+- ~~**Real-time collaboration** — single-user sessions only for now~~ **[IMPLEMENTED in Phase 3]** — Yjs CRDT collaboration with WebSocket transport
 - **Replacing Gemini** — still the primary LLM, optimization is in retrieval not generation
 - **Full NLE replacement** — Aura remains middleware for pre-production, not a video editor
 

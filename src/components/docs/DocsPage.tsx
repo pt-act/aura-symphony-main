@@ -68,18 +68,37 @@ const NAV_TREE: NavItem[] = [
       { key: 'hook-useSymphony', label: 'useSymphony', icon: <Hash size={14} /> },
       { key: 'hook-useLensExecution', label: 'useLensExecution', icon: <Hash size={14} /> },
       { key: 'hook-useCriticGate', label: 'useCriticGate', icon: <Hash size={14} /> },
+      { key: 'hook-useStreaming', label: 'useStreaming', icon: <Hash size={14} /> },
+      { key: 'hook-useKnowledgeTracing', label: 'useKnowledgeTracing', icon: <Hash size={14} /> },
       { key: 'hook-usePerceptionEngine', label: 'usePerceptionEngine', icon: <Hash size={14} /> },
       { key: 'hook-useCustomVirtuosos', label: 'useCustomVirtuosos', icon: <Hash size={14} /> },
       { key: 'hook-useVectorSearch', label: 'useVectorSearch', icon: <Hash size={14} /> },
     ],
   },
   {
+    key: 'advanced', label: 'Advanced Systems', icon: <Zap size={15} />,
+    children: [
+      { key: 'semantic-chunking', label: 'Semantic Chunking', icon: <Layers size={14} /> },
+      { key: 'knowledge-tracing', label: 'Bayesian Knowledge Tracing', icon: <GraduationCap size={14} /> },
+      { key: 'streaming-responses', label: 'Streaming Responses', icon: <Radio size={14} /> },
+      { key: 'react-planner', label: 'ReAct Planner', icon: <Workflow size={14} /> },
+      { key: 'worker-pool', label: 'WebWorker Pool', icon: <Cpu size={14} /> },
+      { key: 'crdt-collaboration', label: 'CRDT Collaboration', icon: <Network size={14} /> },
+      { key: 'clip-embeddings', label: 'CLIP Embeddings', icon: <Eye size={14} /> },
+      { key: 'plugin-marketplace', label: 'Plugin Marketplace', icon: <Package size={14} /> },
+      { key: 'federated-learning', label: 'Federated Learning', icon: <Globe size={14} /> },
+      { key: 'offline-pwa', label: 'Offline-First PWA', icon: <HardDrive size={14} /> },
+    ],
+  },
+  {
     key: 'backend', label: 'Backend Services', icon: <Server size={15} />,
     children: [
       { key: 'backend-overview', label: 'Service Overview', icon: <HardDrive size={14} /> },
+      { key: 'api-proxy-service', label: 'API Proxy (Express)', icon: <Shield size={14} /> },
       { key: 'vector-search-service', label: 'Vector Search (Python)', icon: <Search size={14} /> },
       { key: 'graph-knowledge-service', label: 'Graph Knowledge (SQLite)', icon: <GitBranch size={14} /> },
       { key: 'media-pipeline-service', label: 'Media Pipeline (FFmpeg)', icon: <Video size={14} /> },
+      { key: 'clip-embeddings-service', label: 'CLIP Embeddings (Python)', icon: <Eye size={14} /> },
       { key: 'docker-deployment', label: 'Docker & Compose', icon: <Package size={14} /> },
     ],
   },
@@ -295,13 +314,27 @@ function renderSection(key: string) {
     'hook-useSymphony': SectionHookUseSymphony,
     'hook-useLensExecution': SectionHookUseLensExecution,
     'hook-useCriticGate': SectionHookUseCriticGate,
+    'hook-useStreaming': SectionHookUseStreaming,
+    'hook-useKnowledgeTracing': SectionHookUseKnowledgeTracing,
     'hook-usePerceptionEngine': SectionHookUsePerceptionEngine,
     'hook-useCustomVirtuosos': SectionHookUseCustomVirtuosos,
     'hook-useVectorSearch': SectionHookUseVectorSearch,
+    'semantic-chunking': SectionSemanticChunking,
+    'knowledge-tracing': SectionKnowledgeTracing,
+    'streaming-responses': SectionStreamingResponses,
+    'react-planner': SectionReActPlanner,
+    'worker-pool': SectionWorkerPool,
+    'crdt-collaboration': SectionCrdtCollaboration,
+    'clip-embeddings': SectionClipEmbeddings,
+    'plugin-marketplace': SectionPluginMarketplace,
+    'federated-learning': SectionFederatedLearning,
+    'offline-pwa': SectionOfflinePwa,
     'backend-overview': SectionBackendOverview,
+    'api-proxy-service': SectionApiProxyService,
     'vector-search-service': SectionVectorSearchService,
     'graph-knowledge-service': SectionGraphKnowledgeService,
     'media-pipeline-service': SectionMediaPipelineService,
+    'clip-embeddings-service': SectionClipEmbeddingsService,
     'docker-deployment': SectionDockerDeployment,
     'typescript-types': SectionTypescriptTypes,
     'firestore-schema': SectionFirestoreSchema,
@@ -384,7 +417,9 @@ npm install`} />
 # Edit .env and add:
 GEMINI_API_KEY=AIzaSy...your_actual_key`} />
 
-        <Callout type="info">Vite reads <code>GEMINI_API_KEY</code> from <code>.env</code> and injects it as <code>process.env.API_KEY</code> at build time via the <code>define</code> config in <code>vite.config.ts</code>.</Callout>
+        <Callout type="tip"><strong>Alternative:</strong> Skip the <code>.env</code> file entirely — open the app, click the ⚙️ <strong>Settings</strong> icon, and add your API key in the <strong>AI Provider Settings</strong> panel. This is the recommended approach as keys stay in <code>localStorage</code> and are never embedded in the build.</Callout>
+
+        <Callout type="info">If using <code>.env</code>: Vite reads <code>GEMINI_API_KEY</code> and injects it as <code>process.env.API_KEY</code> at build time via the <code>define</code> config in <code>vite.config.ts</code>. This is used as a fallback when no in-app provider is configured.</Callout>
 
         <h3>3. Start Development Server</h3>
         <CodeBlock language="bash" code={`npm run dev
@@ -420,6 +455,13 @@ function SectionProjectStructure() {
       <div className="markdown-body">
         <CodeBlock title="Directory Layout" code={`aura-symphony/
 ├── backend/
+│   ├── api-proxy/              # Gemini API proxy (Express, :3005)
+│   │   ├── server.js           # Rate limiting, usage metering
+│   │   └── server.test.js
+│   ├── clip-embeddings/        # CLIP multimodal embeddings (FastAPI, :3006)
+│   │   ├── server.py           # ViT-B/32 + ChromaDB
+│   │   ├── Dockerfile
+│   │   └── requirements.txt
 │   ├── graph-knowledge/        # SQLite graph service (Node.js/Express)
 │   │   ├── server-sqlite.js    # SQLite impl with recursive CTEs
 │   │   ├── server.js           # Neo4j impl (requires Neo4j)
@@ -466,7 +508,22 @@ function SectionProjectStructure() {
 │   │   ├── valhalla/           # ValhallaGateway component
 │   │   └── virtuosos/          # CustomVirtuosoBuilder
 │   ├── hooks/                  # ← React hooks (state management)
+│   │   ├── useKnowledgeTracing.ts  # BKT-based adaptive learning
+│   │   ├── useStreaming.ts     # Streaming response hook
+│   │   └── ...
 │   ├── lib/                    # ← Core libraries & utilities
+│   │   ├── crdt-collaboration.ts   # Yjs CRDT sessions
+│   │   ├── clip-embeddings.ts      # Multimodal RAG client
+│   │   ├── federated-learning.ts   # FedAvg + differential privacy
+│   │   ├── knowledge-tracing.ts    # Bayesian Knowledge Tracing
+│   │   ├── lens-handlers/          # Strategy pattern handlers
+│   │   ├── offline-sync.ts         # PWA offline mutation queue
+│   │   ├── plugin-marketplace.ts   # Plugin registry + sandbox
+│   │   ├── react-planner.ts        # ReAct planning loop
+│   │   ├── semantic-chunker.ts     # Adaptive semantic chunking
+│   │   ├── valhalla-sandbox.ts     # Pyodide WASM execution
+│   │   ├── worker-pool.ts          # WebWorker pool + work-stealing
+│   │   └── ...
 │   ├── services/
 │   │   └── virtuosos.ts        # VIRTUOSO_REGISTRY (agent profiles)
 │   ├── styles/
@@ -494,11 +551,14 @@ function SectionConfiguration() {
       <div className="markdown-body">
         <h3>Environment Variables</h3>
         <PropTable rows={[
-          { name: 'GEMINI_API_KEY', type: 'string', desc: 'Google Gemini API key for all AI features. Injected as process.env.API_KEY at build time.', default: 'Required' },
+          { name: 'GEMINI_API_KEY', type: 'string', desc: 'Google Gemini API key (fallback). Injected as process.env.API_KEY at build time. Not required if an in-app provider is configured.', default: 'Fallback' },
+          { name: 'VITE_API_PROXY_URL', type: 'string', desc: 'URL of the backend API proxy for Gemini calls (e.g., http://localhost:3005). Eliminates client-side key exposure.', default: '"" (disabled)' },
           { name: 'VITE_VECTOR_BACKEND_URL', type: 'string', desc: 'URL of the vector search backend (e.g., http://localhost:3001)', default: '"" (disabled)' },
           { name: 'VITE_GRAPH_BACKEND_URL', type: 'string', desc: 'URL of the graph knowledge backend (e.g., http://localhost:4004)', default: '"" (disabled)' },
           { name: 'VITE_MEDIA_BACKEND_URL', type: 'string', desc: 'URL of the media pipeline backend (e.g., http://localhost:3002)', default: '"" (disabled)' },
         ]} />
+
+        <Callout type="tip">The recommended way to configure API keys is via the in-app <strong>Settings panel</strong> (⚙️ icon). This stores keys in <code>localStorage</code> and avoids embedding them in the build. The <code>.env</code> file is used only as a fallback when no in-app provider is active.</Callout>
 
         <Callout type="warn">When backend URLs are empty, the system falls back gracefully: vector search uses Gemini's context window directly, graph queries return empty results, and media processing uses the browser-side WebWorker.</Callout>
 
@@ -533,39 +593,42 @@ function SectionSystemOverview() {
       <span className="article-label">Architecture</span>
       <h2>System Overview</h2>
       <div className="markdown-body">
-        <p>Aura Symphony is a polyglot microservices architecture with a rich client frontend. The system decomposes into four tiers:</p>
-        <CodeBlock title="Architecture Diagram" code={`┌─────────────────────────────────────────────────────┐
-│                 Frontend (React 19 + Vite 6)         │
-│                                                      │
-│  ┌──────────┐   ┌────────────────┐   ┌────────────┐ │
-│  │Conductor │◀─▶│  Symphony Bus  │◀─▶│ Virtuosos  │ │
-│  │  Input   │   │  (EventTarget) │   │  (7 agents)│ │
-│  └──────────┘   └───────┬────────┘   └────────────┘ │
-│                         │ Events                     │
-│  ┌──────────────────────▼─────────────────────────┐  │
-│  │  Zod Schema Validation · Critic Quality Gate   │  │
-│  │  WebWorker (frame extraction, PDF parsing)     │  │
-│  │  IndexedDB (task persistence)                  │  │
-│  └────────────────────────────────────────────────┘  │
-└──────────────┬──────────────┬──────────────┬─────────┘
-               │REST          │REST          │WebSocket+REST
-┌──────────────▼────┐ ┌──────▼──────┐ ┌─────▼──────────┐
-│  Vector Search    │ │  Graph      │ │  Media Pipeline │
-│  FastAPI+ChromaDB │ │  Knowledge  │ │  Express+FFmpeg │
-│  :3001            │ │  SQLite/Neo │ │  :3002 / WS:3003│
-└───────────────────┘ │  :4004      │ └────────────────┘
-                      └─────────────┘
-               │                            │
-┌──────────────▼────────────────────────────▼──────────┐
-│              Firebase (Auth + Firestore)             │
-│              Google Gemini API (direct)               │
-└──────────────────────────────────────────────────────┘`} />
+        <p>Aura Symphony is a polyglot microservices architecture with a rich client frontend. The system decomposes into multiple tiers:</p>
+        <CodeBlock title="Architecture Diagram" code={`┌─────────────────────────────────────────────────────────┐
+│                 Frontend (React 19 + Vite 6)             │
+│                                                          │
+│  ┌──────────┐   ┌────────────────┐   ┌────────────────┐ │
+│  │Conductor │◀─▶│  Symphony Bus  │◀─▶│ Virtuosos (7)  │ │
+│  │  Input   │   │  (EventTarget) │   │ + Plugin Market │ │
+│  └──────────┘   └───────┬────────┘   └────────────────┘ │
+│                         │ Events / Commission Chains      │
+│  ┌──────────────────────▼──────────────────────────────┐ │
+│  │  Zod Validation · Critic Gate · ReAct Planner       │ │
+│  │  BKT Knowledge Tracing · Streaming · CRDT (Yjs)    │ │
+│  │  Worker Pool · Pyodide Sandbox · Offline Sync (PWA) │ │
+│  │  Semantic Chunker · Federated Learning              │ │
+│  └─────────────────────────────────────────────────────┘ │
+└───┬──────────┬──────────┬──────────┬──────────┬──────────┘
+    │REST      │REST      │WS+REST   │REST      │REST
+┌───▼────┐ ┌───▼───┐ ┌────▼─────┐ ┌──▼──────┐ ┌─▼──────────┐
+│ Vector │ │ Graph │ │  Media   │ │  API    │ │  CLIP      │
+│ Search │ │ Know. │ │ Pipeline │ │ Proxy   │ │ Embeddings │
+│ :3001  │ │ :4004 │ │ :3002/03 │ │ :3005   │ │ :3006      │
+└────────┘ └───────┘ └──────────┘ └─────────┘ └────────────┘
+               │                        │
+┌──────────────▼────────────────────────▼──────────────────┐
+│              Firebase (Auth + Firestore)                 │
+│              Google Gemini API (via proxy or direct)      │
+└──────────────────────────────────────────────────────────┘`} />
 
         <h3>Design Decisions</h3>
         <ul>
-          <li><strong>Client-side LLM calls:</strong> Gemini API is called directly from the browser via <code>@google/genai</code>. This eliminates the need for a backend auth proxy but exposes the API key in the client bundle. For production, a backend proxy is recommended.</li>
-          <li><strong>Graceful degradation:</strong> All three backend services are optional. When unavailable, the frontend falls back to browser-local alternatives (WebWorker for media, Gemini context-window for search, flat Firestore for DLP).</li>
-          <li><strong>Polyglot backends:</strong> Python for vector search (ChromaDB ecosystem), Node.js for I/O-intensive media pipeline and graph queries.</li>
+          <li><strong>API key security:</strong> A backend API proxy (<code>:3005</code>) keeps the Gemini key server-side with rate limiting and usage metering. Users can also configure keys via the in-app Settings panel (stored in <code>localStorage</code>). Direct browser-to-Gemini calls remain as a fallback.</li>
+          <li><strong>Strategy-pattern dispatch:</strong> <code>useLensExecution</code> uses a handler registry where each lens type is an independent module. New lenses are added by creating a handler file and registering it.</li>
+          <li><strong>Graceful degradation:</strong> All backend services are optional. When unavailable, the frontend falls back to browser-local alternatives (WebWorker for media, Gemini context-window for search, flat Firestore for DLP).</li>
+          <li><strong>Polyglot backends:</strong> Python for vector search and CLIP embeddings (ML ecosystem), Node.js for I/O-intensive media pipeline and graph queries.</li>
+          <li><strong>Real-time collaboration:</strong> Yjs CRDT enables conflict-free multi-user editing with WebSocket transport and IndexedDB persistence.</li>
+          <li><strong>Offline-first:</strong> Service Worker caching + IndexedDB mutation queue enables full offline operation with background sync on reconnect.</li>
         </ul>
       </div>
     </div>
@@ -1102,8 +1165,8 @@ function SectionHookUseLensExecution() {
       <span className="article-label">Hook</span>
       <h2>useLensExecution</h2>
       <div className="markdown-body">
-        <p>Central dispatch hub for all lens/mode execution. Routes to the appropriate Virtuoso API based on the selected lens type. Handles 12+ lens types including PDF analysis, chat, video generation, web search, course curation, and custom virtuosos.</p>
-        <p><FileRef path="src/hooks/useLensExecution.ts" /></p>
+        <p>Strategy-pattern dispatcher for all lens/mode execution. Routes to the appropriate handler module based on the selected lens type. Each lens type is an independent handler file registered in a central registry.</p>
+        <p><FileRef path="src/hooks/useLensExecution.ts" /> · <FileRef path="src/lib/lens-handlers/registry.ts" /></p>
         <CodeBlock code={`const { handleSelectLens } = useLensExecution(deps);
 
 // Execute a lens:
@@ -1111,7 +1174,13 @@ await handleSelectLens('Deep Analysis');                    // Built-in lens
 await handleSelectLens('Custom', 'Analyze color theory');   // Custom prompt
 await handleSelectLens('PDF Analysis', undefined, pdfFile); // PDF upload
 await handleSelectLens('Chat', 'Hello');                    // Conversational
-await handleSelectLens('Generate Video', 'A sunset');       // Artisan`} />
+await handleSelectLens('Generate Video', 'A sunset');       // Artisan
+
+// Handler modules (src/lib/lens-handlers/):
+//   pdf-handler.ts, chat-handler.ts, media-handler.ts,
+//   search-handler.ts, course-handler.ts, video-analysis-handler.ts
+// Adding a new lens: create handler file → add to handlers[] in registry
+// Runtime extensibility: registerHandler() for plugins`} />
         <Callout type="info">Text-based lens output is gated through the <code>useCriticGate</code> hook before display. If the Critic rejects the output, it triggers up to 2 retry cycles.</Callout>
       </div>
     </div>
@@ -1189,9 +1258,341 @@ function SectionHookUseVectorSearch() {
   );
 }
 
+function SectionHookUseStreaming() {
+  return (
+    <div className="docs-article">
+      <span className="article-label">Hook</span>
+      <h2>useStreaming</h2>
+      <div className="markdown-body">
+        <p>Pipes streaming Gemini responses directly into Insight state, reducing perceived latency by 60-80%. Supports all 6 Virtuoso APIs with <code>AbortController</code> cancellation.</p>
+        <p><FileRef path="src/hooks/useStreaming.ts" /> · <FileRef path="src/api/streaming.ts" /></p>
+        <CodeBlock code={`const { streamResponse, isStreaming, cancel } = useStreaming();
+
+// StreamOptions:
+//   onChunk(text: string)    — called per token
+//   onComplete(full: string) — called when stream ends
+//   onError(err: Error)      — called on failure
+//   signal: AbortSignal      — for cancellation`} />
+      </div>
+    </div>
+  );
+}
+
+function SectionHookUseKnowledgeTracing() {
+  return (
+    <div className="docs-article">
+      <span className="article-label">Hook</span>
+      <h2>useKnowledgeTracing</h2>
+      <div className="markdown-body">
+        <p>React hook wrapping the Bayesian Knowledge Tracing engine. Persists BKT state to <code>localStorage</code>, provides adaptive content recommendations, and migrates from flat DLP mastery scores.</p>
+        <p><FileRef path="src/hooks/useKnowledgeTracing.ts" /> · <FileRef path="src/lib/knowledge-tracing.ts" /></p>
+        <CodeBlock code={`const { updateMastery, getRecommendations, bktState } = useKnowledgeTracing(userId);
+
+// updateMastery(concept, correct, prerequisites?)
+// getRecommendations(count?) → ContentRecommendation[]
+//   reasons: 'low-mastery' | 'high-uncertainty' | 'prerequisite-gap' | 'decay'`} />
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ADVANCED SYSTEMS (Phases 2-3)
+   ═══════════════════════════════════════════════════════════════════ */
+
+function SectionSemanticChunking() {
+  return (
+    <div className="docs-article">
+      <span className="article-label">Advanced</span>
+      <h2>Adaptive Semantic Chunking</h2>
+      <div className="markdown-body">
+        <p>Replaces fixed 100-word windows with topic-boundary-aware chunking. Uses a 5-step pipeline with no API calls — all embeddings computed locally via FNV-1a hash-based bigrams.</p>
+        <p><FileRef path="src/lib/semantic-chunker.ts" /></p>
+        <CodeBlock code={`Pipeline:
+  1. Sentence splitting (regex-based)
+  2. FNV-1a hash-based bigram embedding (128-dim)
+  3. Pairwise cosine similarity between adjacent sentences
+  4. Percentile-based break detection (low similarity = topic change)
+  5. Merge/balance (enforce min/max chunk sizes)
+
+// API
+adaptiveChunkTranscript(transcript, videoId, config?): VideoChunk[]
+chunkTranscript(transcript, videoId): VideoChunk[]  // wrapper
+chunkTranscriptFixed(...)  // legacy fixed chunker preserved`} />
+      </div>
+    </div>
+  );
+}
+
+function SectionKnowledgeTracing() {
+  return (
+    <div className="docs-article">
+      <span className="article-label">Advanced</span>
+      <h2>Bayesian Knowledge Tracing</h2>
+      <div className="markdown-body">
+        <p>Full BKT implementation with 4 parameters per knowledge component: <code>p(L₀)</code> initial mastery, <code>p(T)</code> transition, <code>p(G)</code> guess, <code>p(S)</code> slip. Extensions include temporal decay, prerequisite-aware scaling, and confidence intervals.</p>
+        <p><FileRef path="src/lib/knowledge-tracing.ts" /></p>
+        <CodeBlock code={`BKT Parameters (per concept):
+  p(L₀) = 0.1   // initial probability of mastery
+  p(T)  = 0.2   // probability of learning per opportunity
+  p(G)  = 0.25  // probability of correct guess
+  p(S)  = 0.1   // probability of slip
+
+Extensions:
+  - Exponential temporal decay (14-day half-life)
+  - Prerequisite-aware transit scaling
+  - Agresti-Coull confidence intervals
+  - Adaptive content selection engine (4 recommendation reasons)`} />
+      </div>
+    </div>
+  );
+}
+
+function SectionStreamingResponses() {
+  return (
+    <div className="docs-article">
+      <span className="article-label">Advanced</span>
+      <h2>Streaming Responses</h2>
+      <div className="markdown-body">
+        <p>Uses Gemini's <code>generateContentStream</code> to display partial results as they arrive. Wrappers exist for all 6 Virtuoso APIs with <code>StreamOptions</code> callbacks and <code>AbortController</code> cancellation.</p>
+        <p><FileRef path="src/api/streaming.ts" /></p>
+        <CodeBlock code={`// Streaming wrappers for each Virtuoso:
+streamPdfAnalysis(frames, query, options)
+streamSearch(query, options)
+streamChat(message, history, options)
+streamVideoAnalysis(frames, lensType, query, options)
+streamCourse(frames, options)
+streamTranscription(frames, options)
+
+// Generic:
+streamGenerate(model, contents, options)`} />
+      </div>
+    </div>
+  );
+}
+
+function SectionReActPlanner() {
+  return (
+    <div className="docs-article">
+      <span className="article-label">Advanced</span>
+      <h2>ReAct Hierarchical Planner</h2>
+      <div className="markdown-body">
+        <p>Reason + Act loop for complex multi-step queries. The Conductor detects complexity via <code>isComplexQuery()</code> heuristic and routes to a ReAct loop instead of single-pass dispatch.</p>
+        <p><FileRef path="src/lib/react-planner.ts" /></p>
+        <CodeBlock code={`ReAct Loop:
+  THINK → PLAN → ACT → OBSERVE → ADAPT (repeat)
+
+  isComplexQuery(query): boolean  // heuristic routing
+  generatePlan(query, context): Plan  // JSON-mode LLM response
+  executeStep(step): StepResult  // executeValidatedCall
+  adaptPlan(plan, observation): Plan  // replanning on failure
+
+Bounds: MAX_ITERATIONS=6, MAX_ACTIONS=8
+Simple queries → existing single-pass dispatcher`} />
+      </div>
+    </div>
+  );
+}
+
+function SectionWorkerPool() {
+  return (
+    <div className="docs-article">
+      <span className="article-label">Advanced</span>
+      <h2>WebWorker Pool</h2>
+      <div className="markdown-body">
+        <p>N-worker pool (<code>hardwareConcurrency</code>, max 8) with least-loaded selection and work-stealing scheduler. Replaces the singleton SharedWorker for frame extraction.</p>
+        <p><FileRef path="src/lib/worker-pool.ts" /></p>
+        <CodeBlock code={`const pool = new WorkerPool(workerUrl, { maxWorkers: 8 });
+
+// Submit individual tasks
+const result = await pool.submit(task);
+
+// Parallel frame processing (splits across workers)
+const frames = await processFramesParallel(bitmaps);
+
+// Work-stealing: 100ms interval, LIFO steal / FIFO local
+// Batch submission with round-robin distribution
+// Full lifecycle: stats, drain, terminate`} />
+      </div>
+    </div>
+  );
+}
+
+function SectionCrdtCollaboration() {
+  return (
+    <div className="docs-article">
+      <span className="article-label">Advanced</span>
+      <h2>CRDT Collaborative Editing</h2>
+      <div className="markdown-body">
+        <p>Real-time collaboration via <strong>Yjs</strong> CRDTs. <code>CollaborationSession</code> wraps a <code>Y.Doc</code> with 6 shared types and WebSocket transport with auto-reconnect.</p>
+        <p><FileRef path="src/lib/crdt-collaboration.ts" /></p>
+        <CodeBlock code={`Shared CRDT Types:
+  annotations: Y.Map    // Timeline annotations
+  insights: Y.Array     // Analysis insights
+  dlp: Y.Map            // Digital Learner Profile
+  chat: Y.Array         // Chat messages
+  cursors: Y.Map        // Peer cursor positions
+  metadata: Y.Map       // Session metadata
+
+Features:
+  - WebSocketTransport with auto-reconnect
+  - SessionManager for multi-room support
+  - Change events with local/remote origin tracking
+  - State export/import for snapshots
+  - UndoManager per session
+  - y-indexeddb persistence
+  - Peer color assignment for cursor visualization`} />
+      </div>
+    </div>
+  );
+}
+
+function SectionClipEmbeddings() {
+  return (
+    <div className="docs-article">
+      <span className="article-label">Advanced</span>
+      <h2>CLIP Multimodal RAG</h2>
+      <div className="markdown-body">
+        <p>Client-side fusion search combining text and visual embeddings. Uses CLIP ViT-B/32 on the backend for frame-level visual search.</p>
+        <p><FileRef path="src/lib/clip-embeddings.ts" /> · <FileRef path="backend/clip-embeddings/server.py" /></p>
+        <CodeBlock code={`Fusion Search:
+  Text results (40% weight) + Visual results (60% weight)
+  "Both" boost: timestamps appearing in both modalities get score bonus
+
+Pipeline: frame → CLIP embedding → ChromaDB → cosine search
+Batch processing for video-level indexing
+
+Example: "find the frame where the speaker points at the whiteboard"
+  → embedding-based retrieval, not LLM re-analysis`} />
+      </div>
+    </div>
+  );
+}
+
+function SectionPluginMarketplace() {
+  return (
+    <div className="docs-article">
+      <span className="article-label">Advanced</span>
+      <h2>Plugin Marketplace</h2>
+      <div className="markdown-body">
+        <p>Registry with local catalog + remote API fallback. Supports search/filter, SHA-256 integrity verification, and sandboxed handler execution.</p>
+        <p><FileRef path="src/lib/plugin-marketplace.ts" /></p>
+        <CodeBlock code={`Installation Pipeline:
+  1. Fetch handler code from registry
+  2. SHA-256 integrity verification
+  3. Create sandboxed handler (restricted Function scope)
+     - Blocks: window, document, fetch, eval, XMLHttpRequest
+  4. Register with Virtuoso system
+
+Search: by query, tags, verified status
+Sort: by installs, rating, or recency
+Publishing: ID must start with 'plugin_' or 'custom_'
+Per-plugin telemetry tracking`} />
+      </div>
+    </div>
+  );
+}
+
+function SectionFederatedLearning() {
+  return (
+    <div className="docs-article">
+      <span className="article-label">Advanced</span>
+      <h2>Federated Learning</h2>
+      <div className="markdown-body">
+        <p>FedAvg protocol for BKT parameter optimization across clients with (ε, δ)-differential privacy. Enables the AI tutor to improve as more students use it while preserving individual privacy.</p>
+        <p><FileRef path="src/lib/federated-learning.ts" /></p>
+        <CodeBlock code={`Protocol:
+  1. Clients train BKT parameters locally (grid search MLE)
+  2. L2 gradient clipping for sensitivity bounding
+  3. Gaussian noise injection (calibrated ε, δ)
+  4. Weighted aggregation across heterogeneous clients
+  5. User ID anonymization (one-way hash)
+
+Privacy: (ε, δ)-differential privacy with analytic mechanism
+Aggregation: FedAvg with per-client sample weighting`} />
+      </div>
+    </div>
+  );
+}
+
+function SectionOfflinePwa() {
+  return (
+    <div className="docs-article">
+      <span className="article-label">Advanced</span>
+      <h2>Offline-First PWA</h2>
+      <div className="markdown-body">
+        <p>Service Worker + IndexedDB mutation queue for full offline operation with background sync on reconnect.</p>
+        <p><FileRef path="src/lib/offline-sync.ts" /> · <FileRef path="public/sw.js" /></p>
+        <CodeBlock code={`Service Worker Caching Strategies:
+  Cache-First: /assets/, fonts, images (static)
+  Network-First: /api/ calls
+  Stale-While-Revalidate: CDN resources
+
+IndexedDB Mutation Queue:
+  - FIFO ordering
+  - Optimistic sync with exponential backoff (max 5 retries)
+  - Auto-sync on reconnect (online/offline detection)
+  - Frame/transcript caching with 7-day TTL
+  - Background sync via SW sync event`} />
+      </div>
+    </div>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    BACKEND SERVICES
    ═══════════════════════════════════════════════════════════════════ */
+
+function SectionApiProxyService() {
+  return (
+    <div className="docs-article">
+      <span className="article-label">Backend</span>
+      <h2>API Proxy Service</h2>
+      <div className="markdown-body">
+        <p>Express proxy that keeps the Gemini API key server-side, adding rate limiting and usage metering. Eliminates client-side key exposure.</p>
+        <p><FileRef path="backend/api-proxy/server.js" /></p>
+
+        <h3>Endpoints</h3>
+        <PropTable rows={[
+          { name: 'POST /api/generate', type: 'JSON body', desc: 'Proxy for generateContent. Forwards to Gemini with server-side key.' },
+          { name: 'POST /api/chat', type: 'JSON body', desc: 'Multi-turn chat proxy' },
+          { name: 'POST /api/search', type: 'JSON body', desc: 'Grounded search proxy (Scholar)' },
+          { name: 'GET /api/health', type: '—', desc: 'Health check' },
+          { name: 'GET /api/usage', type: '—', desc: 'Per-endpoint stats (count, errors, avg latency) + per-model counts' },
+        ]} />
+
+        <h3>Rate Limiting</h3>
+        <p>Sliding-window per-IP limiter. Default: <strong>30 req/min</strong>. Returns <code>429</code> with <code>Retry-After</code> header. Stale IPs pruned every 60s.</p>
+
+        <Callout type="tip">Set <code>VITE_API_PROXY_URL=http://localhost:3005</code> in the frontend <code>.env</code> to enable. When unset, the frontend calls Gemini directly (backward compatible).</Callout>
+      </div>
+    </div>
+  );
+}
+
+function SectionClipEmbeddingsService() {
+  return (
+    <div className="docs-article">
+      <span className="article-label">Backend</span>
+      <h2>CLIP Embeddings Service</h2>
+      <div className="markdown-body">
+        <p>FastAPI backend using CLIP ViT-B/32 (via <code>transformers</code> + <code>torch</code>) for multimodal embedding generation and visual search.</p>
+        <p><FileRef path="backend/clip-embeddings/server.py" /></p>
+
+        <h3>Endpoints</h3>
+        <PropTable rows={[
+          { name: 'POST /embed/image', type: 'multipart', desc: 'Generate CLIP embedding for an uploaded image' },
+          { name: 'POST /embed/text', type: 'JSON body', desc: 'Generate CLIP embedding for text' },
+          { name: 'POST /embed/batch', type: 'multipart', desc: 'Batch embed multiple images' },
+          { name: 'POST /search/visual', type: 'multipart', desc: 'Visual similarity search across indexed frames' },
+          { name: 'GET /health', type: '—', desc: 'Health check' },
+        ]} />
+
+        <p>Storage: ChromaDB with cosine distance. Docker service on port <strong>3006</strong>.</p>
+      </div>
+    </div>
+  );
+}
 
 function SectionBackendOverview() {
   return (
@@ -1199,15 +1600,17 @@ function SectionBackendOverview() {
       <span className="article-label">Backend</span>
       <h2>Service Overview</h2>
       <div className="markdown-body">
-        <p>Aura Symphony includes three optional backend microservices, all orchestrated via Docker Compose. Each service has health checks, graceful degradation, and is fully testable in isolation.</p>
+        <p>Aura Symphony includes five backend microservices, all orchestrated via Docker Compose. Each service has health checks, graceful degradation, and is fully testable in isolation.</p>
 
         <PropTable rows={[
-          { name: 'Vector Search', type: 'Python / FastAPI', desc: 'Semantic search with ChromaDB embeddings', default: ':3001' },
+          { name: 'API Proxy', type: 'Node.js / Express', desc: 'Gemini API proxy with rate limiting (30 req/min), usage metering, key isolation', default: ':3005' },
+          { name: 'Vector Search', type: 'Python / FastAPI', desc: 'Semantic search with ChromaDB embeddings + adaptive chunking', default: ':3001' },
           { name: 'Graph Knowledge', type: 'Node.js / Express', desc: 'Concept graph with SQLite recursive CTEs', default: ':4004' },
           { name: 'Media Pipeline', type: 'Node.js / Express', desc: 'FFmpeg frame extraction + WebSocket progress', default: ':3002 / WS :3003' },
+          { name: 'CLIP Embeddings', type: 'Python / FastAPI', desc: 'Multimodal RAG with CLIP ViT-B/32 + ChromaDB for visual search', default: ':3006' },
         ]} />
 
-        <Callout type="tip">All backends are optional. When their URLs are not configured, the frontend falls back to browser-local alternatives. Set <code>VITE_VECTOR_BACKEND_URL</code>, <code>VITE_GRAPH_BACKEND_URL</code>, and <code>VITE_MEDIA_BACKEND_URL</code> to enable them.</Callout>
+        <Callout type="tip">All backends are optional. When their URLs are not configured, the frontend falls back to browser-local alternatives. Set <code>VITE_API_PROXY_URL</code>, <code>VITE_VECTOR_BACKEND_URL</code>, <code>VITE_GRAPH_BACKEND_URL</code>, and <code>VITE_MEDIA_BACKEND_URL</code> to enable them.</Callout>
       </div>
     </div>
   );
@@ -1232,9 +1635,14 @@ function SectionVectorSearchService() {
         ]} />
 
         <h3>Client-Side Chunking</h3>
-        <p><FileRef path="src/lib/vector-search.ts" /> provides chunking utilities:</p>
-        <CodeBlock code={`// Transcript chunking with overlap
-chunkTranscript(transcript, videoId, chunkSize=100, overlap=20): VideoChunk[]
+        <p><FileRef path="src/lib/vector-search.ts" /> and <FileRef path="src/lib/semantic-chunker.ts" /> provide chunking utilities:</p>
+        <CodeBlock code={`// Adaptive semantic chunking (default — splits on topic boundaries)
+chunkTranscript(transcript, videoId): VideoChunk[]
+// Pipeline: sentence split → FNV-1a bigram embedding (128-dim) →
+//   pairwise cosine similarity → percentile break detection → merge/balance
+
+// Legacy fixed chunking (preserved for compatibility)
+chunkTranscriptFixed(transcript, videoId, chunkSize=100, overlap=20): VideoChunk[]
 
 // Frame description chunking
 chunkFrameDescriptions(frames, videoId): VideoChunk[]
@@ -1333,10 +1741,12 @@ function SectionDockerDeployment() {
       <div className="markdown-body">
         <p><FileRef path="docker-compose.yml" /> orchestrates all backend services with health checks and persistent volumes.</p>
         <CodeBlock title="docker-compose.yml services" code={`services:
-  neo4j:         # Neo4j Community 5 (:7474, :7687)
-  vector-search: # FastAPI + ChromaDB (:3001)
-  media-pipeline: # Express + FFmpeg (:3002, WS :3003)
+  neo4j:           # Neo4j Community 5 (:7474, :7687)
+  vector-search:   # FastAPI + ChromaDB (:3001)
+  media-pipeline:  # Express + FFmpeg (:3002, WS :3003)
   graph-knowledge: # Express + SQLite/Neo4j (:3004)
+  api-proxy:       # Gemini API proxy with rate limiting (:3005)
+  clip-embeddings: # CLIP ViT-B/32 + ChromaDB (:3006)
 
 volumes:
   neo4j-data:    # Persistent graph storage
@@ -1345,9 +1755,11 @@ volumes:
 
         <CodeBlock title="Quick Start" language="bash" code={`docker compose up -d
 # Health checks:
-curl http://localhost:3001/health  # Vector
-curl http://localhost:3002/health  # Media
-curl http://localhost:3004/health  # Graph`} />
+curl http://localhost:3001/health  # Vector Search
+curl http://localhost:3002/health  # Media Pipeline
+curl http://localhost:3004/health  # Graph Knowledge
+curl http://localhost:3005/api/health  # API Proxy
+curl http://localhost:3006/health  # CLIP Embeddings`} />
       </div>
     </div>
   );
@@ -1551,8 +1963,15 @@ function SectionValhallaOverview() {
   2. Safety Analysis: analyzeScriptDeep() checks for dangerous patterns
   3. Visual Preview: Gemini generates rendered preview image
   4. User Approval: Script + preview shown in ValhallaGateway UI
-  5. Execution: (sandboxed) — currently simulated
-→ Result: { script, imageUrl, logs }`} />
+  5. Sandboxed Execution: Pyodide (Python-in-WASM) with 3-layer security
+→ Result: { script, imageUrl, logs }
+
+Pyodide Sandbox (src/lib/valhalla-sandbox.ts):
+  Layer 1: Regex + AST pre-check (analyzeScriptDeep)
+  Layer 2: Python-level import blocking (18 dangerous modules)
+  Layer 3: 30-second execution timeout
+  State: idle → loading → ready → executing
+  Features: matplotlib figure capture as base64 PNG, prewarmSandbox()`} />
 
         <h3>API</h3>
         <CodeBlock code={`async function executeValhallaCommand(
@@ -1923,19 +2342,30 @@ function SectionTesting() {
       <span className="article-label">Operations</span>
       <h2>Testing Strategy</h2>
       <div className="markdown-body">
-        <h3>Test Files</h3>
+        <h3>Test Files (438 tests across 20 files)</h3>
         <PropTable rows={[
           { name: 'src/api/client.test.ts', type: 'Vitest', desc: 'API client factory, provider resolution, connection testing' },
           { name: 'src/lib/conductor-validator.test.ts', type: 'Vitest', desc: 'Zod schema validation: valid calls, invalid args, hallucinated functions, correction prompts' },
+          { name: 'src/lib/conductor-schemas.test.ts', type: 'Vitest', desc: 'All 18 schemas: valid/invalid/edge cases, .strict() enforcement, property-based testing' },
           { name: 'src/lib/provider-config.test.ts', type: 'Vitest', desc: 'Provider CRUD, localStorage persistence, active provider resolution' },
           { name: 'src/lib/valhalla-analyzer.test.ts', type: 'Vitest', desc: 'Script safety: infinite loops, dangerous imports, destructive calls, system escapes, network ops' },
-          { name: 'src/lib/vector-search.test.ts', type: 'Vitest', desc: 'Transcript chunking, frame description chunking, overlap behavior' },
-          { name: 'backend/vector-search/test_server.py', type: 'pytest', desc: 'FastAPI endpoints: ingest, search, health, stats, clear' },
-          { name: 'backend/media-pipeline/server.test.js', type: 'Vitest', desc: 'Job submission, status polling, frame extraction' },
-          { name: 'backend/media-pipeline/websocket.test.js', type: 'Vitest', desc: 'WebSocket connection, progress broadcasting' },
-          { name: 'backend/graph-knowledge/server.test.js', type: 'Vitest', desc: 'Graph CRUD, recursive CTE traversal, learning path queries' },
-          { name: 'e2e/aura.spec.ts', type: 'Playwright', desc: 'End-to-end smoke tests: landing page, docs page, workspace' },
+          { name: 'src/lib/vector-search.test.ts', type: 'Vitest', desc: 'Adaptive semantic chunking, frame description chunking' },
+          { name: 'src/lib/symphonyBus.test.ts', type: 'Vitest', desc: 'Event dispatch, listen/unlisten, commission, reportResult, chainCommission' },
+          { name: 'src/lib/telemetry.test.ts', type: 'Vitest', desc: 'Log sinks, timer utility, all 6 log functions' },
+          { name: 'src/lib/lens-handlers/registry.test.ts', type: 'Vitest', desc: 'Handler resolution, fallback, runtime registration' },
+          { name: 'src/api/proxy-client.test.ts', type: 'Vitest', desc: 'Proxy detection when unconfigured' },
+          { name: 'src/__tests__/semantic-chunker.test.ts', type: 'Vitest', desc: 'Adaptive chunking pipeline, FNV-1a embedding, break detection' },
+          { name: 'src/__tests__/knowledge-tracing.test.ts', type: 'Vitest', desc: 'BKT update, temporal decay, prerequisite scaling, content selection' },
+          { name: 'src/__tests__/react-planner.test.ts', type: 'Vitest', desc: 'Complex query detection, ReAct loop, plan generation' },
+          { name: 'src/__tests__/worker-pool.test.ts', type: 'Vitest', desc: 'Worker pool lifecycle, work-stealing, batch submission' },
+          { name: 'src/__tests__/crdt-collaboration.test.ts', type: 'Vitest', desc: 'CRDT sessions, shared types, change events, state export/import' },
+          { name: 'src/__tests__/valhalla-sandbox.test.ts', type: 'Vitest', desc: 'Pyodide safety rejection, sandbox state machine' },
+          { name: 'src/__tests__/clip-embeddings.test.ts', type: 'Vitest', desc: 'Fusion search scoring, result merging' },
+          { name: 'src/__tests__/plugin-marketplace.test.ts', type: 'Vitest', desc: 'Search, filtering, installation, sandboxing, integrity verification' },
+          { name: 'src/__tests__/federated-learning.test.ts', type: 'Vitest', desc: 'Differential privacy, gradient clipping, FedAvg aggregation, MLE' },
+          { name: 'src/__tests__/offline-sync.test.ts', type: 'Vitest', desc: 'Queue operations, sync execution, cache management' },
         ]} />
+        <p><em>Plus 3 backend test files and 1 E2E Playwright spec.</em></p>
 
         <h3>Running Tests</h3>
         <CodeBlock language="bash" code={`# Frontend unit tests
