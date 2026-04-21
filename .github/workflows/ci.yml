@@ -51,8 +51,6 @@ jobs:
   backend-integration-tests:
     name: Backend Integration Tests
     runs-on: ubuntu-latest
-    services:
-      # No services needed — tests hit running server instances
     steps:
       - uses: actions/checkout@v4
 
