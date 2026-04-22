@@ -111,10 +111,11 @@ export const handleExportPng = async (insight: Insight) => {
 
 export const handleExportTable = (insight: Insight) => {
   if (insight.type !== 'Table' || !insight.data) return;
-  const headers = Object.keys(insight.data[0]);
+  const tableData = insight.data as unknown as Record<string, unknown>[];
+  const headers = Object.keys(tableData[0]);
   const csvContent = [
     headers.join(','),
-    ...insight.data.map((row: any) =>
+    ...tableData.map((row: any) =>
       headers.map((header) => JSON.stringify(row[header])).join(','),
     ),
   ].join('\n');
@@ -125,7 +126,7 @@ export const handleExportTable = (insight: Insight) => {
 
 export const handleExportChat = (insight: Insight) => {
   if (insight.type !== 'Chat' || !insight.data) return;
-  const chatContent = insight.data
+  const chatContent = (insight.data as ChatMessage[])
     .map((msg: ChatMessage) => `${msg.role.toUpperCase()}: ${msg.text}`)
     .join('\n\n');
 
@@ -139,18 +140,18 @@ export const handleExportText = (insight: Insight) => {
   let content = `${insight.title}\n\n`;
 
   if (insight.type === 'PDF Analysis' || typeof insight.data === 'string') {
-    content += insight.data;
+    content += insight.data as string;
   } else if (insight.isList) {
-    content += insight.data
+    content += (insight.data as unknown as {time: string; text: string}[])
       .map(
-        (item: {time: string; text: string}) =>
+        (item) =>
           `- [${item.time}] ${item.text}`,
       )
       .join('\n');
   } else {
     // For Paragraph, Haiku etc.
-    content += insight.data
-      .map((item: {time: string; text: string}) => item.text)
+    content += (insight.data as unknown as {time: string; text: string}[])
+      .map((item) => item.text)
       .join(insight.type === 'Haiku' ? '\n' : ' ');
   }
 
@@ -165,12 +166,13 @@ export const handleExportMarkdown = (insight: Insight) => {
 
   switch (insight.type) {
     case 'Table': {
-      const headers = Object.keys(insight.data[0]);
+      const mdTableData = insight.data as unknown as Record<string, unknown>[];
+      const headers = Object.keys(mdTableData[0]);
       mdContent += `| ${headers
         .map((h) => h.charAt(0).toUpperCase() + h.slice(1))
         .join(' | ')} |\n`;
       mdContent += `| ${headers.map(() => '---').join(' | ')} |\n`;
-      mdContent += insight.data
+      mdContent += mdTableData
         .map((row: any) => {
           const rowData = headers.map((header) => {
             const cellData = row[header];
@@ -182,7 +184,7 @@ export const handleExportMarkdown = (insight: Insight) => {
       break;
     }
     case 'Chat':
-      mdContent += insight.data
+      mdContent += (insight.data as ChatMessage[])
         .map(
           (msg: ChatMessage) =>
             `**${msg.role.toUpperCase()}:**\n\n${msg.text}`,
@@ -190,16 +192,16 @@ export const handleExportMarkdown = (insight: Insight) => {
         .join('\n\n---\n\n');
       break;
     case 'Mermaid':
-      mdContent += '```mermaid\n' + insight.data + '\n```';
+      mdContent += '```mermaid\n' + (insight.data as string) + '\n```';
       break;
     case 'PDF Analysis':
-      mdContent += insight.data;
+      mdContent += insight.data as string;
       break;
     default:
       if (insight.isList) {
-        mdContent += insight.data
+        mdContent += (insight.data as unknown as {time: string; text: string}[])
           .map(
-            (item: {time: string; text: string}) =>
+            (item) =>
               `- **${item.time}** ${item.text}`,
           )
           .join('\n');
@@ -207,8 +209,8 @@ export const handleExportMarkdown = (insight: Insight) => {
         // For Paragraph, Haiku etc.
         mdContent +=
           '> ' +
-          insight.data
-            .map((item: {time: string; text: string}) => item.text)
+          (insight.data as unknown as {time: string; text: string}[])
+            .map((item) => item.text)
             .join(insight.type === 'Haiku' ? '\n>\n> ' : ' ');
       }
       break;
@@ -232,8 +234,9 @@ export const handleExportPdf = async (insight: Insight) => {
 
   switch (insight.type) {
     case 'Table': {
-      const headers = Object.keys(insight.data[0]);
-      const body = insight.data.map((row: any) =>
+      const pdfTableData = insight.data as unknown as Record<string, unknown>[];
+      const headers = Object.keys(pdfTableData[0]);
+      const body = pdfTableData.map((row: any) =>
         headers.map((header) => {
           const cellData = row[header];
           return Array.isArray(cellData) ? cellData.join(', ') : cellData;
@@ -249,7 +252,7 @@ export const handleExportPdf = async (insight: Insight) => {
     case 'Chat': {
       let y = startY;
       doc.setFontSize(10);
-      for (const msg of insight.data) {
+      for (const msg of insight.data as ChatMessage[]) {
         const text = `${msg.role.toUpperCase()}: ${msg.text}`;
         const splitText = doc.splitTextToSize(text, 180);
         const textHeight = splitText.length * 5; // estimate height
@@ -299,18 +302,18 @@ export const handleExportPdf = async (insight: Insight) => {
         insight.type === 'PDF Analysis' ||
         typeof insight.data === 'string'
       ) {
-        content = insight.data;
+        content = insight.data as string;
       } else if (insight.isList) {
-        content = insight.data
+        content = (insight.data as unknown as {time: string; text: string}[])
           .map(
-            (item: {time: string; text: string}) =>
+            (item) =>
               `- [${item.time}] ${item.text}`,
           )
           .join('\n');
       } else {
         // For Paragraph, Haiku etc.
-        content = insight.data
-          .map((item: {time: string; text: string}) => item.text)
+        content = (insight.data as unknown as {time: string; text: string}[])
+          .map((item) => item.text)
           .join(insight.type === 'Haiku' ? '\n' : ' ');
       }
       const splitContent = doc.splitTextToSize(content, 180);

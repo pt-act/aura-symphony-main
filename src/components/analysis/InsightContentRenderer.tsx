@@ -19,7 +19,7 @@
 import c from 'classnames';
 import React, {useMemo, useState} from 'react';
 import {generateSpeech} from '../../api/api';
-import type {ChatMessage, Insight} from '../../types';
+import type {Annotation, ChatMessage, DigitalLearnerProfile, Insight, QuizQuestion} from '../../types';
 import {decode, decodeAudioData, timeToSecs} from '../../lib/utils';
 import AnnotationsContent from './insight-content/AnnotationsContent';
 import ChatContent from './insight-content/ChatContent';
@@ -129,14 +129,15 @@ function StandaloneQuiz({insight, onQuizComplete, jumpToTimecode}: {
   jumpToTimecode: (time: number) => void;
 }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const quizData = insight.data as QuizQuestion[];
   const [selectedAnswers, setSelectedAnswers] = useState<(string | null)[]>(
-    Array(insight.data.length).fill(null),
+    Array(quizData.length).fill(null),
   );
 
   return (
     <QuizModule
       title={insight.title.toString()}
-      data={insight.data}
+      data={quizData}
       onQuizComplete={(_concept, score, total) => onQuizComplete(score, total)}
       onHighlightRequest={(time: string) => {
         jumpToTimecode(timeToSecs(time));
@@ -207,7 +208,7 @@ export default function InsightContentRenderer({
     case 'Custom':
       return (
         <TextContent
-          data={insight.data}
+          data={insight.data as unknown as {time: string; text: string}[]}
           isParagraph={false}
           jumpToTimecode={jumpToTimecode}
           currentTime={currentTime}
@@ -218,7 +219,7 @@ export default function InsightContentRenderer({
     case 'Haiku':
       return (
         <TextContent
-          data={insight.data}
+          data={insight.data as unknown as {time: string; text: string}[]}
           isParagraph={true}
           jumpToTimecode={jumpToTimecode}
           currentTime={currentTime}
@@ -226,22 +227,22 @@ export default function InsightContentRenderer({
         />
       );
     case 'Table':
-      return <TableContent data={insight.data} jumpToTimecode={jumpToTimecode} />;
+      return <TableContent data={insight.data as unknown as {time: string; text: string; objects: string[]}[]} jumpToTimecode={jumpToTimecode} />;
     case 'Chart':
       return (
         <Chart
-          data={insight.data}
+          data={insight.data as unknown as {time: string; value: number}[]}
           yLabel={insight.title}
           jumpToTimecode={jumpToTimecode}
         />
       );
     case 'Mermaid':
-      return <MermaidContent data={insight.data} insightId={insight.id} />;
+      return <MermaidContent data={insight.data as string} insightId={insight.id} />;
     case 'Generate Video':
-      return <VideoContent url={insight.data} />;
+      return <VideoContent url={insight.data as string} />;
     case 'Generate Image':
     case 'Edit Image':
-      return <img src={insight.data} className="generated-image" alt={insight.title} />;
+      return <img src={insight.data as string} className="generated-image" alt={insight.title} />;
     case 'Web Search':
       return <SearchContent data={insight.data} />;
     case 'Transcribe Audio':
@@ -253,7 +254,7 @@ export default function InsightContentRenderer({
     case 'Annotations':
       return (
         <AnnotationsContent
-          data={insight.data}
+          data={insight.data as Annotation[]}
           jumpToTimecode={jumpToTimecode}
           onDelete={onDeleteAnnotation}
         />
@@ -267,14 +268,14 @@ export default function InsightContentRenderer({
         />
       );
     case 'DLP':
-      return <DlpMonitor dlp={insight.data} />;
+      return <DlpMonitor dlp={insight.data as DigitalLearnerProfile} />;
     case 'Create Course': // This type is handled specially in App.tsx, but provide a fallback.
     case 'Deep Analysis':
       // Deep Analysis re-uses the same function call types as other video lenses
       if (Array.isArray(insight.data)) {
         return (
           <ListContent
-            data={insight.data}
+            data={insight.data as unknown as {time: string; text: string}[]}
             jumpToTimecode={jumpToTimecode}
             currentTime={currentTime}
             duration={duration}

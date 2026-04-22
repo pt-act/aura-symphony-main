@@ -47,7 +47,7 @@ export default function ChatContent({insight, onSendMessage}: ChatContentProps) 
   const handleChatSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (userMessage.trim() || selectedFile) {
-      onSendMessage(insight.id, insight.data, userMessage, selectedFile || undefined);
+      onSendMessage(insight.id, insight.data as ChatMessage[], userMessage, selectedFile || undefined);
       setUserMessage('');
       setSelectedFile(null);
     }
@@ -62,7 +62,7 @@ export default function ChatContent({insight, onSendMessage}: ChatContentProps) 
   return (
     <div className="chat-insight">
       <div className="chat-history" ref={chatScrollRef}>
-        {insight.data.map((msg: ChatMessage, index: number) => (
+        {(insight.data as ChatMessage[]).map((msg: ChatMessage, index: number) => (
           <div key={index} className={c('chat-message', msg.role)}>
             <div className="message-content">
               {msg.file && (

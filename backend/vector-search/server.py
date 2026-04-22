@@ -18,8 +18,8 @@ from typing import Optional
 from contextlib import asynccontextmanager
 
 import chromadb
-from chromadb.config import Settings as ChromaSettings
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 # ─── Configuration ─────────────────────────────────────────────────
@@ -90,8 +90,6 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Aura Vector Search", lifespan=lifespan)
 
 # ─── CORS ──────────────────────────────────────────────────────────
-
-from fastapi.middleware.cors import CORSMiddleware
 
 ALLOWED_ORIGINS = os.environ.get(
     "ALLOWED_ORIGINS",
