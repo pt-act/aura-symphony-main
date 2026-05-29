@@ -190,7 +190,9 @@ export default function LiveConversation({
     }
   };
 
-  const stopConversation = () => {
+  // Declared as a function (not arrow) so it is hoisted and can be referenced
+  // by useEscapeKey before this point in the component body.
+  function stopConversation() {
     sessionPromiseRef.current?.then((session) => session.close());
     sessionPromiseRef.current = null;
 
@@ -213,7 +215,7 @@ export default function LiveConversation({
     currentOutputRef.current = '';
     setStatus('idle');
     onClose();
-  };
+  }
 
   useEffect(() => {
     if (isOpen) {

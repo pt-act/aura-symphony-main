@@ -18,6 +18,7 @@
  *   GET  /api/usage          — Detailed usage metrics
  */
 
+import { fileURLToPath } from 'url';
 import express from 'express';
 import { GoogleGenAI } from '@google/genai';
 
@@ -27,12 +28,7 @@ const RATE_LIMIT_WINDOW_MS = parseInt(process.env.RATE_LIMIT_WINDOW_MS || '60000
 const RATE_LIMIT_MAX = parseInt(process.env.RATE_LIMIT_MAX || '30');                   // 30 req/min
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000').split(',');
 
-if (!API_KEY) {
-  console.error('[API Proxy] FATAL: GEMINI_API_KEY not set. Exiting.');
-  process.exit(1);
-}
-
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+const ai = new GoogleGenAI({ apiKey: API_KEY || 'placeholder' });
 
 // ─── Rate Limiter (sliding window, per-IP) ─────────────────────
 
@@ -274,10 +270,21 @@ app.get('/api/usage', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`[API Proxy] Listening on :${PORT}`);
-  console.log(`[API Proxy] Rate limit: ${RATE_LIMIT_MAX} req / ${RATE_LIMIT_WINDOW_MS / 1000}s`);
-  console.log(`[API Proxy] Allowed origins: ${ALLOWED_ORIGINS.join(', ')}`);
-});
+// Only start the server and enforce API-key requirement when run directly.
+// When imported as a module (e.g. by vitest), skip both so tests can import
+// rateLimit / usage without triggering process.exit or port conflicts.
+const isMain = process.argv[1] === fileURLToPath(import.meta.url);
+
+if (isMain) {
+  if (!API_KEY) {
+    console.error('[API Proxy] FATAL: GEMINI_API_KEY not set. Exiting.');
+    process.exit(1);
+  }
+  app.listen(PORT, () => {
+    console.log(`[API Proxy] Listening on :${PORT}`);
+    console.log(`[API Proxy] Rate limit: ${RATE_LIMIT_MAX} req / ${RATE_LIMIT_WINDOW_MS / 1000}s`);
+    console.log(`[API Proxy] Allowed origins: ${ALLOWED_ORIGINS.join(', ')}`);
+  });
+}
 
 export { app, rateLimit, usage };

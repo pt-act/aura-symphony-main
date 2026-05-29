@@ -5,7 +5,7 @@
  * and screen reader announcements.
  */
 
-import {useCallback, useRef, useEffect} from 'react';
+import React, {useCallback, useRef, useEffect} from 'react';
 
 /**
  * Hook: Makes a non-interactive element keyboard-accessible.
