@@ -96,4 +96,5 @@ All backend services are optional — the frontend degrades gracefully to browse
 **438 tests** across 20 files. Production build in ~29s.
 
 ## License
-Apache 2.0
+All Rights Reserved. See [LICENSE](LICENSE) for details.
+Unauthorized copying, modification, distribution, or use is strictly prohibited.

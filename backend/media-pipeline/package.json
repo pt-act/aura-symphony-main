@@ -1,6 +1,7 @@
 {
   "name": "aura-media-pipeline",
   "private": true,
+  "license": "UNLICENSED",
   "type": "module",
   "scripts": {
     "start": "node server.js"

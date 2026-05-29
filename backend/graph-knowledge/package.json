@@ -1,6 +1,7 @@
 {
   "name": "aura-graph-knowledge",
   "private": true,
+  "license": "UNLICENSED",
   "type": "module",
   "scripts": {
     "start": "node server.js"
