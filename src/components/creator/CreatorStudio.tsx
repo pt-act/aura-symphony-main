@@ -8,8 +8,10 @@
  */
 import {AnimatePresence, motion, Reorder} from 'framer-motion';
 import type firebase from 'firebase/compat/app';
-import React from 'react';
+import React, {useState} from 'react';
+import {FolderOpen, FileText, FileText as FileMd, Plus, Trash2, MonitorPlay, Check, X} from 'lucide-react';
 import {savePresentation, updatePresentation} from '../../api/firestoreService';
+import {useToast} from '../../hooks/useToast';
 import type {Presentation, Slide} from '../../types';
 import {
   handleExportPresentationPdf,
@@ -35,19 +37,26 @@ export default function CreatorStudio({
   onNewPresentation,
   onOpenLibrary,
 }: CreatorStudioProps) {
+  const {success, error} = useToast();
+  const [isNaming, setIsNaming] = useState(false);
+  const [nameInput, setNameInput] = useState('');
+
   const handleSave = async () => {
     if (!presentation) return;
 
     let presentationToSave = {...presentation};
+
+    // If untitled and unsaved, show inline naming instead of prompt()
     if (presentation.name === 'Untitled Presentation' && !presentation.id) {
-      const newName = prompt(
-        'Enter a name for your presentation:',
-        presentation.name,
-      );
-      if (!newName) return; // User cancelled
-      presentationToSave.name = newName;
+      setNameInput(presentation.name);
+      setIsNaming(true);
+      return;
     }
 
+    await doSave(presentationToSave);
+  };
+
+  const doSave = async (presentationToSave: Presentation) => {
     try {
       if (presentationToSave.id) {
         await updatePresentation(presentationToSave.id, {
@@ -62,11 +71,23 @@ export default function CreatorStudio({
         presentationToSave.id = newId;
       }
       setPresentation(presentationToSave);
-      // You can add a toast notification for success here
-    } catch (error) {
-      console.error('Failed to save presentation:', error);
-      // You can add a toast notification for error here
+      success('Presentation saved successfully');
+    } catch (err) {
+      console.error('Failed to save presentation:', err);
+      error('Failed to save presentation');
     }
+  };
+
+  const handleNameConfirm = async () => {
+    if (!presentation || !nameInput.trim()) return;
+    const named = {...presentation, name: nameInput.trim()};
+    setIsNaming(false);
+    await doSave(named);
+  };
+
+  const handleNameCancel = () => {
+    setIsNaming(false);
+    setNameInput('');
   };
 
   const handleAddSlide = () => {
@@ -84,10 +105,7 @@ export default function CreatorStudio({
   };
 
   const handleDeleteSlide = () => {
-    if (!presentation || presentation.slides.length <= 1) {
-      // Or show a toast message
-      return;
-    }
+    if (!presentation || presentation.slides.length <= 1) return;
     const newSlides = presentation.slides.filter(
       (_, index) => index !== activeSlideIndex,
     );
@@ -117,12 +135,22 @@ export default function CreatorStudio({
 
   const handleExportPdf = () => {
     if (!presentation) return;
-    handleExportPresentationPdf(presentation);
+    try {
+      handleExportPresentationPdf(presentation);
+      success('PDF exported successfully');
+    } catch (e) {
+      error('Failed to export PDF');
+    }
   };
 
   const handleExportMarkdown = () => {
     if (!presentation) return;
-    handleExportPresentationMarkdown(presentation);
+    try {
+      handleExportPresentationMarkdown(presentation);
+      success('Markdown exported successfully');
+    } catch (e) {
+      error('Failed to export Markdown');
+    }
   };
 
   const activeSlide = presentation?.slides[activeSlideIndex];
@@ -134,19 +162,49 @@ export default function CreatorStudio({
         <div className="creator-actions">
           <button onClick={onNewPresentation}>New</button>
           <button onClick={onOpenLibrary}>
-            <span className="icon">folder_open</span> My Library
+            <FolderOpen size={16} /> My Library
           </button>
           <button onClick={handleSave} disabled={!presentation}>
             Save
           </button>
           <button onClick={handleExportPdf} disabled={!presentation}>
-            <span className="icon">picture_as_pdf</span> Export PDF
+            <FileText size={16} /> Export PDF
           </button>
           <button onClick={handleExportMarkdown} disabled={!presentation}>
-            <span className="icon">description</span> Export MD
+            <FileMd size={16} /> Export MD
           </button>
         </div>
       </header>
+
+      {/* Inline naming bar — replaces prompt() */}
+      <AnimatePresence>
+        {isNaming && (
+          <motion.div
+            className="naming-bar"
+            initial={{height: 0, opacity: 0}}
+            animate={{height: 'auto', opacity: 1}}
+            exit={{height: 0, opacity: 0}}>
+            <input
+              type="text"
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              placeholder="Enter presentation name..."
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleNameConfirm();
+                if (e.key === 'Escape') handleNameCancel();
+              }}
+            />
+            <button className="naming-confirm-btn" onClick={handleNameConfirm}>
+              <Check size={16} /> Save
+            </button>
+            <button className="naming-cancel-btn" onClick={handleNameCancel}>
+              <X size={16} /> Cancel
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <main className="creator-main-content">
         {presentation ? (
           <>
@@ -179,7 +237,7 @@ export default function CreatorStudio({
                 </AnimatePresence>
               </Reorder.Group>
               <button className="add-slide-btn" onClick={handleAddSlide}>
-                <span className="icon">add</span> Add Slide
+                <Plus size={20} /> Add Slide
               </button>
             </div>
             <div className="slide-editor-area">
@@ -195,7 +253,7 @@ export default function CreatorStudio({
                 className="delete-slide-btn"
                 onClick={handleDeleteSlide}
                 disabled={presentation.slides.length <= 1}>
-                <span className="icon">delete</span>
+                <Trash2 size={18} />
               </button>
             </div>
             <div className="speaker-notes-area">
@@ -212,7 +270,7 @@ export default function CreatorStudio({
           </>
         ) : (
           <div className="empty-studio-placeholder">
-            <span className="icon">slideshow</span>
+            <MonitorPlay size={64} />
             <h2>Welcome to the Creator Studio</h2>
             <p>Create a new presentation or open an existing one to begin.</p>
             <button onClick={onNewPresentation}>

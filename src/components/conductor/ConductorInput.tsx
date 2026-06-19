@@ -8,6 +8,7 @@
  */
 import React, {useState, useEffect, useRef} from 'react';
 import c from 'classnames';
+import {Send, Mic, MicOff, Radio} from 'lucide-react';
 
 interface ConductorInputProps {
   onQuerySubmit: (query: string) => void;
@@ -154,9 +155,9 @@ export default function ConductorInput({
           title="Wake Word Mode ('Hey Conductor')"
           onClick={toggleWakeWordMode}
           disabled={isLoading || !recognitionRef.current}>
-          <span className="icon" style={{ color: isWakeWordMode ? '#ea4335' : 'inherit' }}>
-            {isWakeWordMode ? 'record_voice_over' : 'voice_over_off'}
-          </span>
+          {isWakeWordMode
+            ? <Radio size={20} color="var(--error)" />
+            : <Radio size={20} />}
         </button>
         <button
           type="button"
@@ -164,16 +165,16 @@ export default function ConductorInput({
           title="Use microphone"
           onClick={toggleListening}
           disabled={isLoading || !recognitionRef.current || isWakeWordMode}>
-          <span className="icon" style={{ color: (isListening && !isWakeWordMode) ? '#ea4335' : 'inherit' }}>
-            {(isListening && !isWakeWordMode) ? 'mic' : 'mic_none'}
-          </span>
+          {(isListening && !isWakeWordMode)
+            ? <Mic size={20} color="var(--error)" />
+            : <MicOff size={20} />}
         </button>
         <button
           type="submit"
           className="conductor-button"
           title="Submit"
           disabled={isLoading || !query.trim()}>
-          <span className="icon">send</span>
+          <Send size={20} />
         </button>
       </form>
     </div>

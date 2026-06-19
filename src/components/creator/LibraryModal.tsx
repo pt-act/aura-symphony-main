@@ -7,9 +7,11 @@
  * UNAUTHORIZED USE IS STRICTLY PROHIBITED.
  */
 import React, {useEffect, useState} from 'react';
-import {AnimatePresence, motion} from 'framer-motion';
+import {ExternalLink, Trash2, AlertTriangle} from 'lucide-react';
+import Modal from '../shared/Modal';
+import {SkeletonListItem} from '../shared/Skeleton';
+import {useToast} from '../../hooks/useToast';
 import {deletePresentation, getPresentationsForUser} from '../../api/firestoreService';
-import {useEscapeKey} from '../../lib/a11y';
 import type {Presentation} from '../../types';
 
 interface LibraryModalProps {
@@ -27,8 +29,8 @@ export default function LibraryModal({
 }: LibraryModalProps) {
   const [presentations, setPresentations] = useState<Presentation[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEscapeKey(onClose, isOpen);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const {success, error} = useToast();
 
   useEffect(() => {
     if (isOpen && userId) {
@@ -40,70 +42,67 @@ export default function LibraryModal({
     }
   }, [isOpen, userId]);
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this presentation?')) {
-      await deletePresentation(id);
-      setPresentations(presentations.filter((p) => p.id !== id));
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    try {
+      await deletePresentation(deleteTarget);
+      setPresentations(presentations.filter((p) => p.id !== deleteTarget));
+      success('Presentation deleted');
+    } catch (e) {
+      error('Failed to delete presentation');
     }
+    setDeleteTarget(null);
   };
 
-  if (!isOpen) return null;
-
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          className="modal-overlay"
-          initial={{opacity: 0}}
-          animate={{opacity: 1}}
-          exit={{opacity: 0}}
-          onClick={onClose}>
-          <motion.div
-            className="modal-content"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="library-title"
-            initial={{y: 50, opacity: 0}}
-            animate={{y: 0, opacity: 1}}
-            exit={{y: 50, opacity: 0}}
-            onClick={(e) => e.stopPropagation()}>
-            <header className="modal-header">
-              <h2 id="library-title">My Library</h2>
-              <button onClick={onClose} aria-label="Close library">&times;</button>
-            </header>
-            <div className="modal-body">
-              {isLoading ? (
-                <p>Loading...</p>
-              ) : presentations.length === 0 ? (
-                <p>You haven't saved any presentations yet.</p>
-              ) : (
-                <ul className="library-list">
-                  {presentations.map((p) => (
-                    <li key={p.id}>
-                      <span
-                        className="library-item-name"
-                        onClick={() => onLoad(p)}>
-                        {p.name}
-                      </span>
-                      <div className="library-item-actions">
-                        <button onClick={() => onLoad(p)} title="Load" aria-label={`Load presentation ${p.name}`}>
-                          <span className="icon">open_in_new</span>
-                        </button>
-                        <button
-                          onClick={() => handleDelete(p.id!)}
-                          title="Delete"
-                          aria-label={`Delete presentation ${p.name}`}>
-                          <span className="icon">delete</span>
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <Modal isOpen={isOpen} onClose={onClose} title="My Library">
+      <div className="modal-body">
+        {isLoading ? (
+          <ul className="library-list">
+            <SkeletonListItem count={4} />
+          </ul>
+        ) : presentations.length === 0 ? (
+          <p>You haven't saved any presentations yet.</p>
+        ) : (
+          <ul className="library-list">
+            {presentations.map((p) => (
+              <li key={p.id}>
+                {deleteTarget === p.id ? (
+                  <div className="library-delete-confirm">
+                    <AlertTriangle size={16} />
+                    <span>Delete "{p.name}"?</span>
+                    <button className="confirm-delete-btn" onClick={handleDeleteConfirm}>
+                      Delete
+                    </button>
+                    <button className="cancel-delete-btn" onClick={() => setDeleteTarget(null)}>
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <span
+                      className="library-item-name"
+                      onClick={() => onLoad(p)}>
+                      {p.name}
+                    </span>
+                    <div className="library-item-actions">
+                      <button onClick={() => onLoad(p)} title="Load" aria-label={`Load presentation ${p.name}`}>
+                        <ExternalLink size={18} />
+                      </button>
+                      <button
+                        onClick={() => setDeleteTarget(p.id!)}
+                        title="Delete"
+                        aria-label={`Delete presentation ${p.name}`}>
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </Modal>
   );
 }

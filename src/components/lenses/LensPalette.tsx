@@ -28,7 +28,6 @@ export default function LensPalette({onSelect, hasVideo}: LensPaletteProps) {
   const [activePrompt, setActivePrompt] = useState<Mode | null>(null);
 
   const handleSelect = (mode: Mode) => {
-    // Lenses that don't need a modal
     if (!modes[mode].prompt) {
       onSelect(mode);
     } else {
@@ -69,14 +68,16 @@ export default function LensPalette({onSelect, hasVideo}: LensPaletteProps) {
             'PDF Analysis',
           ].includes(mode);
           const isDisabled = requiresVideo && !hasVideo;
+          const Icon = config.icon;
           return (
             <button
               key={mode}
-              className="lens-button"
-              title={mode}
+              className={`lens-button ${isDisabled ? 'lens-disabled' : ''}`}
+              title={isDisabled ? `${mode} — load a video first` : mode}
               onClick={() => handleSelect(mode as Mode)}
               disabled={isDisabled}>
-              <config.icon />
+              <Icon />
+              <span className="lens-label">{mode}</span>
             </button>
           );
         })}

@@ -6,8 +6,9 @@
  * or used in any form without prior express written permission.
  * UNAUTHORIZED USE IS STRICTLY PROHIBITED.
  */
-import {AnimatePresence, motion} from 'framer-motion';
 import React, {useEffect, useRef, useState} from 'react';
+import {Mic, CircleStop} from 'lucide-react';
+import Modal from '../shared/Modal';
 import type {Mode} from '../../types';
 import {fileToBase64} from '../../lib/utils';
 
@@ -40,7 +41,6 @@ export default function LensPromptModal({
   const audioChunksRef = useRef<Blob[]>([]);
 
   useEffect(() => {
-    // Reset state when modal opens for a new mode
     if (isOpen) {
       setPromptValue('');
       setAspectRatio('16:9');
@@ -78,7 +78,7 @@ export default function LensPromptModal({
         new File([audioBlob], 'recording.webm', {type: 'audio/webm'}),
       );
       onSubmit('Transcribe this audio', {file: fileData});
-      stream.getTracks().forEach((track) => track.stop()); // Stop microphone
+      stream.getTracks().forEach((track) => track.stop());
     };
     audioChunksRef.current = [];
     mediaRecorderRef.current.start();
@@ -94,19 +94,10 @@ export default function LensPromptModal({
     if (!mode) return null;
 
     const needsText = ![
-      'A/V captions',
-      'Paragraph',
-      'Key moments',
-      'In-strukt',
-      'Table',
-      'Haiku',
-      'Create Course',
-      'Transcribe Audio',
-      'Live Conversation',
+      'A/V captions', 'Paragraph', 'Key moments', 'In-strukt',
+      'Table', 'Haiku', 'Create Course', 'Transcribe Audio', 'Live Conversation',
     ].includes(mode);
-    const needsAspectRatio = ['Generate Video', 'Generate Image'].includes(
-      mode,
-    );
+    const needsAspectRatio = ['Generate Video', 'Generate Image'].includes(mode);
     const needsFileUpload = ['Edit Image', 'PDF Analysis'].includes(mode);
     const needsOptionalFileUpload = ['Generate Video'].includes(mode);
     const needsAudioRecord = ['Transcribe Audio'].includes(mode);
@@ -114,14 +105,11 @@ export default function LensPromptModal({
     if (needsAudioRecord) {
       return (
         <div className="audio-recorder">
-          <h3>{mode}</h3>
           <p>Click to record audio from your microphone.</p>
           <button
             onClick={isRecording ? handleStopRecording : handleStartRecording}
             className={`record-button ${isRecording ? 'recording' : ''}`}>
-            <span className="icon">
-              {isRecording ? 'stop_circle' : 'mic'}
-            </span>
+            {isRecording ? <CircleStop size={24} /> : <Mic size={24} />}
             {isRecording ? 'Stop & Transcribe' : 'Start Recording'}
           </button>
         </div>
@@ -129,11 +117,7 @@ export default function LensPromptModal({
     }
 
     return (
-      <form
-        className="lens-prompt-form"
-        onSubmit={handleSubmit}
-        onClick={(e) => e.stopPropagation()}>
-        <h3>{mode}</h3>
+      <form className="lens-prompt-form" onSubmit={handleSubmit}>
         {(needsFileUpload || needsOptionalFileUpload) && (
           <div className="file-input-container">
             <label htmlFor="lens-file-upload">
@@ -163,34 +147,22 @@ export default function LensPromptModal({
           <div className="aspect-ratio-selector">
             <span>Aspect Ratio:</span>
             <label>
-              <input
-                type="radio"
-                name="aspect-ratio"
-                value="16:9"
+              <input type="radio" name="aspect-ratio" value="16:9"
                 checked={aspectRatio === '16:9'}
-                onChange={() => setAspectRatio('16:9')}
-              />
+                onChange={() => setAspectRatio('16:9')} />
               16:9
             </label>
             <label>
-              <input
-                type="radio"
-                name="aspect-ratio"
-                value="9:16"
+              <input type="radio" name="aspect-ratio" value="9:16"
                 checked={aspectRatio === '9:16'}
-                onChange={() => setAspectRatio('9:16')}
-              />
+                onChange={() => setAspectRatio('9:16')} />
               9:16
             </label>
             {mode === 'Generate Image' && (
               <label>
-                <input
-                  type="radio"
-                  name="aspect-ratio"
-                  value="1:1"
+                <input type="radio" name="aspect-ratio" value="1:1"
                   checked={aspectRatio === '1:1'}
-                  onChange={() => setAspectRatio('1:1')}
-                />
+                  onChange={() => setAspectRatio('1:1')} />
                 1:1
               </label>
             )}
@@ -210,22 +182,11 @@ export default function LensPromptModal({
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          className="lens-prompt-overlay"
-          initial={{opacity: 0}}
-          animate={{opacity: 1}}
-          exit={{opacity: 0}}
-          onClick={onClose}>
-          <motion.div
-            initial={{y: 50, opacity: 0}}
-            animate={{y: 0, opacity: 1}}
-            exit={{y: 50, opacity: 0}}>
-            {renderContent()}
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <Modal isOpen={isOpen} onClose={onClose} title={mode || 'Lens'}
+      contentClassName="modal-content lens-prompt-modal-content">
+      <div className="modal-body">
+        {renderContent()}
+      </div>
+    </Modal>
   );
 }
