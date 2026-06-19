@@ -172,4 +172,4 @@ None of these change the foundation; they build on it. The hard, safety-critical
 
 ---
 
-*Part of [Aura Symphony](https://aura-symphony.netlify.app/docs/). Project Valhalla is the bridge between Aura's AI agents and executable automation. The repository is **public and intentionally transparent** about both what it does and what it can become — the goal is to share this safe-execution pattern with the community, to help creators across many domains.*
+*Part of [Aura Symphony](https://aura-symphony.netlify.app/docs/). Project Valhalla is the bridge between Aura's AI agents and executable automation. The repository is **public and intentionally transparent** about both what it does and what it can become — the goal is to share this safe-execution pattern with the community to help creators across many domains.*
