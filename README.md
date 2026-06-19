@@ -2,6 +2,12 @@
 
 Aura is a zero-surface, multi-agent platform for deep video analysis, generative media creation, and adaptive learning. Step into the conductor's shoes and let the Virtuosos do the heavy lifting.
 
+## Documentation
+
+📖 **Full documentation: [aura-symphony.netlify.app/docs](https://aura-symphony.netlify.app/docs/)**
+
+The complete docs hub covers getting started, architecture, the Virtuosos, Lenses, core patterns, backend services, adaptive learning, and operations — searchable, in-depth guides that go well beyond this README.
+
 ## Features
 
 ### The Virtuosos
@@ -116,4 +122,3 @@ See [CHANGELOG.md](CHANGELOG.md) for detailed implementation progress.
 ## License
 All Rights Reserved. See [LICENSE](LICENSE) for details.
 Unauthorized copying, modification, distribution, or use is strictly prohibited.
-
