@@ -36,7 +36,7 @@ Aura isn't just for analysis; it's an educational platform. The "Create Course" 
 
 ### Prerequisites
 - Node.js 18+
-- A Google Gemini API key ([get one here](https://aistudio.google.com/apikey))
+- A model of your choice API key 
 
 ### Setup
 
