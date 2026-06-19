@@ -1,0 +1,249 @@
+/* ============================================================================
+   Video Player, Controls & Timeline (Master Score)
+   ============================================================================ */
+
+.video-player-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: black;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.video-player-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Floating video controls */
+.video-controls {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-slow), visibility var(--transition-slow);
+  z-index: 21;
+}
+
+.video-player-container:hover .video-controls,
+.video-player-container:has(video:paused) .video-controls {
+  opacity: 1;
+  visibility: visible;
+}
+
+.video-controls button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-base);
+  font-family: var(--font-mono);
+  transition: color var(--transition-normal);
+}
+
+.video-controls button:hover {
+  color: var(--accent);
+  background: none;
+}
+
+.video-controls button .icon {
+  font-size: 32px;
+}
+
+/* Speed controls */
+.speed-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  border-left: 1px solid var(--overlay-border);
+  padding-left: var(--space-3);
+  margin-left: var(--space-1);
+}
+
+.speed-controls button {
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-weight: bold;
+}
+
+.speed-controls button.active {
+  background-color: var(--accent);
+  color: var(--bg-base);
+}
+
+/* Export NLE button */
+.export-nle-btn {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Master Score (Vertical Timeline) */
+.master-score {
+  background-color: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex-shrink: 0;
+  z-index: var(--z-sticky);
+}
+
+.master-score-header {
+  padding: var(--space-4) var(--space-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.collapse-toggle {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.collapse-toggle:hover {
+  background-color: var(--overlay-hover);
+  color: var(--text-primary);
+}
+
+.master-score-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+}
+
+/* Timeline track */
+.timeline-container.vertical {
+  flex-grow: 1;
+  padding: 20px 0;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+  display: flex;
+  justify-content: center;
+}
+
+.timeline-container.vertical .timeline-track {
+  width: 4px;
+  height: 100%;
+  background-color: var(--border);
+  border-radius: 2px;
+  position: relative;
+}
+
+.timeline-container.vertical .timeline-progress {
+  width: 100%;
+  height: 0;
+  background-color: var(--accent);
+  border-radius: 2px;
+  position: absolute;
+  top: 0;
+}
+
+.timeline-container.vertical .timeline-playhead {
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  border-radius: 50%;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.timeline-container.vertical .timeline-selection {
+  width: 100%;
+  background-color: var(--accent-soft);
+  border: none;
+  border-left: 2px solid var(--accent);
+  border-right: 2px solid var(--accent);
+  position: absolute;
+}
+
+/* Annotation markers */
+.annotation-marker {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent);
+  border-radius: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  transition: transform var(--transition-normal);
+}
+
+.annotation-marker:hover {
+  transform: translate(-50%, -50%) scale(1.5);
+}
+
+.annotation-tooltip {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: 0.7rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-normal);
+  z-index: var(--z-overlay);
+}
+
+.annotation-marker:hover .annotation-tooltip {
+  opacity: 1;
+}
+
+.annotation-input-container.vertical {
+  position: absolute;
+  left: 20px;
+  z-index: var(--z-modal);
+}
+
+.annotation-input-container.vertical input {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--accent);
+  color: var(--text-primary);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  width: 150px;
+}

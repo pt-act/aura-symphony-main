@@ -1,0 +1,175 @@
+/* Course View */
+.course-view-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.course-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.course-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.learning-module {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.learning-module h3 {
+  margin-bottom: var(--space-3);
+  font-size: var(--text-base);
+}
+
+.text-module p {
+  line-height: 1.6;
+  font-size: var(--text-sm);
+}
+
+.clickable-sentence {
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 0.1em 0;
+  transition: background-color var(--transition-fast);
+}
+
+.clickable-sentence:hover {
+  background-color: var(--accent-soft);
+}
+
+.clickable-sentence.highlighted {
+  background-color: var(--accent-medium);
+  font-weight: bold;
+}
+
+.clickable-item {
+  display: flex;
+  gap: var(--space-2);
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast);
+}
+
+.clickable-item:hover {
+  background-color: var(--accent-soft);
+}
+
+.clickable-item.highlighted {
+  background-color: var(--accent-medium);
+}
+
+.clickable-item time {
+  font-family: var(--font-mono);
+  color: var(--accent);
+  font-size: var(--text-sm);
+  flex-shrink: 0;
+}
+
+/* Quiz */
+.quiz-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.quiz-question {
+  font-size: var(--text-base);
+  font-weight: 500;
+  margin-bottom: var(--space-3);
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.quiz-option {
+  padding: var(--space-3);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  transition: all var(--transition-fast);
+}
+
+.quiz-option:hover {
+  border-color: var(--accent);
+}
+
+.quiz-option.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.quiz-option.correct {
+  border-color: var(--success);
+  background: rgba(52, 168, 83, 0.1);
+}
+
+.quiz-option.incorrect {
+  border-color: var(--error);
+  background: rgba(207, 102, 121, 0.1);
+}
+
+.quiz-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-4);
+}
+
+.quiz-hint-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  padding: var(--space-2) var(--space-3);
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.quiz-hint-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Biofeedback Monitor */
+.biofeedback-monitor {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-base);
+}
+
+.biofeedback-monitor video {
+  width: 100%;
+  border-radius: var(--radius-md);
+}
+
+.loader-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+}
