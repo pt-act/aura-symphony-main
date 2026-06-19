@@ -1,0 +1,134 @@
+/* ============================================================================
+   Design Token System — Aura Symphony
+   Dark theme is the default (:root), light theme via [data-theme="light"]
+   All components reference these tokens — never hardcode values.
+   ============================================================================ */
+
+:root {
+  /* === Color Palette (Dark Theme — Default) === */
+  --bg-base: #121212;
+  --bg-surface: #1e1e1e;
+  --bg-surface-hover: #252525;
+  --bg-elevated: #2a2a2a;
+  --text-primary: #e0e0e0;
+  --text-secondary: #b0b0b0;
+  --text-tertiary: #757575;
+  --text-on-accent: #ffffff;
+  --accent: #8ab4f8;
+  --accent-hover: #1a73e8;
+  --accent-soft: rgba(138, 180, 248, 0.1);
+  --accent-medium: rgba(138, 180, 248, 0.2);
+  --border: #333333;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --error: #cf6679;
+  --success: #34a853;
+  --warning: #fbbc04;
+
+  /* === Overlays (theme-aware semi-transparent) === */
+  --overlay-hover: rgba(255, 255, 255, 0.05);
+  --overlay-active: rgba(255, 255, 255, 0.08);
+  --overlay-border: rgba(255, 255, 255, 0.1);
+
+  /* === Glassmorphism === */
+  --glass-bg: rgba(30, 30, 30, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+
+  /* === Spacing Scale (4px base) === */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.5rem;    /* 24px */
+  --space-6: 2rem;      /* 32px */
+  --space-8: 3rem;      /* 48px */
+
+  /* === Border Radius === */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 100px;
+
+  /* === Shadows / Elevation === */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.16);
+  --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.6);
+
+  /* === Typography === */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --text-xs: 0.75rem;     /* 12px */
+  --text-sm: 0.875rem;    /* 14px */
+  --text-base: 1rem;      /* 16px */
+  --text-lg: 1.125rem;    /* 18px */
+  --text-xl: 1.25rem;     /* 20px */
+  --text-2xl: 1.5rem;     /* 24px */
+
+  /* === Transitions === */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+  --transition-spring: 0.3s cubic-bezier(0.04, 0.62, 0.23, 0.98);
+
+  /* === Z-Index Layers === */
+  --z-base: 1;
+  --z-sticky: 100;
+  --z-overlay: 1000;
+  --z-modal: 2000;
+  --z-toast: 3000;
+
+  /* === Backward-compatible aliases === */
+  --background-color: var(--bg-base);
+  --surface-color: var(--bg-surface);
+  --primary-text-color: var(--text-primary);
+  --secondary-text-color: var(--text-secondary);
+  --accent-color: var(--accent);
+  --accent-color-dark: var(--accent-hover);
+  --error-color: var(--error);
+  --border-color: var(--border);
+}
+
+/* === Light Theme === */
+[data-theme="light"] {
+  --bg-base: #ffffff;
+  --bg-surface: #f7f8f8;
+  --bg-surface-hover: #f0f1f2;
+  --bg-elevated: #ebecec;
+  --text-primary: #1a1a1a;
+  --text-secondary: #555555;
+  --text-tertiary: #888888;
+  --text-on-accent: #ffffff;
+  --accent: #1a73e8;
+  --accent-hover: #1557b0;
+  --accent-soft: rgba(26, 115, 232, 0.08);
+  --accent-medium: rgba(26, 115, 232, 0.12);
+  --border: #e0e0e0;
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --error: #d93025;
+  --success: #188038;
+  --warning: #f9ab00;
+
+  --overlay-hover: rgba(0, 0, 0, 0.04);
+  --overlay-active: rgba(0, 0, 0, 0.06);
+  --overlay-border: rgba(0, 0, 0, 0.08);
+
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.12);
+
+  --background-color: var(--bg-base);
+  --surface-color: var(--bg-surface);
+  --primary-text-color: var(--text-primary);
+  --secondary-text-color: var(--text-secondary);
+  --accent-color: var(--accent);
+  --accent-color-dark: var(--accent-hover);
+  --error-color: var(--error);
+  --border-color: var(--border);
+}
