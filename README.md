@@ -1,6 +1,6 @@
 # Aura Symphony
 
-Aura is a zero-surface, multi-agent platform for deep video analysis, generative media creation, and adaptive learning. Step into the conductor's shoes and let the Virtuosos do the heavy lifting.
+Aura is a zero-surface, multi-agent **creative platform**: a team of AI Virtuosos that turn your intent into generated media, interactive courses, and automation for the creative tools you already use — with deep multimodal understanding as the layer beneath, not the destination. Step into the conductor's shoes and let the Virtuosos do the heavy lifting.
 
 ## Documentation
 
@@ -43,7 +43,7 @@ Valhalla is Aura's bridge to the outside world: **an LLM agent writes an automat
 This is a **proof of concept that's deliberately transparent** about what's built versus what's next — the value is the architecture, and it's meant to grow with its users. **Read the full deep-dive: [`PROJECT_VALHALLA.md`](PROJECT_VALHALLA.md)** · or in the docs at [aura-symphony.netlify.app/docs/valhalla](https://aura-symphony.netlify.app/docs/valhalla).
 
 ### Adaptive Learning
-Aura isn't just for analysis; it's an educational platform. The "Create Course" lens transforms any video into a structured learning module. As you take quizzes, Aura tracks your performance using **Bayesian Knowledge Tracing** (BKT) with temporal decay and prerequisite-aware content selection. The Digital Learner Profile (DLP) provides calibrated probability-of-mastery estimates. **Federated Learning** with differential privacy enables the system to improve across users while preserving individual privacy.
+Creation extends to teaching. The **Create Course** lens *authors* a structured, interactive learning module from your material — turning a finished piece into a course others can learn from. As learners progress, Aura personalizes the path with **Bayesian Knowledge Tracing** (BKT) using temporal decay and prerequisite-aware content selection; the Digital Learner Profile (DLP) gives calibrated probability-of-mastery estimates, and **Federated Learning** with differential privacy lets the system improve across users while preserving individual privacy.
 
 ## Getting Started
 
