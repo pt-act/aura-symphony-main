@@ -3,6 +3,18 @@ import c from 'classnames';
 import Modal from '../shared/Modal';
 import modes from '../../lib/modes';
 
+const KEYBOARD_SHORTCUTS = [
+  {keys: 'Space', action: 'Play / Pause video'},
+  {keys: 'J', action: 'Seek backward 10 seconds'},
+  {keys: 'K', action: 'Toggle play / pause'},
+  {keys: 'L', action: 'Seek forward 10 seconds'},
+  {keys: '← →', action: 'Frame step backward / forward'},
+  {keys: '/', action: 'Focus the Conductor input'},
+  {keys: 'Cmd/Ctrl + K', action: 'Open Command Palette'},
+  {keys: 'Cmd/Ctrl + P', action: 'Open Valhalla Gateway'},
+  {keys: 'Esc', action: 'Close modal / palette'},
+];
+
 interface HelpModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -32,6 +44,15 @@ export default function HelpModal({isOpen, onClose}: HelpModalProps) {
             className={c({active: activeTab === 'lensguide'})}
             onClick={() => setActiveTab('lensguide')}>
             Lens Guide
+          </button>
+          <button
+            role="tab"
+            aria-selected={activeTab === 'shortcuts'}
+            aria-controls="panel-shortcuts"
+            id="tab-shortcuts"
+            className={c({active: activeTab === 'shortcuts'})}
+            onClick={() => setActiveTab('shortcuts')}>
+            Keyboard Shortcuts
           </button>
         </div>
         <div
@@ -78,6 +99,24 @@ export default function HelpModal({isOpen, onClose}: HelpModalProps) {
                 </li>
               ))}
             </ul>
+          )}
+          {activeTab === 'shortcuts' && (
+            <table className="shortcuts-table">
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {KEYBOARD_SHORTCUTS.map(s => (
+                  <tr key={s.keys}>
+                    <td><kbd className="shortcut-key">{s.keys}</kbd></td>
+                    <td>{s.action}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
         </div>
       </div>

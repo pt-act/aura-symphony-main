@@ -17,10 +17,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Monospace utility — for timestamps, code blocks, data tables */
 .mono {
   font-family: var(--font-mono);
 }
 
+/* Base button */
 button {
   font-family: var(--font-sans);
   background-color: var(--bg-surface);
@@ -46,6 +48,7 @@ button:disabled {
 
 /* Material Symbols icon class — REMOVED in Group B after Lucide migration */
 
+/* Spinner */
 .spinner {
   width: 24px;
   height: 24px;
@@ -68,6 +71,7 @@ button:disabled {
   animation: spin-icon 0.8s linear infinite;
 }
 
+/* Loading spinner container (InsightCard) */
 .loading-spinner {
   display: flex;
   align-items: center;
@@ -77,6 +81,7 @@ button:disabled {
   color: var(--text-secondary);
 }
 
+/* Error toast (Workspace) */
 .error-toast {
   position: fixed;
   bottom: var(--space-6);
@@ -92,6 +97,7 @@ button:disabled {
   font-size: var(--text-sm);
 }
 
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -107,11 +113,13 @@ button:disabled {
   background: var(--text-tertiary);
 }
 
+/* Focus visible */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
+/* Provider settings input focus */
 .settings-card-input:focus {
   outline: none;
   border-color: var(--accent);

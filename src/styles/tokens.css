@@ -80,6 +80,8 @@
   --z-toast: 3000;
 
   /* === Backward-compatible aliases === */
+  /* Map old variable names to new tokens so existing components */
+  /* and inline styles continue working during migration */
   --background-color: var(--bg-base);
   --surface-color: var(--bg-surface);
   --primary-text-color: var(--text-primary);
@@ -123,6 +125,7 @@
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
   --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.12);
 
+  /* Backward-compatible aliases */
   --background-color: var(--bg-base);
   --surface-color: var(--bg-surface);
   --primary-text-color: var(--text-primary);
