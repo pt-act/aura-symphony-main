@@ -27,7 +27,7 @@
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
     "lucide-react": "^1.21.0",
-    "mermaid": "10",
+    "mermaid": "11",
     "motion": "^12.40.0",
     "pdfjs-dist": "^4.10.38",
     "react": "^19.2.7",
