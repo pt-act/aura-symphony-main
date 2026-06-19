@@ -32,14 +32,15 @@ Aura is powered by a multi-agent architecture. Each agent, or "Virtuoso," is an 
 - **Offline-First PWA:** Service Worker caching + IndexedDB mutation queue enables full offline operation with background sync on reconnect.
 - **Multimodal RAG:** CLIP ViT-B/32 frame embeddings enable true visual search alongside text-based retrieval, with fusion scoring across modalities.
 
-Project Valhalla — safe execution of AI-generated code
-Valhalla is Aura's bridge to the outside world: an LLM agent writes an automation script and a hardened in-browser WebAssembly sandbox runs it safely — then hands you the validated, tool-ready script to apply in your software. Letting a model generate code is easy; running it without giving an attacker or a hallucination the keys to the machine is the hard part — and that's the part Valhalla is built around.
+### Project Valhalla — safe execution of AI-generated code
+Valhalla is Aura's bridge to the outside world: **an LLM agent writes an automation script and a hardened in-browser WebAssembly sandbox runs it safely** — then hands you the validated, tool-ready script to apply in your software. Letting a model generate code is easy; *running* it without giving an attacker or a hallucination the keys to the machine is the hard part — and that's the part Valhalla is built around.
 
-Defense in depth (5 layers): static analysis (regex + AST) → a 22-module runtime import firewall → WASM capability isolation (no network, no filesystem, no subprocess) → a 30s CPU timeout → a memory cap. Layers 2–5 are structural — they hold even if detection is fooled.
-Quantitative safety scoring: 100 − 30·critical − 10·warning; any critical finding blocks the script before it runs. A dedicated AST pass catches the obfuscated escapes (getattr dunder, globals(), __builtins__, eval→variable).
-Tool-agnostic substrate: the target is a parameter, not hard-wired code — point it at any scriptable tool (Blender, Houdini, Ableton, Figma, DaVinci…). Each step is the same primitive — generate a vetted script for tool X — so they compose into multi-tool pipelines (e.g. course → Blender for 3D → Ableton Live for audio).
-PMDE + human override: API/scripting first, with the generated script, safety report, and live output surfaced for your approval at every step.
-This is a proof of concept that's deliberately transparent about what's built versus what's next — the value is the architecture, and it's meant to grow with its users. Read the full deep-dive in the docs at aura-symphony.netlify.app/docs/valhalla.
+- **Defense in depth (5 layers):** static analysis (regex + AST) → a 22-module runtime import firewall → WASM capability isolation (no network, no filesystem, no subprocess) → a 30s CPU timeout → a memory cap. Layers 2–5 are *structural* — they hold even if detection is fooled.
+- **Quantitative safety scoring:** `100 − 30·critical − 10·warning`; any critical finding **blocks the script before it runs**. A dedicated AST pass catches the obfuscated escapes (`getattr` dunder, `globals()`, `__builtins__`, `eval`→variable).
+- **Tool-agnostic substrate:** the target is a *parameter*, not hard-wired code — point it at any scriptable tool (Blender, Houdini, Ableton, Figma, DaVinci…). Each step is the same primitive — *generate a vetted script for tool X* — so they compose into multi-tool pipelines (e.g. course → Blender for 3D → Ableton Live for audio).
+- **PMDE + human override:** API/scripting first, with the generated script, safety report, and live output surfaced for your approval at every step.
+
+This is a **proof of concept that's deliberately transparent** about what's built versus what's next — the value is the architecture, and it's meant to grow with its users. **Read the full deep-dive: [`PROJECT_VALHALLA.md`](PROJECT_VALHALLA.md)** · or in the docs at [aura-symphony.netlify.app/docs/valhalla](https://aura-symphony.netlify.app/docs/valhalla).
 
 ### Adaptive Learning
 Aura isn't just for analysis; it's an educational platform. The "Create Course" lens transforms any video into a structured learning module. As you take quizzes, Aura tracks your performance using **Bayesian Knowledge Tracing** (BKT) with temporal decay and prerequisite-aware content selection. The Digital Learner Profile (DLP) provides calibrated probability-of-mastery estimates. **Federated Learning** with differential privacy enables the system to improve across users while preserving individual privacy.
