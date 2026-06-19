@@ -29,6 +29,7 @@ export default defineConfig(({ mode }) => {
       },
       test: {
         globals: true,
+        setupFiles: ['./vitest.setup.ts'],
         include: ['src/**/*.test.ts', 'backend/**/*.test.js'],
       }
     };
