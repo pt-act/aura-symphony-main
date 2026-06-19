@@ -159,11 +159,23 @@
 
 /* Ingestion Screen */
 .ingestion-screen {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100%;
   padding: var(--space-6);
+  isolation: isolate;
+}
+
+/* Subtle brand glow behind the empty state, echoing the landing hero */
+.ingestion-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-glow);
+  z-index: -1;
+  pointer-events: none;
 }
 
 .ingestion-content {
@@ -174,6 +186,12 @@
 .ingestion-content h1 {
   font-size: var(--text-2xl);
   margin-bottom: var(--space-2);
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  width: fit-content;
+  margin-inline: auto;
 }
 
 .ingestion-content p {
@@ -215,12 +233,15 @@
 .file-drop-area {
   padding: var(--space-6);
   border: 2px dashed var(--border);
-  border-radius: var(--radius-md);
-  transition: border-color var(--transition-normal);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  transition: border-color var(--transition-normal),
+    background-color var(--transition-normal);
 }
 
 .file-drop-area:hover {
   border-color: var(--accent);
+  background: var(--accent-soft);
 }
 
 .file-upload-label {

@@ -22,21 +22,37 @@ body {
   font-family: var(--font-mono);
 }
 
-/* Base button */
+/* Base button — calm secondary by default (was a loud outlined-accent on
+   every button, which read generic). Use .btn-primary for emphasis. */
 button {
   font-family: var(--font-sans);
   background-color: var(--bg-surface);
-  color: var(--accent);
-  border: 1px solid var(--accent);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
   padding: var(--space-2) var(--space-4);
   cursor: pointer;
-  transition: background-color var(--transition-normal), color var(--transition-normal);
-  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast),
+    color var(--transition-fast), border-color var(--transition-fast);
+  border-radius: var(--radius-md);
 }
 
 button:hover:not(:disabled) {
-  background-color: var(--accent);
-  color: var(--text-on-accent);
+  background-color: var(--bg-surface-hover);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Primary action — the marketing gradient, for the one key CTA per view */
+.btn-primary {
+  background: var(--gradient-accent);
+  color: #fff;
+  border: 1px solid transparent;
+}
+
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+  border-color: transparent;
+  color: #fff;
 }
 
 button:disabled {

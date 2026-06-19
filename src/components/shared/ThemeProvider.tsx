@@ -16,7 +16,10 @@ function getInitialTheme(): Theme {
   if (typeof window === 'undefined') return 'dark';
   const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
   if (stored === 'light' || stored === 'dark') return stored;
-  return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  // Default to the brand's dark theme regardless of OS preference, so the
+  // product matches the (always-dark) landing/marketing experience. Users can
+  // still switch via the toggle, and that choice is persisted below.
+  return 'dark';
 }
 
 export function ThemeProvider({children}: {children: React.ReactNode}) {
@@ -26,19 +29,6 @@ export function ThemeProvider({children}: {children: React.ReactNode}) {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem(STORAGE_KEY, theme);
   }, [theme]);
-
-  // Listen for system theme changes if user hasn't explicitly chosen
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
-    const handleChange = (e: MediaQueryListEvent) => {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (!stored) {
-        setThemeState(e.matches ? 'light' : 'dark');
-      }
-    };
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, []);
 
   const setTheme = useCallback((t: Theme) => setThemeState(t), []);
   const toggleTheme = useCallback(() => {
