@@ -1,0 +1,154 @@
+/* Chat */
+.chat-insight {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.chat-history {
+  max-height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.chat-message {
+  max-width: 85%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.chat-message.user {
+  align-self: flex-end;
+  background-color: var(--accent);
+  color: var(--text-on-accent);
+}
+
+.chat-message.model {
+  align-self: flex-start;
+  background-color: var(--bg-elevated);
+}
+
+.chat-message .message-content.loading {
+  opacity: 0.5;
+}
+
+.file-attachment-preview img {
+  max-width: 200px;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-2);
+}
+
+.file-icon {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.chat-input-form {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.chat-input-form input[type='text'] {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+}
+
+.chat-input-form input[type='text']:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.file-attachment-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+}
+
+.attach-button, .send-button {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.attach-button:hover, .send-button:hover {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* Annotations list */
+.annotations-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.annotations-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast);
+}
+
+.annotations-list li:hover {
+  background-color: var(--accent-soft);
+}
+
+.annotation-text-container {
+  flex-grow: 1;
+  cursor: pointer;
+  display: flex;
+  gap: var(--space-2);
+  align-items: start;
+}
+
+.annotation-text-container time {
+  font-family: var(--font-mono);
+  color: var(--accent);
+  font-size: var(--text-sm);
+  flex-shrink: 0;
+}
+
+.annotation-text-container .text {
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+.delete-annotation-btn {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-lg);
+}
+
+.delete-annotation-btn:hover {
+  color: var(--error);
+}
+
+/* Orchestra Visualizer */

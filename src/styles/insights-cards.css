@@ -1,0 +1,230 @@
+/* ============================================================================
+   Insight Cards, Content Renderers & Orchestra Visualizer
+   ============================================================================ */
+
+/* Insight Card */
+.insight-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.card-title h3 {
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+
+.card-controls {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.card-controls button {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.card-controls button:hover {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.card-body {
+  padding: var(--space-4);
+}
+
+.card-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.card-footer button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  padding: var(--space-1) var(--space-2);
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+}
+
+.card-footer button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Interactive Transcript List */
+.transcript-list {
+  list-style: none;
+}
+
+.outputItem {
+  display: flex;
+  gap: var(--space-4);
+  align-items: start;
+  padding: var(--space-3) var(--space-2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color var(--transition-normal), padding-left var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.outputItem:hover {
+  background-color: var(--accent-soft);
+}
+
+.outputItem.active {
+  background-color: var(--accent-medium);
+}
+
+.outputItem time {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  font-weight: bold;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  transition: margin-left var(--transition-normal);
+}
+
+.outputItem p.text {
+  margin: 0;
+  line-height: 1.5;
+  font-size: var(--text-sm);
+}
+
+.outputItem::before {
+  content: '';
+  position: absolute;
+  left: -28px;
+  top: 12px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid var(--accent);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  opacity: 0.7;
+  transition: left var(--transition-normal);
+}
+
+.outputItem:hover::before {
+  left: 8px;
+}
+
+.outputItem:hover time {
+  margin-left: 28px;
+}
+
+/* Clickable spans */
+.outputItem-span {
+  cursor: pointer;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+  border-radius: 3px;
+  padding: 0.1em 0;
+}
+
+.outputItem-span:hover {
+  background-color: var(--accent-medium);
+}
+
+.outputItem-span.active {
+  background-color: var(--accent-medium);
+  font-weight: bold;
+}
+
+/* Text content & TTS */
+.text-content-container {
+  position: relative;
+}
+
+.tts-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: var(--space-1);
+}
+
+.tts-button:hover {
+  color: var(--accent);
+  background: none;
+}
+
+.tts-button .icon {
+  font-size: 20px;
+}
+
+.transcription-text {
+  font-style: italic;
+  white-space: pre-wrap;
+}
+
+.markdown-content {
+  white-space: pre-wrap;
+  font-family: inherit;
+  line-height: 1.6;
+}
+
+/* Generated media */
+.generated-image {
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+}
+
+.generated-video-container video {
+  width: 100%;
+  border-radius: var(--radius-md);
+}
+
+/* Search sources */
+.search-sources {
+  margin-top: var(--space-4);
+  font-size: var(--text-sm);
+}
+
+.search-sources h4 {
+  margin-bottom: var(--space-2);
+}
+
+.search-sources ul {
+  list-style: disc;
+  padding-left: 20px;
+}
+
+.search-sources a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.search-sources a:hover {
+  text-decoration: underline;
+}
+
+/* Table content */
