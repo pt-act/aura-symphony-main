@@ -7,7 +7,7 @@ Aura is a zero-surface, multi-agent platform for deep video analysis, generative
 ### The Virtuosos
 Aura is powered by a multi-agent architecture. Each agent, or "Virtuoso," is an expert in a specific domain:
 - **The Conductor:** The orchestrator. It parses your intent and routes tasks.
-- **The Visionary:** The visual analyst. It uses Gemini's multimodal capabilities to extract deep insights from video frames and images.
+- **The Visionary:** The visual analyst. It uses a multimodal's capabilities to extract deep insights from video frames and images.
 - **The Scholar:** The researcher. It grounds analysis in real-world facts using Google Search.
 - **The Artisan:** The creator. It uses Veo and Imagen to generate new media assets.
 - **The Analyst:** The logician. It synthesizes data, creates structured courses, and tracks learning progress.
