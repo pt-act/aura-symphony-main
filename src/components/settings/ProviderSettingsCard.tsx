@@ -1,3 +1,11 @@
+/**
+ * All Rights Reserved.
+ * Copyright (c) 2025 Ricardo Nuno Quintas de Almeida.
+ *
+ * No part of this software may be copied, modified, distributed,
+ * or used in any form without prior express written permission.
+ * UNAUTHORIZED USE IS STRICTLY PROHIBITED.
+ */
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Eye, EyeOff, Check, Server, Key, Cpu, AlertCircle, Loader, Zap } from 'lucide-react';
 import {
@@ -7,7 +15,6 @@ import {
   getActiveProvider as getActiveProviderBase,
 } from '../../lib/provider-config';
 import {testProviderConnection} from '../../api/client';
-import {styles} from './providerSettingsCardStyles';
 
 // Re-export for consumers that imported from this file
 export type { ProviderConfig };
@@ -32,20 +39,14 @@ export default function ProviderSettingsCard() {
   const addProvider = () => {
     const newProvider: ProviderConfig = {
       id: `provider-${Date.now()}`,
-      name: '',
-      baseUrl: '',
-      apiKey: '',
-      model: '',
-      isActive: false,
+      name: '', baseUrl: '', apiKey: '', model: '', isActive: false,
     };
     setProviders(prev => [...prev, newProvider]);
     setEditingId(newProvider.id);
   };
 
   const updateProvider = (id: string, field: keyof ProviderConfig, value: string | boolean) => {
-    setProviders(prev =>
-      prev.map(p => (p.id === id ? { ...p, [field]: value } : p))
-    );
+    setProviders(prev => prev.map(p => (p.id === id ? { ...p, [field]: value } : p)));
   };
 
   const deleteProvider = (id: string) => {
@@ -53,9 +54,7 @@ export default function ProviderSettingsCard() {
   };
 
   const activateProvider = (id: string) => {
-    setProviders(prev =>
-      prev.map(p => ({ ...p, isActive: p.id === id }))
-    );
+    setProviders(prev => prev.map(p => ({ ...p, isActive: p.id === id })));
   };
 
   const handleSave = () => {
@@ -87,50 +86,39 @@ export default function ProviderSettingsCard() {
   const activeProvider = providers.find(p => p.isActive);
 
   return (
-    <div style={styles.card}>
-      {/* Header */}
-      <div style={styles.header}>
-        <div style={styles.headerLeft}>
-          <Server size={20} color="var(--accent-color)" />
+    <div className="settings-card">
+      <div className="settings-card-header">
+        <div className="settings-card-header-left">
+          <Server size={20} className="settings-card-icon" />
           <div>
-            <h2 style={styles.title}>AI Provider Settings</h2>
-            <p style={styles.subtitle}>Configure base URL, API key, and model for each provider</p>
+            <h2 className="settings-card-title">AI Provider Settings</h2>
+            <p className="settings-card-subtitle">Configure base URL, API key, and model for each provider</p>
           </div>
         </div>
-        <button onClick={handleSave} style={saved ? styles.savedBtn : styles.saveBtn}>
+        <button onClick={handleSave} className={saved ? 'settings-save-btn saved' : 'settings-save-btn'}>
           {saved ? <><Check size={14} /> Saved</> : 'Save'}
         </button>
       </div>
 
-      {/* Active Provider Badge */}
       {activeProvider && (
-        <div style={styles.activeBadge}>
-          <span style={styles.activeDot} />
+        <div className="settings-active-badge">
+          <span className="settings-active-dot" />
           Active: {activeProvider.name || activeProvider.model || 'Unnamed'}
         </div>
       )}
 
-      {/* Provider List */}
-      <div style={styles.providerList}>
+      <div className="settings-provider-list">
         {providers.map(provider => {
           const isEditing = editingId === provider.id;
           return (
             <div
               key={provider.id}
-              style={{
-                ...styles.providerRow,
-                borderColor: provider.isActive ? 'var(--accent-color)' : 'var(--border-color)',
-              }}
-            >
-              {/* Provider Header */}
-              <div style={styles.providerHeader}>
-                <div style={styles.providerHeaderLeft}>
+              className={`settings-provider-row ${provider.isActive ? 'active' : ''}`}>
+              <div className="settings-provider-header">
+                <div className="settings-provider-header-left">
                   <button
                     onClick={() => activateProvider(provider.id)}
-                    style={{
-                      ...styles.radioBtn,
-                      background: provider.isActive ? 'var(--accent-color)' : 'transparent',
-                    }}
+                    className={`settings-radio-btn ${provider.isActive ? 'active' : ''}`}
                     title="Set as active"
                   />
                   <input
@@ -138,88 +126,69 @@ export default function ProviderSettingsCard() {
                     value={provider.name}
                     onChange={e => updateProvider(provider.id, 'name', e.target.value)}
                     placeholder="Provider name"
-                    style={styles.nameInput}
+                    className="settings-name-input"
                     onFocus={() => setEditingId(provider.id)}
                   />
                 </div>
-                <div style={styles.providerActions}>
+                <div className="settings-provider-actions">
                   {providers.length > 1 && (
                     <button
                       onClick={() => deleteProvider(provider.id)}
-                      style={styles.iconBtn}
-                      title="Delete provider"
-                    >
+                      className="settings-icon-btn"
+                      title="Delete provider">
                       <Trash2 size={14} />
                     </button>
                   )}
                 </div>
               </div>
 
-              {/* Fields */}
-              <div style={{ ...styles.fields, display: isEditing ? 'flex' : 'none' }}>
-                <div style={styles.fieldGroup}>
-                  <label style={styles.label}>
-                    <Server size={12} /> Base URL
-                  </label>
+              <div className={`settings-fields ${isEditing ? 'open' : ''}`}>
+                <div className="settings-field-group">
+                  <label className="settings-label"><Server size={12} /> Base URL</label>
                   <input
                     type="text"
                     value={provider.baseUrl}
                     onChange={e => updateProvider(provider.id, 'baseUrl', e.target.value)}
                     placeholder="https://api.example.com/v1"
                     className="settings-card-input"
-                    style={styles.input}
                   />
                 </div>
 
-                <div style={styles.fieldGroup}>
-                  <label style={styles.label}>
-                    <Key size={12} /> API Key
-                  </label>
-                  <div style={styles.keyInputWrapper}>
+                <div className="settings-field-group">
+                  <label className="settings-label"><Key size={12} /> API Key</label>
+                  <div className="settings-key-input-wrapper">
                     <input
                       type={showKeys[provider.id] ? 'text' : 'password'}
                       value={provider.apiKey}
                       onChange={e => updateProvider(provider.id, 'apiKey', e.target.value)}
                       placeholder="sk-..."
-                      className="settings-card-input"
-                      style={{ ...styles.input, paddingRight: '36px' }}
+                      className="settings-card-input settings-key-input"
                     />
                     <button
                       onClick={() => toggleKeyVisibility(provider.id)}
-                      style={styles.eyeBtn}
-                      title={showKeys[provider.id] ? 'Hide' : 'Show'}
-                    >
+                      className="settings-eye-btn"
+                      title={showKeys[provider.id] ? 'Hide' : 'Show'}>
                       {showKeys[provider.id] ? <EyeOff size={14} /> : <Eye size={14} />}
                     </button>
                   </div>
                 </div>
 
-                <div style={styles.fieldGroup}>
-                  <label style={styles.label}>
-                    <Cpu size={12} /> Model
-                  </label>
+                <div className="settings-field-group">
+                  <label className="settings-label"><Cpu size={12} /> Model</label>
                   <input
                     type="text"
                     value={provider.model}
                     onChange={e => updateProvider(provider.id, 'model', e.target.value)}
                     placeholder="e.g. gpt-4o, claude-sonnet-4, gemini-2.5-pro"
                     className="settings-card-input"
-                    style={styles.input}
                   />
                 </div>
 
-                {/* Test Connection */}
-                <div style={styles.testConnectionRow}>
+                <div className="settings-test-row">
                   <button
                     onClick={() => handleTestConnection(provider)}
                     disabled={testState[provider.id] === 'testing'}
-                    style={{
-                      ...styles.testBtn,
-                      ...(testState[provider.id] === 'testing' ? styles.testBtnDisabled : {}),
-                      ...(testState[provider.id] === 'ok' ? styles.testBtnOk : {}),
-                      ...(testState[provider.id] === 'fail' ? styles.testBtnFail : {}),
-                    }}
-                  >
+                    className={`settings-test-btn state-${testState[provider.id]}`}>
                     {testState[provider.id] === 'testing' ? (
                       <><Loader size={13} className="spin-icon" /> Testing…</>
                     ) : testState[provider.id] === 'ok' ? (
@@ -231,22 +200,18 @@ export default function ProviderSettingsCard() {
                     )}
                   </button>
                   {testState[provider.id] === 'fail' && testError[provider.id] && (
-                    <span style={styles.testErrorText}>{testError[provider.id]}</span>
+                    <span className="settings-test-error">{testError[provider.id]}</span>
                   )}
                 </div>
               </div>
 
-              {/* Collapsed Summary */}
               {!isEditing && (
-                <div
-                  style={styles.collapsedSummary}
-                  onClick={() => setEditingId(provider.id)}
-                >
-                  <span style={styles.summaryText}>
+                <div className="settings-collapsed-summary" onClick={() => setEditingId(provider.id)}>
+                  <span className="settings-summary-text">
                     {provider.model || 'No model set'}
                     {provider.baseUrl ? ` · ${new URL(provider.baseUrl).hostname}` : ''}
                   </span>
-                  <span style={styles.editHint}>Click to edit</span>
+                  <span className="settings-edit-hint">Click to edit</span>
                 </div>
               )}
             </div>
@@ -254,20 +219,14 @@ export default function ProviderSettingsCard() {
         })}
       </div>
 
-      {/* Add Button */}
-      <button onClick={addProvider} style={styles.addBtn}>
+      <button onClick={addProvider} className="settings-add-btn">
         <Plus size={16} /> Add Provider
       </button>
 
-      {/* Info */}
-      <div style={styles.infoBox}>
-        <AlertCircle size={14} color="var(--secondary-text-color)" />
-        <span>
-          Supports any OpenAI-compatible API (OpenAI, Anthropic via proxy, local LLMs, Ollama, etc.)
-        </span>
+      <div className="settings-info-box">
+        <AlertCircle size={14} />
+        <span>Supports any OpenAI-compatible API (OpenAI, Anthropic via proxy, local LLMs, Ollama, etc.)</span>
       </div>
     </div>
   );
 }
-
-// getActiveProvider is re-exported from provider-config above

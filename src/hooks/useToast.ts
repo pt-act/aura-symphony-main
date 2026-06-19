@@ -6,9 +6,11 @@
  * or used in any form without prior express written permission.
  * UNAUTHORIZED USE IS STRICTLY PROHIBITED.
  */
-import React from 'react';
+import {useContext} from 'react';
+import {ToastContext} from '../components/shared/ToastProvider';
 
-// Note: This component is not currently used, but is kept for potential future use.
-export default function VideoPlayer() {
-  return <div>Video Player</div>;
+export function useToast() {
+  const ctx = useContext(ToastContext);
+  if (!ctx) throw new Error('useToast must be used within ToastProvider');
+  return ctx;
 }

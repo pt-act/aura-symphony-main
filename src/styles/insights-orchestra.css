@@ -1,0 +1,178 @@
+.orchestra-visualizer {
+  position: fixed;
+  bottom: var(--space-5);
+  right: var(--space-5);
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 280px;
+  pointer-events: none;
+}
+
+.orchestra-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--space-2);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+}
+
+.orchestra-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.orchestra-stage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.virtuoso-card {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.virtuoso-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--accent-color);
+  box-shadow: 0 0 10px var(--accent-color);
+}
+
+.virtuoso-icon-wrapper {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--overlay-active);
+  border-radius: var(--radius-md);
+  color: var(--accent-color);
+  flex-shrink: 0;
+}
+
+.virtuoso-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--accent-color);
+}
+
+.virtuoso-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.virtuoso-name-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.virtuoso-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.5;
+}
+
+.virtuoso-name {
+  font-size: var(--text-sm);
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.virtuoso-status-row {
+  height: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.virtuoso-progress-bar {
+  width: 100%;
+  height: 2px;
+  background-color: var(--overlay-border);
+  border-radius: 1px;
+  overflow: hidden;
+  position: relative;
+}
+
+.virtuoso-progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background-color: var(--accent-color);
+  box-shadow: 0 0 8px var(--accent-color);
+}
+
+.virtuoso-status-message {
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  opacity: 0.8;
+}
+
+.virtuoso-card.success .virtuoso-status-message {
+  color: var(--success);
+}
+
+.virtuoso-card.error .virtuoso-status-message {
+  color: var(--error);
+}
+
+.virtuoso-activity {
+  color: var(--accent-color);
+  opacity: 0.6;
+}
+
+.orchestra-idle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  padding: var(--space-2);
+  opacity: 0.5;
+}
+
+.idle-dot {
+  width: 6px;
+  height: 6px;
+  background-color: currentColor;
+  border-radius: 50%;
+}
+
+/* Placeholder */
+.placeholder-text {
+  color: var(--text-tertiary);
+  font-style: italic;
+}

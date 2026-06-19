@@ -1,0 +1,208 @@
+/* ============================================================================
+   Custom Virtuoso Builder Modal
+   ============================================================================ */
+
+.custom-virtuoso-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: var(--z-overlay);
+  backdrop-filter: blur(4px);
+}
+
+.custom-virtuoso-modal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-xl);
+}
+
+.custom-virtuoso-modal .modal-header {
+  padding: var(--space-5);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.custom-virtuoso-modal .modal-header h2 {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 600;
+}
+
+.custom-virtuoso-modal .close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-virtuoso-modal .close-btn:hover {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.custom-virtuoso-modal .modal-body {
+  padding: var(--space-5);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.custom-virtuoso-modal .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.custom-virtuoso-modal .form-row {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.custom-virtuoso-modal .form-row .form-group {
+  flex: 1;
+}
+
+.custom-virtuoso-modal label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.custom-virtuoso-modal input[type="text"],
+.custom-virtuoso-modal select,
+.custom-virtuoso-modal textarea {
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+}
+
+.custom-virtuoso-modal input[type="text"]:focus,
+.custom-virtuoso-modal select:focus,
+.custom-virtuoso-modal textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.custom-virtuoso-modal input[type="color"] {
+  width: 100%;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.custom-virtuoso-modal .modal-footer {
+  padding: var(--space-5);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.custom-virtuoso-modal .btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.custom-virtuoso-modal .btn-secondary:hover {
+  background: var(--bg-surface);
+}
+
+.custom-virtuoso-modal .btn-primary {
+  background: var(--accent);
+  border: none;
+  color: var(--text-on-accent);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.custom-virtuoso-modal .btn-primary:hover {
+  opacity: 0.9;
+}
+
+/* Virtuoso list in builder */
+.virtuoso-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.virtuoso-list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.virtuoso-list-item .virtuoso-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.virtuoso-list-item .virtuoso-details {
+  flex-grow: 1;
+}
+
+.virtuoso-list-item .virtuoso-details strong {
+  font-size: var(--text-sm);
+}
+
+.virtuoso-list-item .virtuoso-details p {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+.virtuoso-list-item .virtuoso-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* Capability checkboxes */
+.capability-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.capability-checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}

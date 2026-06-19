@@ -8,6 +8,7 @@
  */
 import {AnimatePresence} from 'framer-motion';
 import React from 'react';
+import {FlaskConical, PlusCircle} from 'lucide-react';
 import InsightCard from './InsightCard';
 import type {ChatMessage, Insight} from '../../types';
 
@@ -43,19 +44,18 @@ export default function LensLaboratory({
 }: LensLaboratoryProps) {
   return (
     <aside className="lens-laboratory">
-      <div className="lens-laboratory-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span className="icon">science</span>
+      <div className="lens-laboratory-header">
+        <div className="lens-laboratory-title">
+          <FlaskConical size={20} />
           <h2>Lens Laboratory</h2>
         </div>
         {onOpenCustomBuilder && (
-          <button 
-            className="icon-button" 
+          <button
+            className="icon-button"
             onClick={onOpenCustomBuilder}
             title="Create Custom Virtuoso"
-            style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}
           >
-            <span className="icon">add_circle</span>
+            <PlusCircle size={20} />
           </button>
         )}
       </div>

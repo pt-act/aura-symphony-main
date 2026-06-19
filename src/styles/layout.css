@@ -1,0 +1,260 @@
+/* ============================================================================
+   App Layout — container, header, main content, columns
+   ============================================================================ */
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.analysis-view-container {
+  position: relative;
+}
+
+/* App Header */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.app-header h1 {
+  font-size: var(--text-xl);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.user-profile img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-profile span {
+  font-size: var(--text-sm);
+}
+
+/* Main content area */
+.main-content {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+  gap: 0;
+}
+
+.video-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+  padding: var(--space-4);
+}
+
+/* Lens Laboratory sidebar */
+.lens-laboratory {
+  width: 450px;
+  background-color: var(--bg-surface);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.lens-laboratory-header {
+  padding: var(--space-5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border-bottom: 1px solid var(--border);
+  background-color: var(--bg-surface-hover);
+}
+
+.lens-laboratory-header h2 {
+  font-size: var(--text-lg);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+}
+
+.lens-laboratory-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--bg-surface);
+}
+
+/* Icon-only header button */
+.icon-header-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-normal), background var(--transition-normal);
+}
+
+.icon-header-btn:hover:not(:disabled) {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.icon-header-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* === Responsive Breakpoints === */
+
+/* Tablet — 768px: timeline collapses, lens lab becomes drawer */
+@media (max-width: 1024px) {
+  .lens-laboratory {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 350px;
+    z-index: var(--z-overlay);
+    transform: translateX(100%);
+    transition: transform var(--transition-slow);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .lens-laboratory.open {
+    transform: translateX(0);
+  }
+
+  .lens-laboratory-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: calc(var(--z-overlay) - 1);
+  }
+
+  .video-column {
+    padding: var(--space-2);
+  }
+}
+
+/* Mobile — 768px: full reflow */
+@media (max-width: 768px) {
+  .app-header {
+    padding: var(--space-2);
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .app-header h1 {
+    font-size: var(--text-base);
+  }
+
+  .header-controls {
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  .view-switcher button {
+    font-size: var(--text-xs);
+    padding: var(--space-1) var(--space-2);
+  }
+
+  .user-profile span {
+    display: none;
+  }
+
+  .main-content {
+    flex-direction: column;
+  }
+
+  .video-column {
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
+
+  .lens-laboratory {
+    width: 100%;
+  }
+
+  .conductor-container {
+    width: 90%;
+  }
+
+  .conductor-container.focused {
+    width: 95%;
+  }
+
+  .orchestra-visualizer {
+    width: 220px;
+    bottom: var(--space-4);
+    right: var(--space-2);
+  }
+
+  .creator-main-content {
+    flex-direction: column;
+    padding: var(--space-2);
+  }
+
+  .slide-sidebar {
+    flex: 0 0 auto;
+    width: 100%;
+    max-height: 200px;
+    flex-direction: row;
+  }
+
+  .slide-list {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .slide-thumbnail {
+    flex-shrink: 0;
+    width: 160px;
+  }
+}
+
+/* Theme toggle button */
+.theme-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-normal), background var(--transition-normal);
+}
+
+.theme-toggle-btn:hover {
+  color: var(--accent);
+  background: var(--accent-soft);
+}

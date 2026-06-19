@@ -6,8 +6,9 @@
  * or used in any form without prior express written permission.
  * UNAUTHORIZED USE IS STRICTLY PROHIBITED.
  */
-import {AnimatePresence, motion} from 'framer-motion';
 import React from 'react';
+import {Shield} from 'lucide-react';
+import Modal from '../shared/Modal';
 
 interface ConsentModalProps {
   isOpen: boolean;
@@ -20,53 +21,33 @@ export default function ConsentModal({
   onAllow,
   onDeny,
 }: ConsentModalProps) {
-  if (!isOpen) return null;
-
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          className="modal-overlay"
-          initial={{opacity: 0}}
-          animate={{opacity: 1}}
-          exit={{opacity: 0}}>
-          <motion.div
-            className="modal-content"
-            initial={{y: 50, opacity: 0}}
-            animate={{y: 0, opacity: 1}}
-            exit={{y: 50, opacity: 0}}
-            onClick={(e) => e.stopPropagation()}>
-            <header className="modal-header">
-              <h2>Enable Empathetic Learning?</h2>
-            </header>
-            <div className="modal-body consent-modal-body">
-              <h3>Allow camera access to unlock adaptive features.</h3>
-              <p>
-                By enabling your camera, Aura can subtly adapt the learning
-                experience to your pace and focus.
-              </p>
-              <div className="privacy-guarantee">
-                <span className="icon">shield</span>
-                <div>
-                  <strong>Your privacy is our priority.</strong>
-                  <p>
-                    Your camera feed is processed entirely on your device. It is
-                    never recorded, stored, or sent to any servers.
-                  </p>
-                </div>
-              </div>
-              <div className="consent-actions">
-                <button className="primary-action" onClick={onAllow}>
-                  Enable Camera
-                </button>
-                <button className="secondary-action" onClick={onDeny}>
-                  Continue Without
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <Modal isOpen={isOpen} onClose={onDeny} title="Enable Empathetic Learning?">
+      <div className="modal-body consent-modal-body">
+        <h3>Allow camera access to unlock adaptive features.</h3>
+        <p>
+          By enabling your camera, Aura can subtly adapt the learning
+          experience to your pace and focus.
+        </p>
+        <div className="privacy-guarantee">
+          <span className="privacy-icon"><Shield size={20} /></span>
+          <div>
+            <strong>Your privacy is our priority.</strong>
+            <p>
+              Your camera feed is processed entirely on your device. It is
+              never recorded, stored, or sent to any servers.
+            </p>
+          </div>
+        </div>
+        <div className="consent-actions">
+          <button className="primary-action" onClick={onAllow}>
+            Enable Camera
+          </button>
+          <button className="secondary-action" onClick={onDeny}>
+            Continue Without
+          </button>
+        </div>
+      </div>
+    </Modal>
   );
 }

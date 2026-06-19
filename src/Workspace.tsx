@@ -11,6 +11,7 @@ import LensLaboratory from './components/analysis/LensLaboratory';
 import Timeline from './components/analysis/Timeline';
 import VideoControls from './components/analysis/VideoControls';
 import ConductorInput from './components/conductor/ConductorInput';
+import LensPalette from './components/lenses/LensPalette';
 import CourseView from './components/course/CourseView';
 import CreatorStudio from './components/creator/CreatorStudio';
 import LibraryModal from './components/creator/LibraryModal';
@@ -29,7 +30,11 @@ import {useCreatorState} from './hooks/useCreatorState';
 import {useCustomVirtuosos} from './hooks/useCustomVirtuosos';
 import {useAppModals} from './hooks/useAppModals';
 import {useKeyboardActivator, useScreenReaderAnnouncer} from './lib/a11y';
-import {Settings} from 'lucide-react';
+import {useTheme} from './components/shared/ThemeProvider';
+import {useToast} from './hooks/useToast';
+import {useKeyboardShortcuts} from './hooks/useKeyboardShortcuts';
+import CommandPalette, {CommandAction} from './components/shared/CommandPalette';
+import {Settings, Sun, Moon, Search as SearchIcon, Palette as PaletteIcon, Download, HelpCircle, FolderOpen, Wand2} from 'lucide-react';
 
 export default function Workspace() {
   // App State
@@ -41,6 +46,9 @@ export default function Workspace() {
   // Modal State (extracted hook)
   const modals = useAppModals();
   const announce = useScreenReaderAnnouncer();
+  const {theme, toggleTheme} = useTheme();
+  const toast = useToast();
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
 
   const {customVirtuosos, saveCustomVirtuoso, deleteCustomVirtuoso} = useCustomVirtuosos(user);
 
@@ -81,6 +89,7 @@ export default function Workspace() {
     handleSpeedChange,
     jumpToTimecode,
     handleConductorQuery,
+    handleSelectLens,
     handleCloseInsight,
     handleSendMessage,
     handleAddAnnotation,
@@ -143,18 +152,50 @@ export default function Workspace() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'p') {
         e.preventDefault();
-        const tool = prompt('Enter external tool to launch (e.g., Blender, Ableton):', 'Blender');
-        if (tool) {
-          modals.valhalla.open(tool);
-        }
+        // Default to Blender — user can change tool name in the gateway
+        modals.valhalla.open('Blender');
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Command palette actions
+  const commandActions: CommandAction[] = [
+    {id: 'apply-lens', label: 'Apply Lens', icon: <Wand2 size={16} />, handler: () => {
+      const input = document.querySelector('.conductor-form input') as HTMLInputElement;
+      input?.focus();
+    }},
+    {id: 'toggle-theme', label: 'Toggle Theme', icon: theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />, handler: toggleTheme},
+    {id: 'export-nle', label: 'Export to NLE', icon: <Download size={16} />, handler: () => modals.exportNLE.setIsOpen(true)},
+    {id: 'open-settings', label: 'Open Settings', icon: <Settings size={16} />, handler: () => modals.settings.setIsOpen(true)},
+    {id: 'open-help', label: 'Open Help', icon: <HelpCircle size={16} />, handler: () => modals.help.setIsOpen(true)},
+    {id: 'switch-analysis', label: 'Switch to Analysis', icon: <SearchIcon size={16} />, handler: () => setCurrentView('analysis')},
+    {id: 'switch-creator', label: 'Switch to Creator Studio', icon: <PaletteIcon size={16} />, handler: () => setCurrentView('creator')},
+  ];
+
+  // Keyboard shortcuts
+  const anyModalOpen = modals.settings.isOpen || modals.help.isOpen || modals.exportNLE.isOpen ||
+    modals.customVirtuoso.isOpen || modals.valhalla.isOpen || modals.share.isOpen ||
+    modals.liveConversation.isOpen || isPaletteOpen;
+
+  useKeyboardShortcuts([
+    {key: ' ', handler: () => handlePlayPause(), allowInInput: false},
+    {key: 'j', handler: () => jumpToTimecode(Math.max(0, currentTime - 10))},
+    {key: 'k', handler: () => handlePlayPause()},
+    {key: 'l', handler: () => jumpToTimecode(Math.min(duration, currentTime + 10))},
+    {key: 'arrowleft', handler: () => handleFrameStep('backward')},
+    {key: 'arrowright', handler: () => handleFrameStep('forward')},
+    {key: '/', handler: () => {
+      const input = document.querySelector('.conductor-form input') as HTMLInputElement;
+      input?.focus();
+    }},
+    {key: 'k', ctrlKey: true, metaKey: true, handler: () => setIsPaletteOpen(true), allowInModal: true},
+  ], anyModalOpen);
+
   const onExportNLE = (format: 'fcpxml' | 'edl' | 'csv') => {
     handleExportNLE(format, videoUrl || '', duration, annotations);
+    toast.success(`NLE export (${format.toUpperCase()}) completed`);
   };
 
   const renderAnalysisView = () => {
@@ -239,6 +280,10 @@ export default function Workspace() {
           onQuerySubmit={handleConductorQuery}
           isLoading={isConductorLoading}
         />
+        <LensPalette
+          onSelect={handleSelectLens}
+          hasVideo={!!videoUrl}
+        />
       </div>
     );
   };
@@ -308,6 +353,11 @@ export default function Workspace() {
         />
       )}
       <OrchestraVisualizer />
+      <CommandPalette
+        isOpen={isPaletteOpen}
+        onClose={() => setIsPaletteOpen(false)}
+        actions={commandActions}
+      />
       <canvas ref={canvasRef} style={{display: 'none'}} />
       <header className="app-header">
         <h1>Aura</h1>
@@ -341,6 +391,14 @@ export default function Workspace() {
               <button onClick={signInWithGoogle}>Sign In</button>
             )}
           </div>
+          <button
+            className="theme-toggle-btn"
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
           <button
             className="icon-header-btn"
             onClick={() => modals.settings.setIsOpen(true)}

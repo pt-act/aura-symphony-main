@@ -95,6 +95,24 @@ All backend services are optional — the frontend degrades gracefully to browse
 
 **438 tests** across 20 files. Production build in ~29s.
 
+## UI/UX Evolution
+
+The workspace UI has been modernized with a comprehensive design system overhaul:
+
+- **Design Token System** — 16 modular CSS files (all under 250 lines) with full token coverage: color (light/dark), spacing, radius, shadow, typography, transitions, z-index
+- **Light/Dark Theme** — System preference detection with `prefers-color-scheme`, localStorage persistence, FOUC prevention, and a toggle button in the app header
+- **Font Migration** — Inter for body/UI text (replacing Space Mono), Space Mono reserved for timestamps, code blocks, and data tables only
+- **Icon Consolidation** — All Material Symbols icons migrated to Lucide React (single icon system, reduced bundle size)
+- **Modal Consolidation** — All modals use the shared accessible `Modal.tsx` component (focus trap, ARIA, escape, body scroll lock). Zero native `alert()`/`prompt()`/`confirm()` calls remain
+- **Toast Notifications** — Success/error/info toasts with auto-dismiss, ARIA live regions, and keyboard support
+- **Skeleton Loading** — Shimmer-animated skeletons replace spinners for content loading (insight cards, chat, library)
+- **Keyboard Shortcuts** — Space (play/pause), J/K/L (seek), arrows (frame step), `/` (focus conductor), Cmd+K (command palette)
+- **Command Palette** — Cmd/Ctrl+K fuzzy-searchable action launcher with keyboard navigation
+- **Responsive Design** — 768px and 1024px breakpoints with drawer-mode Lens Laboratory and mobile reflow
+- **Lens Labels** — Persistent labels under lens icons at wide breakpoints, tooltips for disabled lenses
+
+See [CHANGELOG.md](CHANGELOG.md) for detailed implementation progress.
+
 ## License
 All Rights Reserved. See [LICENSE](LICENSE) for details.
 Unauthorized copying, modification, distribution, or use is strictly prohibited.

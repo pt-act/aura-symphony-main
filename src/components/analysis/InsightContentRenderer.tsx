@@ -8,6 +8,7 @@
  */
 import c from 'classnames';
 import React, {useMemo, useState} from 'react';
+import {Volume2, Volume1} from 'lucide-react';
 import {generateSpeech} from '../../api/api';
 import type {Annotation, ChatMessage, DigitalLearnerProfile, Insight, QuizQuestion} from '../../types';
 import {decode, decodeAudioData, timeToSecs} from '../../lib/utils';
@@ -105,7 +106,7 @@ function TextContent({
         disabled={isSpeaking}
         className="tts-button"
         title="Read aloud">
-        <span className="icon">{isSpeaking ? 'volume_up' : 'volume_down'}</span>
+        {isSpeaking ? <Volume2 size={20} /> : <Volume1 size={20} />}
       </button>
       {content}
     </div>

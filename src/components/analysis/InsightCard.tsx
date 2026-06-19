@@ -8,7 +8,9 @@
  */
 import {AnimatePresence, motion} from 'framer-motion';
 import React, {useState} from 'react';
+import {Brain, ChevronsDown, ChevronsUp, X} from 'lucide-react';
 import CardFooter from './CardFooter';
+import {SkeletonCard} from '../shared/Skeleton';
 import InsightContentRenderer from './InsightContentRenderer';
 import modes from '../../lib/modes';
 import type {ChatMessage, Insight, Mode} from '../../types';
@@ -48,7 +50,7 @@ export default function InsightCard({
 
   const IconComponent =
     insight.type === 'DLP'
-      ? () => <span className="icon">neurology</span>
+      ? () => <Brain size={18} />
       : modes[insight.type as Mode]?.icon;
 
   return (
@@ -68,15 +70,13 @@ export default function InsightCard({
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             title={isExpanded ? 'Collapse' : 'Expand'}>
-            <span className="icon">
-              {isExpanded ? 'unfold_less' : 'unfold_more'}
-            </span>
+            {isExpanded ? <ChevronsDown size={18} /> : <ChevronsUp size={18} />}
           </button>
           <button
             onClick={() => onClose(insight.id)}
             title="Close"
             className="close-btn">
-            <span className="icon">close</span>
+            <X size={18} />
           </button>
         </div>
       </motion.div>
@@ -94,10 +94,7 @@ export default function InsightCard({
             transition={{duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98]}}>
             <div className="card-body">
               {insight.isLoading ? (
-                <div className="loading-spinner">
-                  <div className="spinner"></div>
-                  <span>Generating...</span>
-                </div>
+                <SkeletonCard />
               ) : (
                 <InsightContentRenderer
                   insight={insight}

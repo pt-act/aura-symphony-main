@@ -9,6 +9,7 @@
 import c from 'classnames';
 import {AnimatePresence, motion} from 'framer-motion';
 import React, {useEffect, useRef, useState} from 'react';
+import {Lightbulb} from 'lucide-react';
 import type {QuizQuestion} from '../../../types';
 
 interface QuizModuleProps {
@@ -239,7 +240,7 @@ export default function QuizModule({
               animate={{opacity: 1, y: 0}}
               exit={{opacity: 0, y: 10}}>
               <button className="quiz-hint-btn" onClick={handleShowHint}>
-                <span className="icon">lightbulb</span> Show Hint
+                <Lightbulb size={14} /> Show Hint
               </button>
             </motion.div>
           )}

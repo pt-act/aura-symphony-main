@@ -1,3 +1,11 @@
+/**
+ * All Rights Reserved.
+ * Copyright (c) 2025 Ricardo Nuno Quintas de Almeida.
+ *
+ * No part of this software may be copied, modified, distributed,
+ * or used in any form without prior express written permission.
+ * UNAUTHORIZED USE IS STRICTLY PROHIBITED.
+ */
 import React, {useState} from 'react';
 import Modal from '../shared/Modal';
 
@@ -23,8 +31,8 @@ export default function ExportNLEModal({
     <Modal isOpen={isOpen} onClose={onClose} title="Export to NLE">
       <div className="modal-body">
         <p>Select the format to export your annotations and timeline data.</p>
-        <div className="export-options" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '20px' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="export-options">
+          <label className="export-option-label">
             <input
               type="radio"
               name="exportFormat"
@@ -34,7 +42,7 @@ export default function ExportNLEModal({
             />
             <strong>FCPXML</strong> (Final Cut Pro, Premiere Pro, DaVinci Resolve)
           </label>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <label className="export-option-label">
             <input
               type="radio"
               name="exportFormat"
@@ -44,7 +52,7 @@ export default function ExportNLEModal({
             />
             <strong>EDL</strong> (Edit Decision List - Universal)
           </label>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <label className="export-option-label">
             <input
               type="radio"
               name="exportFormat"
@@ -56,7 +64,7 @@ export default function ExportNLEModal({
           </label>
         </div>
       </div>
-      <div className="modal-footer" style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+      <div className="modal-footer">
         <button className="secondary-button" onClick={onClose}>
           Cancel
         </button>

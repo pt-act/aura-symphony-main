@@ -8,6 +8,7 @@
  */
 import {AnimatePresence, motion} from 'framer-motion';
 import React, {useEffect, useState} from 'react';
+import {Sparkles} from 'lucide-react';
 import BiofeedbackMonitor from './BiofeedbackMonitor';
 import ConsentModal from './ConsentModal';
 import QuizModule from './learning-modules/QuizModule';
@@ -170,7 +171,7 @@ export default function CourseView({
             initial={{opacity: 0, y: -50}}
             animate={{opacity: 1, y: 0}}
             exit={{opacity: 0, y: -50, transition: {duration: 0.2}}}>
-            <span className="icon">auto_awesome</span>
+            <Sparkles size={16} />
             {adaptationNotice}
           </motion.div>
         )}

@@ -9,15 +9,10 @@
 import {LiveServerMessage, Modality, Blob} from '@google/genai';
 import {getAI} from '../../api/client';
 import c from 'classnames';
-import {AnimatePresence, motion} from 'framer-motion';
-// Fix for framer-motion props not being recognized by TypeScript
 import React from 'react';
 import {useEffect, useRef, useState} from 'react';
 import {decode, decodeAudioData, encode} from '../../lib/utils';
-
-import {useEscapeKey} from '../../lib/a11y';
-
-// AI client is now resolved dynamically per the active provider settings
+import Modal from './Modal';
 
 interface LiveConversationProps {
   isOpen: boolean;
@@ -46,9 +41,6 @@ export default function LiveConversation({
   >([]);
   const [partialInput, setPartialInput] = useState('');
   const [partialOutput, setPartialOutput] = useState('');
-
-  // Escape key closes the modal
-  useEscapeKey(stopConversation, isOpen);
 
   const currentInputRef = useRef('');
   const currentOutputRef = useRef('');
@@ -190,8 +182,6 @@ export default function LiveConversation({
     }
   };
 
-  // Declared as a function (not arrow) so it is hoisted and can be referenced
-  // by useEscapeKey before this point in the component body.
   function stopConversation() {
     sessionPromiseRef.current?.then((session) => session.close());
     sessionPromiseRef.current = null;
@@ -242,54 +232,38 @@ export default function LiveConversation({
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          className="modal-overlay"
-          initial={{opacity: 0}}
-          animate={{opacity: 1}}
-          exit={{opacity: 0}}>
-          <motion.div
-            className="modal-content live-conversation-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="live-conversation-title"
-            initial={{y: 50, opacity: 0}}
-            animate={{y: 0, opacity: 1}}
-            exit={{y: 50, opacity: 0}}>
-            <header className="modal-header">
-              <h2 id="live-conversation-title">Live Conversation</h2>
-              <button onClick={stopConversation} aria-label="Close live conversation">&times;</button>
-            </header>
-            <div className="modal-body">
-              <div className="live-transcript-container">
-                {transcripts.map((t, i) => (
-                  <div key={i} className={c('transcript-entry', t.speaker)}>
-                    <strong>{t.speaker === 'user' ? 'You:' : 'Aura:'}</strong>
-                    <p>{t.text}</p>
-                  </div>
-                ))}
-                {partialInput && (
-                  <div className="transcript-entry user partial">
-                    <strong>You:</strong>
-                    <p>{partialInput}</p>
-                  </div>
-                )}
-                {partialOutput && (
-                  <div className="transcript-entry model partial">
-                    <strong>Aura:</strong>
-                    <p>{partialOutput}</p>
-                  </div>
-                )}
-              </div>
-              <div className="live-footer">
-                {getStatusIndicator()}
-                <p className="status-text">{status}</p>
-              </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={stopConversation}
+      title="Live Conversation"
+      contentClassName="modal-content live-conversation-modal"
+      preventOverlayClose>
+      <div className="modal-body">
+        <div className="live-transcript-container">
+          {transcripts.map((t, i) => (
+            <div key={i} className={c('transcript-entry', t.speaker)}>
+              <strong>{t.speaker === 'user' ? 'You:' : 'Aura:'}</strong>
+              <p>{t.text}</p>
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          ))}
+          {partialInput && (
+            <div className="transcript-entry user partial">
+              <strong>You:</strong>
+              <p>{partialInput}</p>
+            </div>
+          )}
+          {partialOutput && (
+            <div className="transcript-entry model partial">
+              <strong>Aura:</strong>
+              <p>{partialOutput}</p>
+            </div>
+          )}
+        </div>
+        <div className="live-footer">
+          {getStatusIndicator()}
+          <p className="status-text">{status}</p>
+        </div>
+      </div>
+    </Modal>
   );
 }
