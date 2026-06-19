@@ -1,6 +1,6 @@
-torch>=2.12.1
-transformers>=4.40.0
+torch>=2.0.0
+transformers>=5.12.1
 Pillow>=10.0.0
 chromadb>=1.0.0
 fastapi>=0.115.0
-uvicorn>=0.34.0
+uvicorn>=0.49.0
