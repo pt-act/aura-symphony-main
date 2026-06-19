@@ -9,6 +9,6 @@
   "dependencies": {
     "better-sqlite3": "^12.9.0",
     "express": "^5.2.1",
-    "neo4j-driver": "^5.25.0"
+    "neo4j-driver": "^6.1.0"
   }
 }
