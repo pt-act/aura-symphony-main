@@ -7,7 +7,7 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "better-sqlite3": "^12.9.0",
+    "better-sqlite3": "^12.11.1",
     "express": "^4.22.2",
     "neo4j-driver": "^5.25.0"
   }
