@@ -1,0 +1,138 @@
+# Dependabot configuration
+# Docs: https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+#
+# Security updates (for Dependabot *alerts*) are on by default once Dependabot
+# alerts are enabled. This file adds scheduled *version* updates so transitive
+# bumps (like the protobufjs ones) get auto-PR'd before they pile up.
+#
+# Minor + patch updates are grouped into one PR per ecosystem to keep noise low;
+# major updates still open individually so you can review breaking changes.
+
+version: 2
+updates:
+  # ── Frontend / root app (npm) ───────────────────────────────────────
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Etc/UTC
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+    groups:
+      npm-minor-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+
+  # ── Backend Node services (npm) ─────────────────────────────────────
+  - package-ecosystem: npm
+    directory: "/backend/api-proxy"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - backend
+    groups:
+      npm-minor-patch:
+        applies-to: version-updates
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: "/backend/media-pipeline"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - backend
+    groups:
+      npm-minor-patch:
+        applies-to: version-updates
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: "/backend/graph-knowledge"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - backend
+    groups:
+      npm-minor-patch:
+        applies-to: version-updates
+        update-types: [minor, patch]
+
+  # ── Backend Python services (pip) ───────────────────────────────────
+  - package-ecosystem: pip
+    directory: "/backend/vector-search"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - backend
+      - python
+    groups:
+      pip-minor-patch:
+        applies-to: version-updates
+        update-types: [minor, patch]
+
+  - package-ecosystem: pip
+    directory: "/backend/clip-embeddings"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - backend
+      - python
+    groups:
+      pip-minor-patch:
+        applies-to: version-updates
+        update-types: [minor, patch]
+
+  # ── Docker base images ──────────────────────────────────────────────
+  - package-ecosystem: docker
+    directories:
+      - "/backend/api-proxy"
+      - "/backend/media-pipeline"
+      - "/backend/graph-knowledge"
+      - "/backend/vector-search"
+      - "/backend/clip-embeddings"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - docker
+    groups:
+      docker-images:
+        applies-to: version-updates
+        update-types: [minor, patch]
+
+  # ── GitHub Actions ──────────────────────────────────────────────────
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - ci
+    groups:
+      actions:
+        applies-to: version-updates
+        update-types: [minor, patch]
