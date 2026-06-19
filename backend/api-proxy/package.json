@@ -8,10 +8,10 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@google/genai": "^1.46.0",
+    "@google/genai": "^2.9.0",
     "express": "^5.1.0"
   },
   "devDependencies": {
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.9"
   }
 }
