@@ -9,6 +9,8 @@
 /* tslint:disable */
 import c from 'classnames';
 import React, {useEffect, useRef, useState} from 'react';
+import {FileText, Paperclip, Send} from 'lucide-react';
+import {SkeletonTyping} from '../../shared/Skeleton';
 import type {ChatMessage, Insight} from '../../../types';
 
 interface ChatContentProps {
@@ -61,7 +63,7 @@ export default function ChatContent({insight, onSendMessage}: ChatContentProps) 
                     <img src={msg.file.dataUrl} alt={msg.file.name} />
                   ) : (
                     <div className="file-icon">
-                      <span className="icon">description</span>
+                      <FileText size={16} />
                       <span>{msg.file.name}</span>
                     </div>
                   )}
@@ -73,14 +75,16 @@ export default function ChatContent({insight, onSendMessage}: ChatContentProps) 
         ))}
         {insight.isLoading && (
           <div className="chat-message model">
-            <div className="message-content loading">...</div>
+            <div className="message-content">
+              <SkeletonTyping />
+            </div>
           </div>
         )}
       </div>
       <form className="chat-input-form" onSubmit={handleChatSubmit}>
         {selectedFile && (
           <div className="file-attachment-chip">
-            <span className="icon">attachment</span>
+            <Paperclip size={14} />
             {selectedFile.name}
             <button
               type="button"
@@ -109,10 +113,10 @@ export default function ChatContent({insight, onSendMessage}: ChatContentProps) 
           type="button"
           className="attach-button"
           onClick={() => fileInputRef.current?.click()}>
-          <span className="icon">attachment</span>
+          <Paperclip size={20} />
         </button>
         <button type="submit" className="send-button">
-          <span className="icon">send</span>
+          <Send size={20} />
         </button>
       </form>
     </div>

@@ -8,7 +8,12 @@
  */
 /* tslint:disable */
 import React from 'react';
+import {
+  Plus, FileText, Braces, Code, Image as ImageIcon,
+  Download, FileText as FileMd,
+} from 'lucide-react';
 import type {Insight} from '../../types';
+import {useToast} from '../../hooks/useToast';
 import {
   handleExportJson,
   handleExportXml,
@@ -43,47 +48,59 @@ export default function CardFooter({
   user,
   onSendToCreator,
 }: CardFooterProps) {
+  const {success, error} = useToast();
   if (insight.isLoading || !insight.data) return null;
+
+  const wrapExport = (fn: (insight: Insight) => void, label: string) => {
+    return () => {
+      try {
+        fn(insight);
+        success(`${label} exported successfully`);
+      } catch (e) {
+        error(`Failed to export ${label}`);
+      }
+    };
+  };
 
   const buttons: React.ReactNode[] = [];
 
   if (user && sendableTypes.includes(insight.type as string)) {
     buttons.push(
       <button key="send-to-creator" onClick={() => onSendToCreator(insight)}>
-        <span className="icon">add_to_queue</span> Send to Creator
+        <Plus size={14} /> Send to Creator
       </button>,
     );
   }
 
   const pdfButton = (
-    <button key="pdf" onClick={() => handleExportPdf(insight)}>
-      <span className="icon">picture_as_pdf</span> Export PDF
+    <button key="pdf" onClick={wrapExport(handleExportPdf, 'PDF')}>
+      <FileText size={14} /> Export PDF
     </button>
   );
   const jsonButton = (
-    <button key="json" onClick={() => handleExportJson(insight)}>
-      <span className="icon">data_object</span> Export JSON
+    <button key="json" onClick={wrapExport(handleExportJson, 'JSON')}>
+      <Braces size={14} /> Export JSON
     </button>
   );
   const xmlButton = (
-    <button key="xml" onClick={() => handleExportXml(insight)}>
-      <span className="icon">code</span> Export XML
+    <button key="xml" onClick={wrapExport(handleExportXml, 'XML')}>
+      <Code size={14} /> Export XML
     </button>
   );
   const pngButton = (
-    <button key="png" onClick={() => handleExportPng(insight)}>
-      <span className="icon">image</span> Export PNG
+    <button key="png" onClick={wrapExport(handleExportPng, 'PNG')}>
+      <ImageIcon size={14} /> Export PNG
     </button>
   );
 
   switch (insight.type) {
     case 'Table':
       buttons.push(
-        <button key="csv" onClick={() => handleExportTable(insight)}>
-          <span className="icon">download</span> Export CSV
+        <button key="csv" onClick={wrapExport(handleExportTable, 'CSV')}>
+          <Download size={14} /> Export CSV
         </button>,
-        <button key="md" onClick={() => handleExportMarkdown(insight)}>
-          <span className="icon">description</span> Export MD
+        <button key="md" onClick={wrapExport(handleExportMarkdown, 'Markdown')}>
+          <FileMd size={14} /> Export MD
         </button>,
         pdfButton,
         jsonButton,
@@ -93,11 +110,11 @@ export default function CardFooter({
       break;
     case 'Chat':
       buttons.push(
-        <button key="txt" onClick={() => handleExportChat(insight)}>
-          <span className="icon">download</span> Export TXT
+        <button key="txt" onClick={wrapExport(handleExportChat, 'TXT')}>
+          <Download size={14} /> Export TXT
         </button>,
-        <button key="md" onClick={() => handleExportMarkdown(insight)}>
-          <span className="icon">description</span> Export MD
+        <button key="md" onClick={wrapExport(handleExportMarkdown, 'Markdown')}>
+          <FileMd size={14} /> Export MD
         </button>,
         pdfButton,
         jsonButton,
@@ -108,8 +125,8 @@ export default function CardFooter({
     case 'Mermaid':
     case 'Chart':
       buttons.push(
-        <button key="md" onClick={() => handleExportMarkdown(insight)}>
-          <span className="icon">description</span> Export MD
+        <button key="md" onClick={wrapExport(handleExportMarkdown, 'Markdown')}>
+          <FileMd size={14} /> Export MD
         </button>,
         pdfButton,
         jsonButton,
@@ -127,11 +144,11 @@ export default function CardFooter({
         ['Paragraph', 'Haiku', 'PDF Analysis'].includes(insight.type)
       ) {
         buttons.push(
-          <button key="txt" onClick={() => handleExportText(insight)}>
-            <span className="icon">download</span> Export TXT
+          <button key="txt" onClick={wrapExport(handleExportText, 'TXT')}>
+            <Download size={14} /> Export TXT
           </button>,
-          <button key="md" onClick={() => handleExportMarkdown(insight)}>
-            <span className="icon">description</span> Export MD
+          <button key="md" onClick={wrapExport(handleExportMarkdown, 'Markdown')}>
+            <FileMd size={14} /> Export MD
           </button>,
           pdfButton,
           jsonButton,
