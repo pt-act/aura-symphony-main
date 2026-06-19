@@ -231,7 +231,7 @@ app.post('/import/dlp', async (req, res) => {
       });
       imported++;
     } catch (e) {
-      console.error(`[Graph] Import error for ${concept.name}:`, e);
+      console.error('[Graph] Import error for %s:', concept.name, e);
       errors++;
     }
   }

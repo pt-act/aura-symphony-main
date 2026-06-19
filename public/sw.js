@@ -95,12 +95,18 @@ function isAPIRequest(url) {
   );
 }
 
+const CDN_HOSTS = [
+  'cdn.jsdelivr.net',
+  'unpkg.com',
+  'fonts.googleapis.com',
+  'fonts.gstatic.com',
+];
+
 function isCDNResource(url) {
-  return (
-    url.hostname.includes('cdn.jsdelivr.net') ||
-    url.hostname.includes('unpkg.com') ||
-    url.hostname.includes('fonts.googleapis.com') ||
-    url.hostname.includes('fonts.gstatic.com')
+  // Match the host exactly (or a subdomain of it) rather than a substring,
+  // so lookalikes like "cdn.jsdelivr.net.evil.com" are not trusted.
+  return CDN_HOSTS.some(
+    (host) => url.hostname === host || url.hostname.endsWith(`.${host}`)
   );
 }
 

@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main]
 
+# Least-privilege default for every job: read-only access to repo contents.
+# Grant additional scopes per-job only if a job needs them.
+permissions:
+  contents: read
+
 jobs:
   # ─── Frontend Unit Tests ──────────────────────────────────────────
   frontend-tests:
