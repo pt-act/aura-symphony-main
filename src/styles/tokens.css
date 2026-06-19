@@ -79,6 +79,18 @@
   --z-modal: 2000;
   --z-toast: 3000;
 
+  /* === Signature accent (mirrors the marketing site's tri-color beat cycle) === */
+  --cycle-1: #8ab4f8; /* blue */
+  --cycle-2: #a142f4; /* violet */
+  --cycle-3: #f27d26; /* amber */
+  --gradient-accent: linear-gradient(135deg, var(--cycle-1), #7a9fe8 40%, var(--cycle-2));
+  --gradient-glow: radial-gradient(
+    60% 55% at 50% 38%,
+    rgba(138, 180, 248, 0.1),
+    rgba(161, 66, 244, 0.06) 45%,
+    transparent 75%
+  );
+
   /* === Backward-compatible aliases === */
   /* Map old variable names to new tokens so existing components */
   /* and inline styles continue working during migration */
@@ -94,20 +106,30 @@
 
 /* === Light Theme === */
 [data-theme="light"] {
-  --bg-base: #ffffff;
-  --bg-surface: #f7f8f8;
-  --bg-surface-hover: #f0f1f2;
-  --bg-elevated: #ebecec;
-  --text-primary: #1a1a1a;
-  --text-secondary: #555555;
-  --text-tertiary: #888888;
+  /* Soft, cool off-white canvas with white cards floating above it — reads
+     more refined than a flat pure-white screen and echoes the cool grays of
+     the marketing site. */
+  --bg-base: #fbfbfd;
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #f4f5f8;
+  --bg-elevated: #ffffff;
+  --text-primary: #1a1d24;
+  --text-secondary: #545b66;
+  --text-tertiary: #8a8f98;
   --text-on-accent: #ffffff;
   --accent: #1a73e8;
   --accent-hover: #1557b0;
   --accent-soft: rgba(26, 115, 232, 0.08);
   --accent-medium: rgba(26, 115, 232, 0.12);
-  --border: #e0e0e0;
-  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border: #e6e8ec;
+  --border-subtle: rgba(0, 0, 0, 0.05);
+  /* Softer glow for the light canvas */
+  --gradient-glow: radial-gradient(
+    60% 55% at 50% 38%,
+    rgba(138, 180, 248, 0.16),
+    rgba(161, 66, 244, 0.07) 45%,
+    transparent 75%
+  );
   --error: #d93025;
   --success: #188038;
   --warning: #f9ab00;

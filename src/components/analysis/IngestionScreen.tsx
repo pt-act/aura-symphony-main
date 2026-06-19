@@ -78,7 +78,7 @@ export default function IngestionScreen({
               onChange={(e) => setUrl(e.target.value)}
               placeholder="Paste video URL (e.g., .mp4)"
             />
-            <button type="submit">Load</button>
+            <button type="submit" className="btn-primary">Load</button>
           </form>
           <div className="or-divider">OR</div>
           <div className="file-drop-area">
