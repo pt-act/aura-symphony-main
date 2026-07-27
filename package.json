@@ -13,26 +13,26 @@
     "build:local": "vite build"
   },
   "dependencies": {
-    "@google/genai": "^2.9.0",
+    "@google/genai": "^2.13.0",
     "canvg": "^4.0.2",
     "classnames": "^2.5.1",
     "d3-array": "^3.2.4",
     "d3-scale": "^4.0.2",
     "d3-shape": "^3.2.0",
     "face-api.js": "0.22.2",
-    "firebase": "^12.15.0",
-    "framer-motion": "^12.40.0",
+    "firebase": "^12.16.0",
+    "framer-motion": "^12.42.2",
     "gif.js.optimized": "1.0.1",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
-    "lucide-react": "^1.21.0",
+    "lucide-react": "^1.27.0",
     "mermaid": "11",
-    "motion": "^12.40.0",
-    "pdfjs-dist": "^6.0.227",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "react-router-dom": "^7.18.0",
+    "motion": "^12.42.2",
+    "pdfjs-dist": "^6.1.200",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.18.1",
     "y-indexeddb": "^9.0.12",
     "yjs": "^13.6.31",
     "zod": "^4.4.3"
@@ -42,11 +42,11 @@
     "dompurify": "^3.4.11"
   },
   "devDependencies": {
-    "@playwright/test": "^1.61.0",
-    "@types/node": "^26.0.0",
-    "@vitejs/plugin-react": "^6.0.2",
+    "@playwright/test": "^1.62.0",
+    "@types/node": "^26.1.1",
+    "@vitejs/plugin-react": "^6.0.4",
     "typescript": "~6.0.3",
-    "vite": "^8.0.16",
-    "vitest": "^4.1.9"
+    "vite": "^8.1.5",
+    "vitest": "^4.1.10"
   }
 }
