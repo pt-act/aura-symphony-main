@@ -1,9 +1,9 @@
-torch>=2.0.0
-transformers>=5.12.1
-Pillow>=12.2.0
+torch>=2.12.1
+transformers>=5.14.1
+Pillow>=12.3.0
 chromadb>=1.5.9
-fastapi>=0.137.2
+fastapi>=0.139.0
 Pillow>=10.0.0
 chromadb>=1.0.0
 fastapi>=0.138.0
-uvicorn>=0.49.0
+uvicorn>=0.50.2
