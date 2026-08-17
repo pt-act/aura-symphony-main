@@ -91,11 +91,11 @@ Aura supports **two ways** to supply an AI provider key:
 
 ## Architecture
 
-Aura is a polyglot microservices architecture with a rich React 19 + Vite 6 frontend. Seven AI agents communicate via the `SymphonyBus` (custom `EventTarget`-based event bus) with commission chaining for multi-step orchestration.
+Aura is a polyglot microservices architecture with a rich React 19 + Vite 8 frontend. Seven AI agents communicate via the `SymphonyBus` (custom `EventTarget`-based event bus) with commission chaining for multi-step orchestration.
 
 | Service | Stack | Port | Role |
 |---------|-------|------|------|
-| **Frontend** | React 19 + Vite 6 + TypeScript | 3000 | SPA, agent orchestration, frame extraction |
+| **Frontend** | React 19 + Vite 8 + TypeScript | 3000 | SPA, agent orchestration, frame extraction |
 | **API Proxy** | Express | 3005 | Gemini key isolation, rate limiting, usage metering |
 | **Vector Search** | FastAPI + ChromaDB | 3001 | Semantic search with adaptive chunking |
 | **Graph Knowledge** | Express + SQLite | 4004 | Concept graph traversal, learning paths |
@@ -113,7 +113,7 @@ All backend services are optional — the frontend degrades gracefully to browse
 The workspace UI has been modernized with a comprehensive design system overhaul:
 
 - **Design Token System** — 16 modular CSS files (all under 250 lines) with full token coverage: color (light/dark), spacing, radius, shadow, typography, transitions, z-index
-- **Light/Dark Theme** — System preference detection with `prefers-color-scheme`, localStorage persistence, FOUC prevention, and a toggle button in the app header
+- **Light/Dark Theme** — Brand dark theme default (matches marketing site), with localStorage persistence and a toggle button in the app header. Users can switch to light mode if preferred.
 - **Font Migration** — Inter for body/UI text (replacing Space Mono), Space Mono reserved for timestamps, code blocks, and data tables only
 - **Icon Consolidation** — All Material Symbols icons migrated to Lucide React (single icon system, reduced bundle size)
 - **Modal Consolidation** — All modals use the shared accessible `Modal.tsx` component (focus trap, ARIA, escape, body scroll lock). Zero native `alert()`/`prompt()`/`confirm()` calls remain

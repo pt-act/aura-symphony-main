@@ -27,7 +27,7 @@ jobs:
       - run: npm ci
 
       - name: Run frontend unit tests
-        run: npx vitest run --reporter=verbose --project='!backend/*' 2>/dev/null || npx vitest run src/**/*.test.ts --reporter=verbose
+        run: npx vitest run --reporter=verbose src
 
       - name: TypeScript type check
         run: npx tsc --noEmit --skipLibCheck || true  # Soft fail — pre-existing node_modules type conflicts
