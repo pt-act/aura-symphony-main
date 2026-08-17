@@ -38,7 +38,7 @@ import {Settings, Sun, Moon, Search as SearchIcon, Palette as PaletteIcon, Downl
 
 export default function Workspace() {
   // App State
-  const [user, setUser] = useState<Record<string, unknown> | null>(null);
+  const [user, setUser] = useState<{uid: string; photoURL?: string; displayName?: string} | null>(null);
   const [currentView, setCurrentView] = useState<'analysis' | 'creator'>('analysis');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -98,8 +98,8 @@ export default function Workspace() {
   } = useAnalysisState(user, setError, setIsLoading, handleSendToCreator);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser as unknown as Record<string, unknown>);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser: {uid: string} | null) => {
+      setUser(currentUser);
     });
     return () => unsubscribe();
   }, []);

@@ -55,6 +55,7 @@ export function useAnalysisState(
         type: 'Annotations',
         title: 'Annotations',
         data: annotationsState.annotations,
+        isList: true,
         isLoading: false,
       },
       {
@@ -62,6 +63,7 @@ export function useAnalysisState(
         type: 'DLP',
         title: 'Digital Learner Profile',
         data: courseState.dlp,
+        isList: false,
         isLoading: false,
       },
     ]);

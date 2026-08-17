@@ -54,12 +54,12 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
       emailVerified: auth.currentUser?.emailVerified,
       isAnonymous: auth.currentUser?.isAnonymous,
       tenantId: auth.currentUser?.tenantId,
-      providerInfo: auth.currentUser?.providerData.map(provider => ({
+      providerInfo: auth.currentUser?.providerData.map(provider => provider ? ({
         providerId: provider.providerId,
         displayName: provider.displayName,
         email: provider.email,
         photoUrl: provider.photoURL
-      })) || []
+      }) : null).filter((p): p is NonNullable<typeof p> => p !== null) || []
     },
     operationType,
     path
