@@ -420,3 +420,6 @@ export function listActiveSessions(): string[] {
 export { WebSocketTransport } from './collaboration/websocket-transport';
 
 // Re-export utilities for backwards compatibility
+
+// Re-export color utilities for backwards compatibility
+export {pickColor, PEER_COLORS} from './collaboration/websocket-transport';
