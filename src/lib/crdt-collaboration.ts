@@ -77,23 +77,6 @@ export interface TransportProvider {
   onAwarenessChange(callback: (peers: Map<number, PeerAwareness>) => void): void;
 }
 
-// ─── Color palette for peer cursors ──────────────────────────────────
-
-const PEER_COLORS = [
-  '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
-  '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F',
-  '#BB8FCE', '#85C1E9', '#F0B27A', '#82E0AA',
-];
-
-function pickColor(userId: string): string {
-  let hash = 0;
-  for (let i = 0; i < userId.length; i++) {
-    hash = (hash * 31 + userId.charCodeAt(i)) >>> 0;
-  }
-  return PEER_COLORS[hash % PEER_COLORS.length];
-}
-
-// ─── Collaboration Session ───────────────────────────────────────────
 
 /**
  * A CollaborationSession wraps a single Yjs document with typed
@@ -437,4 +420,3 @@ export function listActiveSessions(): string[] {
 export { WebSocketTransport } from './collaboration/websocket-transport';
 
 // Re-export utilities for backwards compatibility
-export {pickColor, PEER_COLORS} from './collaboration/websocket-transport';
