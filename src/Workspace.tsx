@@ -281,7 +281,7 @@ export default function Workspace() {
           isLoading={isConductorLoading}
         />
         <LensPalette
-          onSelect={handleSelectLens}
+          onSelect={(mode, customPrompt, options) => handleSelectLens(mode, customPrompt)}
           hasVideo={!!videoUrl}
         />
       </div>
@@ -302,7 +302,7 @@ export default function Workspace() {
     }
     return (
       <CreatorStudio
-        user={user}
+        user={user as any}
         presentation={presentation}
         setPresentation={setPresentation}
         activeSlideIndex={activeSlideIndex}
@@ -416,7 +416,6 @@ export default function Workspace() {
       {error && (
         <div
           className="error-toast"
-          role="alert"
           aria-live="assertive"
           {...useKeyboardActivator(() => setError(null))}
           onClick={() => setError(null)}

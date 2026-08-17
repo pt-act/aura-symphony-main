@@ -36,10 +36,10 @@ export function useVideoState() {
     }
   }, [isPlaying]);
 
-  const handleFrameStep = useCallback((forward: boolean) => {
+  const handleFrameStep = useCallback((direction: 'forward' | 'backward') => {
     if (videoRef.current) {
       const frameTime = 1 / 30;
-      videoRef.current.currentTime += forward ? frameTime : -frameTime;
+      videoRef.current.currentTime += direction === 'forward' ? frameTime : -frameTime;
     }
   }, []);
 

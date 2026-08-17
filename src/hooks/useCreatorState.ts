@@ -42,8 +42,8 @@ export function useCreatorState(user: any, setCurrentView: (view: 'analysis' | '
           userId: user.uid,
           name: 'New Presentation from Aura',
           slides: slides,
-          createdAt: new Date(),
-          lastUpdated: new Date(),
+          createdAt: new Date().toISOString(),
+          lastUpdated: new Date().toISOString(),
         };
       } else {
         return {
@@ -70,8 +70,8 @@ export function useCreatorState(user: any, setCurrentView: (view: 'analysis' | '
           backgroundColor: '#ffffff',
         },
       ],
-      createdAt: new Date(),
-      lastUpdated: new Date(),
+      createdAt: new Date().toISOString(),
+      lastUpdated: new Date().toISOString(),
     });
     setActiveSlideIndex(0);
   };

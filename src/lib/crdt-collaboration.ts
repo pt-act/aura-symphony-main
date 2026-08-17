@@ -455,7 +455,7 @@ export class WebSocketTransport implements TransportProvider {
         this._connected = true;
         console.log(`[CRDT/WS] Connected to ${url}`);
         // Send initial state
-        const update = Y.encodeStateAsUpdate(doc);
+        const update = Y.encodeStateAsUpdate(doc) as unknown as BufferSource;
         this.ws?.send(update);
         // Send awareness
         if (this.awarenessState) {
@@ -490,7 +490,7 @@ export class WebSocketTransport implements TransportProvider {
       // Relay local updates to server
       doc.on('update', (update: Uint8Array, origin: any) => {
         if (origin !== 'remote' && this._connected && this.ws?.readyState === WebSocket.OPEN) {
-          this.ws.send(update);
+          this.ws.send(update as unknown as BufferSource);
         }
       });
     } catch (err) {

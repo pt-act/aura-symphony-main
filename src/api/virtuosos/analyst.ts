@@ -80,7 +80,7 @@ export async function generateCourseModules(frames: string[]) {
       },
     });
 
-    const result = JSON.parse(response.text);
+    const result = JSON.parse(response.text || '{}');
     symphonyBus.dispatch(Events.TASK_SUCCESS, {id: taskId, result});
     return result;
   } catch (error: any) {

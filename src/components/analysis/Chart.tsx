@@ -89,7 +89,7 @@ export default function Chart({data, yLabel, jumpToTimecode}: ChartProps) {
       </g>
 
       <g>
-        <path d={lineGen(data)} />
+        <path d={lineGen(data) ?? ''} />
       </g>
 
       <g>

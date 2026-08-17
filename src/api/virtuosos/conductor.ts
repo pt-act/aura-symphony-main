@@ -68,5 +68,5 @@ export async function runChat(
   }
 
   const response = await chat.sendMessage({message: finalMessage});
-  return response.text;
+  return response.text || '';
 }

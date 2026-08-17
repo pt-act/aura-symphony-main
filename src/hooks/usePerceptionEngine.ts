@@ -13,7 +13,7 @@ import React, {useEffect, useRef, useState} from 'react';
 const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/weights';
 
 export const usePerceptionEngine = (
-  videoRef: React.RefObject<HTMLVideoElement>,
+  videoRef: React.RefObject<HTMLVideoElement | null>,
 ) => {
   const [isLoading, setIsLoading] = useState(true);
   const [expression, setExpression] = useState<{

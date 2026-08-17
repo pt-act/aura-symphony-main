@@ -95,7 +95,7 @@ If FAIL, provide specific, actionable feedback for improvement.`;
       },
     });
 
-    const parsed = JSON.parse(response.text);
+    const parsed = JSON.parse(response.text || '{}');
 
     const score = Math.round(
       ((parsed.relevance + parsed.factualConsistency + parsed.quality) / 30) * 100

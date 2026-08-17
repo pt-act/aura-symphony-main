@@ -126,7 +126,7 @@ export default function LiveConversation({
             }
 
             const base64Audio =
-              message.serverContent?.modelTurn?.parts[0]?.inlineData.data;
+              (message.serverContent as any)?.modelTurn?.parts?.[0]?.inlineData?.data;
             if (base64Audio && outputAudioContextRef.current) {
               const outputAudioContext = outputAudioContextRef.current;
               nextStartTimeRef.current = Math.max(

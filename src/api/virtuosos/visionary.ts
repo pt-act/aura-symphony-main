@@ -45,8 +45,9 @@ export async function runPdfQuery(
         systemInstruction: VIRTUOSO_REGISTRY[VirtuosoType.VISIONARY].systemInstruction,
       },
     });
-    symphonyBus.dispatch(Events.TASK_SUCCESS, {id: taskId, result: response.text});
-    return response.text;
+    const text = response.text || '';
+    symphonyBus.dispatch(Events.TASK_SUCCESS, {id: taskId, result: text});
+    return text;
   } catch (error: any) {
     symphonyBus.dispatch(Events.TASK_ERROR, {id: taskId, error: error.message});
     throw error;

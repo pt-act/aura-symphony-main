@@ -327,7 +327,7 @@ export function useAnalysisState(
           i.id === insightId
             ? {
                 ...i,
-                data: vectorResult.timecodes,
+                data: vectorResult.timecodes as any,
                 isLoading: false,
                 isList: true,
                 title: `Search: "${query}" (${vectorResult.searchTimeMs.toFixed(0)}ms, vector)`,
@@ -381,7 +381,7 @@ export function useAnalysisState(
       } else {
         setInsights((prev) =>
           prev.map((i) =>
-            i.id === insightId ? {...i, data: response.text, isLoading: false} : i,
+            i.id === insightId ? {...i, data: response.text as any, isLoading: false} : i,
           ),
         );
       }

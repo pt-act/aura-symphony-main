@@ -100,7 +100,9 @@ export async function generateImage(
         aspectRatio,
       },
     });
-    const base64ImageBytes = response.generatedImages[0].image.imageBytes;
+    const generatedImages = response.generatedImages;
+    if (!generatedImages?.[0]?.image?.imageBytes) throw new Error('No image generated');
+    const base64ImageBytes = generatedImages[0].image.imageBytes;
     const imageUrl = `data:image/jpeg;base64,${base64ImageBytes}`;
     symphonyBus.dispatch(Events.TASK_SUCCESS, {id: taskId, result: imageUrl});
     return imageUrl;
@@ -134,8 +136,10 @@ export async function editImage(
       },
     });
 
-    for (const part of response.candidates[0].content.parts) {
-      if (part.inlineData) {
+    const candidates = response.candidates;
+    if (!candidates?.[0]?.content?.parts) throw new Error('No parts in response');
+    for (const part of candidates[0].content.parts) {
+      if (part.inlineData?.data) {
         const base64ImageBytes: string = part.inlineData.data;
         const imageUrl = `data:image/png;base64,${base64ImageBytes}`;
         symphonyBus.dispatch(Events.TASK_SUCCESS, {id: taskId, result: imageUrl});

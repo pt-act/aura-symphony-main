@@ -11,7 +11,7 @@ import React, {useEffect} from 'react';
 
 interface BiofeedbackMonitorProps {
   stream: MediaStream;
-  videoRef: React.RefObject<HTMLVideoElement>;
+  videoRef: React.RefObject<HTMLVideoElement | null>;
   isLoading: boolean;
   expression?: string;
 }

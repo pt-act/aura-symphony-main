@@ -237,9 +237,9 @@ export default function InsightContentRenderer({
     case 'Web Search':
       return <SearchContent data={insight.data} />;
     case 'Transcribe Audio':
-      return <p className="transcription-text">{insight.data}</p>;
+      return <p className="transcription-text">{insight.data as React.ReactNode}</p>;
     case 'PDF Analysis':
-      return <div className="markdown-content">{insight.data}</div>;
+      return <div className="markdown-content">{insight.data as React.ReactNode}</div>;
     case 'Chat':
       return <ChatContent insight={insight} onSendMessage={onSendMessage} />;
     case 'Annotations':
@@ -273,7 +273,7 @@ export default function InsightContentRenderer({
           />
         );
       }
-      return <p>{insight.data}</p>;
+      return <p>{insight.data as React.ReactNode}</p>;
     default:
       return <div className="placeholder-text">Content type not supported.</div>;
   }
