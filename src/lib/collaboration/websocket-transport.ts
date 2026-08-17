@@ -2,7 +2,7 @@
  * WebSocket transport layer for CRDT collaboration.
  * Handles connection lifecycle, message framing, and reconnection.
  */
-import type {Y} from 'yjs';
+import type {Doc} from 'yjs';
 import type {TransportProvider} from '../crdt-collaboration';
 
 export class WebSocketTransport implements TransportProvider {
@@ -13,28 +13,24 @@ export class WebSocketTransport implements TransportProvider {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectDelay = 1000;
-  private onConnectCallback?: () => void;
-  private onDisconnectCallback?: (reason: string) => void;
 
   constructor(url: string, doc: Doc) {
     this.url = url;
     this.doc = doc;
   }
 
-  connect(onConnect?: () => void, onDisconnect?: (reason: string) => void): void {
-    this.onConnectCallback = onConnect;
-    this.onDisconnectCallback = onDisconnect;
+  connect(roomId: string, doc: Doc): void {
+    this.url = `${this.url}/${roomId}`;
+    this.doc = doc;
     this.ws = new WebSocket(this.url);
 
     this.ws.onopen = () => {
       this.reconnectAttempts = 0;
       console.log(`[WS] Connected to ${this.url}`);
-      onConnect?.();
     };
 
     this.ws.onclose = (event) => {
       console.warn(`[WS] Disconnected: ${event.code} ${event.reason}`);
-      onDisconnect?.(event.reason || 'Connection closed');
       this.scheduleReconnect();
     };
 
@@ -51,7 +47,22 @@ export class WebSocketTransport implements TransportProvider {
     this.reconnectAttempts++;
     const delay = Math.min(this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1), 30000);
     console.log(`[WS] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
-    this.reconnectTimer = window.setTimeout(() => this.connect(this.onConnectCallback, this.onDisconnectCallback), delay);
+    this.reconnectTimer = window.setTimeout(() => {
+      const onConnect = () => {};
+      const onDisconnect = () => {};
+      this.connect('', this.doc);
+    }, delay);
+  }
+
+  disconnect(): void {
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+    if (this.ws) {
+      this.ws.close();
+      this.ws = null;
+    }
   }
 
   send(data: string | ArrayBuffer): void {
@@ -68,18 +79,19 @@ export class WebSocketTransport implements TransportProvider {
     }
   }
 
-  disconnect(): void {
-    if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer);
-      this.reconnectTimer = null;
-    }
-    if (this.ws) {
-      this.ws.close();
-      this.ws = null;
-    }
+  setAwareness(state: import('../crdt-collaboration').PeerAwareness): void {
+    this.send(JSON.stringify({type: 'awareness', state}));
   }
 
-  get isConnected(): boolean {
+  getAwareness(): Map<number, import('../crdt-collaboration').PeerAwareness> {
+    return new Map();
+  }
+
+  onAwarenessChange(callback: (peers: Map<number, import('../crdt-collaboration').PeerAwareness>) => void): void {
+    // No-op for now
+  }
+
+  get connected(): boolean {
     return this.ws?.readyState === WebSocket.OPEN;
   }
 }
