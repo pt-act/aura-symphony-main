@@ -436,5 +436,5 @@ export function listActiveSessions(): string[] {
 // Re-export WebSocketTransport for backwards compatibility
 export { WebSocketTransport } from './collaboration/websocket-transport';
 
-// Re-export Yjs utilities
-export { Y, pickColor, PEER_COLORS } from 'yjs';
+// Re-export utilities for backwards compatibility
+export {pickColor, PEER_COLORS} from './collaboration/websocket-transport';
