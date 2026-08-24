@@ -8,13 +8,13 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@google/genai": "^2.17.1",
+    "@google/genai": "^2.18.0",
     "express": "^5.1.0"
   },
   "overrides": {
     "protobufjs": "7.6.5"
   },
   "devDependencies": {
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   }
 }
