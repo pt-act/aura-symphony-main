@@ -13,22 +13,22 @@
     "build:local": "vite build"
   },
   "dependencies": {
-    "@google/genai": "^2.17.1",
+    "@google/genai": "^2.18.0",
     "canvg": "^4.0.2",
     "classnames": "^2.5.1",
     "d3-array": "^3.2.4",
     "d3-scale": "^4.0.2",
     "d3-shape": "^3.2.0",
     "face-api.js": "0.22.2",
-    "firebase": "^12.17.0",
-    "framer-motion": "^13.0.0",
+    "firebase": "^12.18.0",
+    "framer-motion": "^13.1.1",
     "gif.js.optimized": "1.0.1",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
-    "lucide-react": "^1.31.0",
+    "lucide-react": "^1.33.0",
     "mermaid": "11",
-    "motion": "^13.1.0",
+    "motion": "^13.1.1",
     "pdfjs-dist": "^6.2.108",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
@@ -47,9 +47,9 @@
     "@types/node": "^26.2.0",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
-    "@vitejs/plugin-react": "^6.0.5",
+    "@vitejs/plugin-react": "^6.1.0",
     "typescript": "~7.0.2",
-    "vite": "^8.2.1",
-    "vitest": "^4.1.10"
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11"
   }
 }
