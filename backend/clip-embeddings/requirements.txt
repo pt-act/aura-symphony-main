@@ -1,4 +1,4 @@
-torch>=2.14.0
+torch>=2.14.1
 transformers>=5.16.1
 Pillow>=12.3.0
 chromadb>=1.5.9
