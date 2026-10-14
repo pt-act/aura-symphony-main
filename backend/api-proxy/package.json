@@ -8,8 +8,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@google/genai": "^2.21.0",
-    "express": "^5.1.0"
+    "@google/genai": "^2.28.0",
+    "express": "^5.3.0"
   },
   "overrides": {
     "protobufjs": "7.6.5"
