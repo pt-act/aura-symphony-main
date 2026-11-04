@@ -35,7 +35,7 @@
     "react-router-dom": "^7.18.4",
     "y-indexeddb": "^9.0.12",
     "yjs": "^13.6.32",
-    "zod": "^4.6.5"
+    "zod": "^4.6.6"
   },
   "overrides": {
     "node-fetch": "^2.7.0",
